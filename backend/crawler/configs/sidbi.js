@@ -1,0 +1,62 @@
+export default {
+    name: "SIDBI",
+    baseUrl: "https://www.sidbi.in/",
+    startUrls: [
+        "https://www.sidbi.in/en/home-product",
+        "https://www.sidbi.in/prayaas",
+        "https://www.sidbi.in/en/cgtmse",
+        "https://www.sidbi.in/en/msme-cluster-development-initiatives",
+        "https://www.sidbivcf.in/en",
+        "https://www.sidbivcf.in/en/funds/overview",
+        "https://www.sidbivcf.in/en/funds/startup-india-fund-of-funds-2-0",
+        "https://www.sidbivcf.in/en/funds/ffs",
+        "https://www.sidbivcf.in/en/funds/aspire-fund-af",
+        "https://www.sidbivcf.in/en/funds/up-sf",
+        "https://www.sidbivcf.in/en/funds/iaf",
+        "https://www.sidbivcf.in/en/funds/osgf",
+        "https://www.sidbivcf.in/en/commitments"
+    ],
+    allowedDomains: [
+        "sidbi.in",
+        "www.sidbi.in",
+        "sidbivcf.in",
+        "www.sidbivcf.in"
+    ],
+    excludePatterns: [
+        "/contact-us",
+        "/tenders",
+        "/press-releases",
+        "/testimonials",
+        "/rti-cell",
+        "/reservation-roster",
+        "/website-policy",
+        "/feedback-forms",
+        "/privacy-policy",
+        "/copyright-policy",
+        "/hyperlink-policy",
+        "/accessibility",
+        "/disclaimer",
+        "/sitemap",
+        "/terms-conditions",
+        "/complaints",
+        "/news",
+        "/media",
+        "/gallery",
+        "/careers"
+    ],
+    followLinks: true,
+    maxDepth: 3,
+    crawlFrequency: "Monthly",
+    tags: [
+        "startup",
+        "government",
+        "funding",
+        "MSME",
+        "venture-capital",
+        "fund-of-funds",
+        "SIDBI",
+        "loan",
+        "credit-guarantee",
+        "micro-enterprise"
+    ]
+}

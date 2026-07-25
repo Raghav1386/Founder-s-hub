@@ -1,0 +1,49 @@
+export default {
+    name: "DPIIT",
+    baseUrl: "https://www.dpiit.gov.in",
+    startUrls: [
+        "https://www.dpiit.gov.in/",
+        "https://www.dpiit.gov.in/offerings",
+        "https://www.dpiit.gov.in/offerings/initiative",
+        "https://www.dpiit.gov.in/offerings/initiative/details/startup-india-initiative-and-related-schemes-1gTM1ETMtQWa",
+        "https://www.dpiit.gov.in/documents",
+        "https://www.dpiit.gov.in/whats-new",
+        "https://www.dpiit.gov.in/important-links"
+    ],
+    allowedDomains: [
+        "dpiit.gov.in",
+        "www.dpiit.gov.in"
+    ],
+    excludePatterns: [
+        "/connect",
+        "/feedback",
+        "/help",
+        "/sitemap",
+        "/RelatedLinks",
+        "/cookies",
+        "/policies",
+        "/offerings/tenders",
+        "/offerings/vacancies",
+        "/ministry",
+        "/media",
+        "/search"
+    ],
+    followLinks: true,
+    maxDepth: 3,
+    crawlFrequency: "weekly",
+    tags: [
+        "startup",
+        "government",
+        "india",
+        "dpiit",
+        "funding",
+        "seed-fund",
+        "credit-guarantee",
+        "tax-exemption",
+        "startup-recognition",
+        "industrial-policy",
+        "investment-promotion",
+        "gazette-notification",
+        "scheme"
+    ]
+}
