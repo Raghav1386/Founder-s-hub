@@ -20,6 +20,8 @@
 import { Queue } from './queue.js';
 import { discoverLinks } from './discoverLinks.js';
 import { saveDocument } from './saveDocument.js';
+import { cleanMarkdown } from './cleanMarkdown.js';
+import { isKnowledgePage } from './isKnowledgePage.js';
 import { logger } from './logger.js';
 
 /**
@@ -43,6 +45,9 @@ async function fetchPageWithCrawl4AI(targetUrl) {
                 urls: targetUrl,
                 word_count_threshold: 10,
                 extraction_strategy: 'NoExtractionStrategy',
+                excluded_tags: ['nav', 'footer', 'header', 'script', 'style', 'noscript', 'aside', 'form', 'svg'],
+                remove_overlay_elements: true,
+                process_iframes: false,
                 bypass_cache: true
             })
         });
@@ -67,7 +72,8 @@ async function fetchPageWithCrawl4AI(targetUrl) {
     try {
         const fetchResponse = await fetch(targetUrl, {
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) FounderPilot-Crawler/1.0'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8'
             }
         });
 
@@ -85,10 +91,17 @@ async function fetchPageWithCrawl4AI(targetUrl) {
         const hrefMatches = [...htmlText.matchAll(/href=["'](https?:\/\/[^"'\s]+)["']/gi)];
         const extractedLinks = hrefMatches.map(match => match[1]);
 
-        // Basic strip HTML tags for simple markdown fallback text
+        // Strip UI container tags and HTML elements for clean markdown fallback text
         const plainText = htmlText
             .replace(/<script\b[^<]*>[\s\S]*?<\/script>/gi, '')
             .replace(/<style\b[^<]*>[\s\S]*?<\/style>/gi, '')
+            .replace(/<noscript\b[^<]*>[\s\S]*?<\/noscript>/gi, '')
+            .replace(/<header\b[^<]*>[\s\S]*?<\/header>/gi, '')
+            .replace(/<footer\b[^<]*>[\s\S]*?<\/footer>/gi, '')
+            .replace(/<nav\b[^<]*>[\s\S]*?<\/nav>/gi, '')
+            .replace(/<aside\b[^<]*>[\s\S]*?<\/aside>/gi, '')
+            .replace(/<form\b[^<]*>[\s\S]*?<\/form>/gi, '')
+            .replace(/<svg\b[^<]*>[\s\S]*?<\/svg>/gi, '')
             .replace(/<[^>]+>/g, ' ')
             .replace(/\s+/g, ' ')
             .trim();
@@ -142,6 +155,7 @@ export async function crawlSource(config, dbCollection, crawlRunId) {
         inserted: 0,
         updated: 0,
         unchanged: 0,
+        skipped: 0,
         failed: 0
     };
 
@@ -184,15 +198,43 @@ export async function crawlSource(config, dbCollection, crawlRunId) {
             // STEP 3a: Crawl page using Crawl4AI
             const pageResult = await fetchPageWithCrawl4AI(url);
 
+            // Clean extracted raw markdown prior to database storage
+            const rawMarkdown = pageResult.markdown || '';
+            const cleanedMarkdown = cleanMarkdown(rawMarkdown, sourceName);
+
             // Prepare standardized page document object
             const pageData = {
                 title: pageResult.title || 'Untitled',
                 url: url,
                 source: sourceName,
-                markdown: pageResult.markdown || ''
+                markdown: cleanedMarkdown
             };
 
-            // STEP 3b: Save or update document in MongoDB
+            // STEP 3b: Evaluate whether page contains valid knowledge content
+            const isValidKnowledge = isKnowledgePage(pageData);
+
+            if (!isValidKnowledge) {
+                stats.skipped++;
+                logger.info(`Skipping non-knowledge page (low score / UI form page): ${url}`);
+
+                // Still discover links from page to navigate deeper into knowledge sections
+                const discoveredItems = discoverLinks(
+                    pageResult.links || [],
+                    depth,
+                    sourceConfig,
+                    visitedUrls,
+                    url
+                );
+
+                for (const newItem of discoveredItems) {
+                    if (!visitedUrls.has(newItem.url)) {
+                        queue.enqueue(newItem);
+                    }
+                }
+                continue;
+            }
+
+            // STEP 3c: Save or update document in MongoDB
             const saveResult = await saveDocument(pageData, dbCollection, crawlRunId);
 
             if (saveResult.status === 'inserted') stats.inserted++;

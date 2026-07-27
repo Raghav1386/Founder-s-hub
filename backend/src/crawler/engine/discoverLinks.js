@@ -96,7 +96,8 @@ export function discoverLinks(links = [], currentDepth = 0, config = {}, visited
     }
 
     const allowedDomains = config.allowedDomains || [];
-    const excludePatterns = config.excludeUrls || [];
+    const includePatterns = config.includePatterns || [];
+    const excludePatterns = config.excludePatterns || config.excludeUrls || [];
     
     // Track unique links added in this specific batch to avoid duplicates
     const batchSeenUrls = new Set();
@@ -147,7 +148,14 @@ export function discoverLinks(links = [], currentDepth = 0, config = {}, visited
             continue;
         }
 
-        // STEP 6: Check excluded URL patterns (e.g. static assets, download files, login links)
+        // STEP 6a: Check excluded URL patterns (static assets, UI forms, login, dashboard, etc.)
+        const DEFAULT_BLOCKED_EXTENSIONS = ['.pdf', '.zip', '.rar', '.exe', '.png', '.jpg', '.jpeg', '.mp4', '.xlsx', '.docx'];
+        const pathnameLower = parsedUrlObj.pathname.toLowerCase();
+        const isStaticAsset = DEFAULT_BLOCKED_EXTENSIONS.some(ext => pathnameLower.endsWith(ext));
+        if (isStaticAsset) {
+            continue;
+        }
+
         const isExcluded = excludePatterns.some(pattern => {
             const lowerTarget = targetUrl.toLowerCase();
             const lowerPattern = pattern.toLowerCase();
@@ -156,6 +164,20 @@ export function discoverLinks(links = [], currentDepth = 0, config = {}, visited
 
         if (isExcluded) {
             continue;
+        }
+
+        // STEP 6b: Check includePatterns constraint (if configured)
+        // If includePatterns is provided, link MUST match at least one include pattern
+        if (includePatterns.length > 0) {
+            const matchesIncludePattern = includePatterns.some(pattern => {
+                const lowerTarget = targetUrl.toLowerCase();
+                const lowerPattern = pattern.toLowerCase();
+                return lowerTarget.includes(lowerPattern);
+            });
+
+            if (!matchesIncludePattern) {
+                continue;
+            }
         }
 
         // Mark as seen in this batch

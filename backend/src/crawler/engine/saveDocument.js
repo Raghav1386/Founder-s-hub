@@ -45,8 +45,14 @@ export async function saveDocument(pageData, dbCollection, crawlRunId = null) {
         title = 'Untitled Page',
         url,
         source = 'unknown',
-        markdown = ''
+        markdown: rawMarkdown = ''
     } = pageData;
+
+    // Truncate rawMarkdown to 250KB to conserve storage and fit within MongoDB Atlas 512MB free tier limit
+    const MAX_MARKDOWN_BYTES = 250 * 1024;
+    const markdown = (rawMarkdown && rawMarkdown.length > MAX_MARKDOWN_BYTES)
+        ? rawMarkdown.substring(0, MAX_MARKDOWN_BYTES)
+        : rawMarkdown;
 
     // STEP 1: Generate SHA-256 hash of the markdown content
     const newContentHash = generateContentHash(markdown);

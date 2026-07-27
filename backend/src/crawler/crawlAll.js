@@ -120,6 +120,7 @@ export async function crawlAll() {
             Inserted: s.stats ? s.stats.inserted : 0,
             Updated: s.stats ? s.stats.updated : 0,
             Unchanged: s.stats ? s.stats.unchanged : 0,
+            Skipped: s.stats ? s.stats.skipped : 0,
             Failed: s.stats ? s.stats.failed : 0
         })));
 
