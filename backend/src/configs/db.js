@@ -20,13 +20,14 @@ import mongoose from 'mongoose';
  */
 export async function connectDB() {
     try {
-        // Read MongoDB connection string from environment variables
+        // Read MongoDB connection string and database name from environment variables
         const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/founderpilot';
+        const dbName = process.env.MONGODB_DB_NAME || 'founderpilot';
 
-        // Connect to MongoDB using Mongoose
-        const connection = await mongoose.connect(mongoUri);
+        // Connect to MongoDB using Mongoose with explicit dbName
+        const connection = await mongoose.connect(mongoUri, { dbName });
 
-        console.log(`[SUCCESS] MongoDB connected successfully: ${connection.connection.host}`);
+        console.log(`[SUCCESS] MongoDB connected successfully to database "${connection.connection.name}" on host ${connection.connection.host}`);
         return connection;
     } catch (error) {
         // Log the failure details and terminate process immediately

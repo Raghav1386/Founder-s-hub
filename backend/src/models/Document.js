@@ -51,9 +51,13 @@ const documentSchema = new mongoose.Schema(
         },
         processingStatus: {
             type: String,
-            enum: ['pending', 'processing', 'completed', 'failed'],
+            enum: ['pending', 'pending_structure', 'pending_embedding', 'processing', 'completed', 'failed'],
             default: 'pending',
             index: true
+        },
+        structured: {
+            type: mongoose.Schema.Types.Mixed,
+            default: null
         },
         documentStatus: {
             type: String,

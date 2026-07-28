@@ -72,7 +72,7 @@ export async function saveDocument(pageData, dbCollection, crawlRunId = null) {
                 source: source,
                 markdown: markdown,
                 contentHash: newContentHash,
-                processingStatus: 'pending',    // Flagged so embedding service knows to process this doc
+                processingStatus: 'pending_structure',    // Flagged for document structuring pipeline
                 documentStatus: 'active',      // Document is active
                 lastSeenInCrawl: currentRunId, // Tracks which crawl run saw this page
                 embeddingVersion: 1,           // Initial embedding version
@@ -96,7 +96,7 @@ export async function saveDocument(pageData, dbCollection, crawlRunId = null) {
                 source: source,
                 markdown: markdown,
                 contentHash: newContentHash,
-                processingStatus: 'pending',    // Re-flag as pending for re-embedding pipeline
+                processingStatus: 'pending_structure',    // Re-flag as pending_structure for pipeline
                 lastSeenInCrawl: currentRunId, // Update crawl run ID
                 lastCrawledAt: now,            // Update crawl timestamp
                 updatedAt: now                 // Update record modified timestamp

@@ -6,18 +6,23 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
-    "crawl": "node src/crawler/index.js"
+    "crawl": "node src/crawler/index.js",
+    "queue-structure": "node src/pipeline/queueForStructuring.js",
+    "structure": "node src/pipeline/structurePipeline.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@langchain/core": "^1.2.3",
+    "@langchain/google-genai": "^2.2.0",
     "cors": "^2.8.6",
     "crawl4ai": "^1.1.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongoose": "^9.8.0",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "zod": "^4.4.3"
   }
 }
