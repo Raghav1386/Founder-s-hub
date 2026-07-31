@@ -2,8 +2,9 @@
  * queueForStructuring.js (src/pipeline/queueForStructuring.js)
  * 
  * Purpose:
- * Helper script to update existing MongoDB documents with processingStatus = "pending" or "failed"
- * back to processingStatus = "pending_structure" so they can be re-processed by the structuring pipeline.
+ * Helper script to update existing MongoDB documents that haven't been structured yet
+ * (where structured is null or missing, and processingStatus is "pending" or "failed")
+ * to processingStatus = "pending_structure".
  */
 
 import dotenv from 'dotenv';
@@ -21,12 +22,25 @@ async function queueDocuments() {
     await connectDB();
 
     try {
+        // Only target documents that do NOT have structured data yet
+        const filter = {
+            $or: [
+                { structured: null },
+                { structured: { $exists: false } }
+            ],
+            processingStatus: { $ne: 'pending_embedding' }
+        };
+
         const result = await Document.updateMany(
-            { processingStatus: { $in: ['pending', 'failed'] } },
+            filter,
             { $set: { processingStatus: 'pending_structure' } }
         );
 
-        console.log(`✅ Updated ${result.modifiedCount} document(s) (pending/failed) to processingStatus = "pending_structure".`);
+        console.log(`✅ Queued ${result.modifiedCount} document(s) (unstructured) to processingStatus = "pending_structure".`);
+
+        const alreadyStructured = await Document.countDocuments({ processingStatus: 'pending_embedding' });
+        console.log(`ℹ️ Already structured documents preserved in DB: ${alreadyStructured}`);
+
     } catch (error) {
         console.error('❌ Error updating documents:', error.message);
     } finally {

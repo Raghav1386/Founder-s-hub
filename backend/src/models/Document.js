@@ -76,6 +76,10 @@ const documentSchema = new mongoose.Schema(
             type: Date,
             default: null
         },
+        embeddedAt: {
+            type: Date,
+            default: null
+        },
         lastCrawledAt: {
             type: Date,
             default: Date.now

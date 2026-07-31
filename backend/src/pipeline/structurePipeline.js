@@ -2,17 +2,18 @@
  * structurePipeline.js (src/pipeline/structurePipeline.js)
  * 
  * Purpose:
- * Sequential Document Structuring Pipeline using LangChain JS, Gemini 2.5 Flash, and Zod.
+ * Sequential Document Structuring Pipeline using LangChain JS, Gemini, and Zod.
+ * Uses gemini-2.0-flash by default for higher daily request quota (1,500 RPD on free tier).
  * Includes rate-limit throttling (429 retry backoff) and asset URL filtering.
  * 
  * Pipeline Flow:
  * 1. Connect to MongoDB via Mongoose.
  * 2. Find documents where processingStatus = "pending_structure".
  * 3. Filter out non-document assets (.css, .js, images, fonts).
- * 4. Send markdown content to Gemini 2.5 Flash with structured schema extraction.
- * 5. Handle rate-limits (429) automatically with exponential backoff / retry.
- * 6. Save the structured JSON into document.structured.
- * 7. Update processingStatus = "pending_embedding".
+ * 4. Check if document already has structured JSON; if so, skip API call and promote to pending_embedding.
+ * 5. Send markdown content to Gemini Flash with structured schema extraction.
+ * 6. Handle rate-limits (429) automatically with backoff / retry.
+ * 7. Save the structured JSON into document.structured and set processingStatus = "pending_embedding".
  */
 
 import dotenv from 'dotenv';
@@ -50,9 +51,15 @@ async function invokeWithRetry(structuredLlm, prompt, maxRetries = 3) {
         } catch (error) {
             const errorMsg = error.message || '';
             const isRateLimit = errorMsg.includes('429') || errorMsg.includes('Too Many Requests') || errorMsg.includes('Quota exceeded');
+            const isDailyQuotaExceeded = errorMsg.includes('GenerateRequestsPerDayPerProjectPerModel-FreeTier');
+
+            if (isDailyQuotaExceeded) {
+                console.error(`\n❌ [Daily Quota Exceeded] You have hit the daily request limit for this model free tier.`);
+                console.error(`👉 Tip: Set GEMINI_MODEL="gemini-2.0-flash" in your .env file or enable pay-as-you-go billing in Google AI Studio.\n`);
+                throw error;
+            }
 
             if (isRateLimit && attempt < maxRetries) {
-                // Attempt to parse retry delay from error message (e.g. "Please retry in 32s")
                 let waitSeconds = 35;
                 const match = errorMsg.match(/retry in ([0-9.]+)s/i);
                 if (match && match[1]) {
@@ -94,22 +101,24 @@ export async function runStructuringPipeline() {
         if (documents.length === 0) {
             const pendingCount = await Document.countDocuments({ processingStatus: 'pending' });
             const failedCount = await Document.countDocuments({ processingStatus: 'failed' });
+            const completedCount = await Document.countDocuments({ processingStatus: 'pending_embedding' });
+            
             console.log('ℹ️ No documents waiting for structuring.');
+            console.log(`📊 Current DB Stats: ${completedCount} ready for embedding, ${pendingCount} pending, ${failedCount} failed.`);
             if (pendingCount > 0 || failedCount > 0) {
-                console.log(`💡 Found ${pendingCount} "pending" and ${failedCount} "failed" documents.`);
-                console.log('👉 Run "npm run queue-structure" to queue them for structuring!');
+                console.log('👉 Run "npm run queue-structure" to queue remaining unstructured documents!');
             }
             return;
         }
 
-        // Step 4: Initialize LangChain Gemini model with Gemini 2.5 Flash
-        const modelName = process.env.GEMINI_MODEL || 'gemini-2.5-flash';
+        // Step 4: Initialize LangChain Gemini model (gemini-2.0-flash has 1,500 RPD on free tier)
+        const modelName = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
         console.log(`🤖 Initializing LangChain Gemini LLM (Model: ${modelName})...`);
 
         const llm = new ChatGoogleGenerativeAI({
             model: modelName,
             apiKey: apiKey,
-            temperature: 0.1, // Low temperature for deterministic, factual structured output
+            temperature: 0.1, // Low temperature for deterministic factual extraction
         });
 
         // Bind the structured output schema using LangChain's .withStructuredOutput()
@@ -136,6 +145,15 @@ export async function runStructuringPipeline() {
                 doc.processingStatus = 'failed';
                 await doc.save();
                 skippedCount++;
+                continue;
+            }
+
+            // Skip API call if document already has valid structured data
+            if (doc.structured && doc.structured.summary) {
+                console.log(`ℹ️ Document already contains structured data. Promoting to "pending_embedding"...`);
+                doc.processingStatus = 'pending_embedding';
+                await doc.save();
+                successCount++;
                 continue;
             }
 
@@ -182,7 +200,7 @@ ${doc.markdown}
 
                 successCount++;
 
-                // Pause briefly (e.g. 4 seconds) between requests to stay within free-tier rate limits (15 RPM / 5 RPM)
+                // Pause briefly (4 seconds) between requests to stay within free-tier rate limits (15 RPM)
                 const DELAY_BETWEEN_REQUESTS_MS = parseInt(process.env.STRUCTURE_DELAY_MS || '4000', 10);
                 if (DELAY_BETWEEN_REQUESTS_MS > 0 && i < documents.length - 1) {
                     await sleep(DELAY_BETWEEN_REQUESTS_MS);
@@ -191,8 +209,15 @@ ${doc.markdown}
             } catch (error) {
                 console.error(`❌ Error structuring document "${doc.title}" (ID: ${doc._id}):`, error.message);
                 
-                // Keep processingStatus as pending_structure if it was a rate limit failure after max retries, otherwise mark failed
-                const isRateLimit = error.message.includes('429') || error.message.includes('Quota exceeded');
+                const errorMsg = error.message || '';
+                const isDailyQuotaExceeded = errorMsg.includes('GenerateRequestsPerDayPerProjectPerModel-FreeTier');
+                
+                if (isDailyQuotaExceeded) {
+                    console.error('⛔ Stopping pipeline execution: Daily free tier quota reached.');
+                    break;
+                }
+
+                const isRateLimit = errorMsg.includes('429') || errorMsg.includes('Quota exceeded');
                 doc.processingStatus = isRateLimit ? 'pending_structure' : 'failed';
                 await doc.save();
                 failCount++;
