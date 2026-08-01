@@ -51,7 +51,9 @@ if (morgan) {
     app.use(morgan('dev'));
 }
 
-// Step 5: Health Check Routes
+import founderRoutes from './src/routes/founderRoutes.js';
+
+// Step 5: Health Check & API Routes
 /**
  * GET /
  * Main root health check endpoint
@@ -73,6 +75,12 @@ app.get('/health', (req, res) => {
         timestamp: new Date().toISOString()
     });
 });
+
+/**
+ * API Routes
+ * Mount /api/founder endpoints
+ */
+app.use('/api/founder', founderRoutes);
 
 // Step 6: Start Server
 const PORT = process.env.PORT || 5000;
