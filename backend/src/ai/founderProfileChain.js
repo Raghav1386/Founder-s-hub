@@ -56,7 +56,7 @@ export const founderProfileZodSchema = z.object({
     .describe('Confidence score between 0.0 and 1.0 evaluating the completeness and quality of input details.'),
   searchText: z
     .string()
-    .describe('Concise 1-2 sentence natural language text summarizing sector, stage, location, DPIIT status, and support/funding intent. Example: "AI SaaS startup for MSMEs. Prototype stage. Karnataka. DPIIT recognized. Looking for grants and seed funding."')
+    .describe('Government scheme targeted search query string. Example: "Government financial scheme grant subsidy seed fund incentive program for CleanTech startup in Karnataka. Stage: MVP. DPIIT: Yes. Seeking: Funding, Grant, Mentorship."')
 });
 
 // Prompt Template for LangChain
@@ -77,13 +77,8 @@ FOUNDER ONBOARDING DATA:
 INSTRUCTIONS:
 1. Synthesize the startup description and answers into structured insights.
 2. Provide concise, professional, and precise values for all required fields.
-3. Formulate a natural language "searchText" string (1-2 sentences) summarizing:
-   - What the startup does & sector
-   - Stage
-   - Location (State/UT)
-   - DPIIT status
-   - Key support & funding needs
-   Example: "AI SaaS startup for MSMEs. Prototype stage. Karnataka. DPIIT recognized. Looking for grants and seed funding."
+3. Formulate a targeted "searchText" string prefixing with scheme retrieval intent:
+   Example: "Government financial scheme grant subsidy seed fund incentive program for CleanTech startup in Karnataka. Stage: MVP. DPIIT: Yes. Seeking: Funding, Grant, Mentorship."
 `;
 
 const promptTemplate = PromptTemplate.fromTemplate(SYSTEM_PROMPT);

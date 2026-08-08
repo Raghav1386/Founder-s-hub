@@ -3,23 +3,23 @@
  * 
  * Purpose:
  * Sequential Document Structuring Pipeline using LangChain JS, Gemini, and Zod.
- * Uses gemini-2.0-flash by default for higher daily request quota (1,500 RPD on free tier).
- * Includes rate-limit throttling (429 retry backoff) and asset URL filtering.
+ * Uses gemini-2.0-flash by default, with automatic fallback to ChatGroq (llama-3.1-8b-instant)
+ * if Gemini free-tier daily quota is reached.
  * 
  * Pipeline Flow:
  * 1. Connect to MongoDB via Mongoose.
  * 2. Find documents where processingStatus = "pending_structure".
  * 3. Filter out non-document assets (.css, .js, images, fonts).
  * 4. Check if document already has structured JSON; if so, skip API call and promote to pending_embedding.
- * 5. Send markdown content to Gemini Flash with structured schema extraction.
- * 6. Handle rate-limits (429) automatically with backoff / retry.
- * 7. Save the structured JSON into document.structured and set processingStatus = "pending_embedding".
+ * 5. Send markdown content to Gemini Flash / ChatGroq fallback with structured schema extraction.
+ * 6. Save the structured JSON into document.structured and set processingStatus = "pending_embedding".
  */
 
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { ChatGoogleGenerativeAI } from '@langchain/google-genai';
+import { ChatGroq } from '@langchain/groq';
 import connectDB from '../configs/db.js';
 import Document from '../models/Document.js';
 import schemeSchema from './schema/schemeSchema.js';
@@ -42,34 +42,58 @@ function isAssetUrl(urlStr) {
 }
 
 /**
- * Invokes Gemini structured output model with automatic 429 retry handling.
+ * Invokes structuring model with Gemini and fallback to ChatGroq on 429 quota limits.
  */
-async function invokeWithRetry(structuredLlm, prompt, maxRetries = 3) {
+async function invokeStructuringLlm(geminiLlm, groqLlm, prompt, maxRetries = 3) {
+    let geminiQuotaExceeded = false;
+
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
-            return await structuredLlm.invoke(prompt);
+            if (!geminiQuotaExceeded && geminiLlm) {
+                return await geminiLlm.invoke(prompt);
+            }
         } catch (error) {
             const errorMsg = error.message || '';
-            const isRateLimit = errorMsg.includes('429') || errorMsg.includes('Too Many Requests') || errorMsg.includes('Quota exceeded');
-            const isDailyQuotaExceeded = errorMsg.includes('GenerateRequestsPerDayPerProjectPerModel-FreeTier');
+            const isDailyQuotaExceeded = errorMsg.includes('GenerateRequestsPerDayPerProjectPerModel-FreeTier') || errorMsg.includes('Quota exceeded');
 
             if (isDailyQuotaExceeded) {
-                console.error(`\n❌ [Daily Quota Exceeded] You have hit the daily request limit for this model free tier.`);
-                console.error(`👉 Tip: Set GEMINI_MODEL="gemini-2.0-flash" in your .env file or enable pay-as-you-go billing in Google AI Studio.\n`);
-                throw error;
-            }
-
-            if (isRateLimit && attempt < maxRetries) {
-                let waitSeconds = 35;
+                console.warn(`\n⚠️ [Gemini Quota Reached] Falling back to ChatGroq (llama-3.1-8b-instant) for structuring...`);
+                geminiQuotaExceeded = true;
+            } else if (attempt < maxRetries) {
+                let waitSeconds = 10;
                 const match = errorMsg.match(/retry in ([0-9.]+)s/i);
                 if (match && match[1]) {
                     waitSeconds = Math.ceil(parseFloat(match[1])) + 2;
                 }
-
-                console.warn(`⏳ [Rate Limit 429] Waiting ${waitSeconds}s before retry attempt ${attempt + 1}/${maxRetries}...`);
+                console.warn(`⏳ [Gemini 429] Waiting ${waitSeconds}s before retry attempt ${attempt + 1}/${maxRetries}...`);
                 await sleep(waitSeconds * 1000);
-            } else {
-                throw error;
+                continue;
+            }
+        }
+
+        // Try Groq LLM fallback if Gemini failed or quota exceeded
+        if (groqLlm) {
+            for (let groqAttempt = 1; groqAttempt <= 3; groqAttempt++) {
+                try {
+                    console.log(`🤖 Processing document structuring via ChatGroq fallback...`);
+                    return await groqLlm.invoke(prompt);
+                } catch (groqErr) {
+                    const groqMsg = groqErr.message || '';
+                    const isGroqRateLimit = groqMsg.includes('429') || groqMsg.includes('rate_limit_exceeded') || groqMsg.includes('Rate limit reached');
+                    
+                    if (isGroqRateLimit && groqAttempt < 3) {
+                        let waitSec = 12;
+                        const match = groqMsg.match(/try again in ([0-9.]+)s/i);
+                        if (match && match[1]) {
+                            waitSec = Math.ceil(parseFloat(match[1])) + 2;
+                        }
+                        console.warn(`⏳ [Groq Rate Limit 429] Pausing ${waitSec}s before retry attempt ${groqAttempt + 1}/3...`);
+                        await sleep(waitSec * 1000);
+                        continue;
+                    }
+                    console.error(`❌ Groq structuring error:`, groqErr.message);
+                    throw groqErr;
+                }
             }
         }
     }
@@ -81,10 +105,12 @@ async function invokeWithRetry(structuredLlm, prompt, maxRetries = 3) {
 export async function runStructuringPipeline() {
     console.log('🚀 Starting Document Structuring Pipeline...');
 
-    // Step 1: Ensure Gemini API Key is available
-    const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
-    if (!apiKey) {
-        console.error('❌ Error: Missing GEMINI_API_KEY or GOOGLE_API_KEY in environment variables (.env).');
+    // Step 1: Check environment keys
+    const geminiApiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+    const groqApiKey = process.env.GROQ_API_KEY;
+
+    if (!geminiApiKey && !groqApiKey) {
+        console.error('❌ Error: Missing GEMINI_API_KEY and GROQ_API_KEY in environment variables (.env).');
         process.exit(1);
     }
 
@@ -105,51 +131,52 @@ export async function runStructuringPipeline() {
             
             console.log('ℹ️ No documents waiting for structuring.');
             console.log(`📊 Current DB Stats: ${completedCount} ready for embedding, ${pendingCount} pending, ${failedCount} failed.`);
-            if (pendingCount > 0 || failedCount > 0) {
-                console.log('👉 Run "npm run queue-structure" to queue remaining unstructured documents!');
-            }
             return;
         }
 
-        // Step 4: Initialize LangChain Gemini model (gemini-2.0-flash has 1,500 RPD on free tier)
-        const modelName = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
-        console.log(`🤖 Initializing LangChain Gemini LLM (Model: ${modelName})...`);
+        // Step 4: Initialize Gemini and Groq LLM models
+        let geminiLlm = null;
+        if (geminiApiKey) {
+            const geminiModel = new ChatGoogleGenerativeAI({
+                model: process.env.GEMINI_MODEL || 'gemini-2.0-flash',
+                apiKey: geminiApiKey,
+                temperature: 0.1
+            });
+            geminiLlm = geminiModel.withStructuredOutput(schemeSchema, { name: 'government_scheme_extraction' });
+        }
 
-        const llm = new ChatGoogleGenerativeAI({
-            model: modelName,
-            apiKey: apiKey,
-            temperature: 0.1, // Low temperature for deterministic factual extraction
-        });
-
-        // Bind the structured output schema using LangChain's .withStructuredOutput()
-        const structuredLlm = llm.withStructuredOutput(schemeSchema, {
-            name: 'ExtractGovernmentSchemeMetadata',
-        });
+        let groqLlm = null;
+        if (groqApiKey) {
+            const groqModel = new ChatGroq({
+                apiKey: groqApiKey,
+                model: 'llama-3.1-8b-instant',
+                temperature: 0.1
+            });
+            groqLlm = groqModel.withStructuredOutput(schemeSchema, { name: 'government_scheme_extraction' });
+        }
 
         let successCount = 0;
-        let failCount = 0;
         let skippedCount = 0;
+        let failCount = 0;
 
-        // Step 5: Process documents sequentially using a for...of loop with async/await
+        // Step 5: Process documents sequentially
         for (let i = 0; i < documents.length; i++) {
             const doc = documents[i];
-            const currentNum = i + 1;
-            console.log(`\n--------------------------------------------------`);
-            console.log(`[${currentNum}/${documents.length}] Processing Document: "${doc.title}"`);
-            console.log(`🔗 URL: ${doc.url}`);
-            console.log(`📌 Source: ${doc.source}`);
 
-            // Filter out non-content asset files (.css, .js, images)
+            console.log(`\n--------------------------------------------------`);
+            console.log(`[${i + 1}/${documents.length}] Processing Document: "${doc.title || 'Untitled'}"`);
+            console.log(`🔗 URL: ${doc.url}`);
+            console.log(`📌 Source: ${doc.source || 'Unknown'}`);
+
             if (isAssetUrl(doc.url)) {
-                console.warn(`⏭️ Skipping asset URL: ${doc.url}`);
-                doc.processingStatus = 'failed';
-                await doc.save();
+                console.log(`⏭️ Skipping asset URL: ${doc.url}`);
                 skippedCount++;
+                doc.processingStatus = 'skipped_asset';
+                await doc.save();
                 continue;
             }
 
-            // Skip API call if document already has valid structured data
-            if (doc.structured && doc.structured.summary) {
+            if (doc.structured && Object.keys(doc.structured).length > 0) {
                 console.log(`ℹ️ Document already contains structured data. Promoting to "pending_embedding"...`);
                 doc.processingStatus = 'pending_embedding';
                 await doc.save();
@@ -158,67 +185,36 @@ export async function runStructuringPipeline() {
             }
 
             if (!doc.markdown || doc.markdown.trim().length === 0) {
-                console.warn(`⚠️ Skipping document ID ${doc._id}: Markdown content is empty.`);
+                console.warn(`⚠️ Empty markdown content for document "${doc.title}". Skipping structuring...`);
                 doc.processingStatus = 'failed';
                 await doc.save();
                 failCount++;
                 continue;
             }
 
+            const truncatedMarkdown = doc.markdown.length > 20000 
+                ? doc.markdown.substring(0, 20000) + '\n\n[Content truncated for structuring]'
+                : doc.markdown;
+
+            const prompt = `Analyze the following government scheme web document and extract structured scheme metadata adherence to schema:\n\nDOCUMENT TITLE: ${doc.title || 'Untitled'}\nDOCUMENT URL: ${doc.url}\nSOURCE: ${doc.source}\n\nRAW MARKDOWN CONTENT:\n${truncatedMarkdown}`;
+
             try {
-                // Construct prompt instructions for Gemini
-                const prompt = `You are an expert AI assistant specializing in analyzing official Indian government scheme documents and startup policies.
-Extract all key details from the document text provided below according to the required schema.
-If a piece of information is not present or not specified in the document, use appropriate defaults such as empty arrays [], false, or "N/A".
+                console.log(`⏳ Sending markdown (${truncatedMarkdown.length} chars) to AI LLM for structured extraction...`);
+                const structuredData = await invokeStructuringLlm(geminiLlm, groqLlm, prompt);
 
-Document Title: ${doc.title}
-Source: ${doc.source}
-URL: ${doc.url}
-
---- DOCUMENT MARKDOWN TEXT START ---
-${doc.markdown}
---- DOCUMENT MARKDOWN TEXT END ---
-`;
-
-                console.log(`⏳ Sending markdown (${doc.markdown.length} chars) to Gemini for structured extraction...`);
-
-                // Send to Gemini model via LangChain structured output with retry mechanism
-                const structuredData = await invokeWithRetry(structuredLlm, prompt);
-
-                console.log(`✅ Extracted structured data successfully!`);
-                console.log(`   Summary snippet: ${structuredData.summary.substring(0, 100)}...`);
-
-                // Step 6: Store extracted JSON inside document.structured
                 doc.structured = structuredData;
-
-                // Step 7: Update processingStatus to "pending_embedding"
                 doc.processingStatus = 'pending_embedding';
 
-                // Save updated document to MongoDB
                 await doc.save();
                 console.log(`💾 Saved document to MongoDB with processingStatus = "pending_embedding".`);
-
                 successCount++;
 
-                // Pause briefly (4 seconds) between requests to stay within free-tier rate limits (15 RPM)
-                const DELAY_BETWEEN_REQUESTS_MS = parseInt(process.env.STRUCTURE_DELAY_MS || '4000', 10);
-                if (DELAY_BETWEEN_REQUESTS_MS > 0 && i < documents.length - 1) {
-                    await sleep(DELAY_BETWEEN_REQUESTS_MS);
-                }
+                // Small pause between requests
+                await sleep(1500);
 
             } catch (error) {
                 console.error(`❌ Error structuring document "${doc.title}" (ID: ${doc._id}):`, error.message);
-                
-                const errorMsg = error.message || '';
-                const isDailyQuotaExceeded = errorMsg.includes('GenerateRequestsPerDayPerProjectPerModel-FreeTier');
-                
-                if (isDailyQuotaExceeded) {
-                    console.error('⛔ Stopping pipeline execution: Daily free tier quota reached.');
-                    break;
-                }
-
-                const isRateLimit = errorMsg.includes('429') || errorMsg.includes('Quota exceeded');
-                doc.processingStatus = isRateLimit ? 'pending_structure' : 'failed';
+                doc.processingStatus = 'failed';
                 await doc.save();
                 failCount++;
             }
@@ -238,5 +234,5 @@ ${doc.markdown}
     }
 }
 
-// Execute the pipeline if script is run directly from command line
+// Execute if run directly from CLI
 runStructuringPipeline();

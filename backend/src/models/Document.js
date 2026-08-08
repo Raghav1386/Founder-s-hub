@@ -51,7 +51,7 @@ const documentSchema = new mongoose.Schema(
         },
         processingStatus: {
             type: String,
-            enum: ['pending', 'pending_structure', 'pending_embedding', 'processing', 'completed', 'failed'],
+            enum: ['pending', 'pending_structure', 'pending_embedding', 'processing', 'completed', 'failed', 'skipped_asset'],
             default: 'pending',
             index: true
         },

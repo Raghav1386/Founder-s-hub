@@ -9,7 +9,8 @@
     "crawl": "node src/crawler/index.js",
     "queue-structure": "node src/pipeline/queueForStructuring.js",
     "structure": "node src/pipeline/structurePipeline.js",
-    "embed": "node src/embeddings/embedDocuments.js"
+    "embed": "node src/embeddings/embedDocuments.js",
+    "pipeline": "node src/pipeline/runDailyPipeline.js"
   },
   "keywords": [],
   "author": "",

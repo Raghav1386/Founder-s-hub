@@ -7,11 +7,14 @@ export default {
         "https://aim.gov.in/aic.php",
         "https://aim.gov.in/acic.php",
         "https://aim.gov.in/arise.php",
-        "https://aim.gov.in/aim-i2e.php"
+        "https://aim.gov.in/aim-i2e.php",
+        "https://aim.gov.in/incubators.php"
     ],
     allowedDomains: [
         "aim.gov.in",
-        "www.aim.gov.in"
+        "www.aim.gov.in",
+        "aimapp2.aim.gov.in",
+        "acic.aim.gov.in"
     ],
     includePatterns: [
         "scheme",
@@ -38,7 +41,11 @@ export default {
         "atl",
         "aic",
         "acic",
-        "arise"
+        "arise",
+        "incubator",
+        "incubation-center",
+        "scale-up",
+        "mentor"
     ],
     excludePatterns: [
         "login",

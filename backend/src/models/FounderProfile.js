@@ -44,6 +44,25 @@ const founderProfileSchema = new mongoose.Schema(
       type: String,
       required: true,
       index: true
+    },
+
+    // Evaluated matched government schemes
+    matchedSchemes: {
+      type: [
+        {
+          documentId: String,
+          title: String,
+          url: String,
+          source: String,
+          eligibilityScore: Number,
+          eligibilityStatus: String,
+          reasoning: String,
+          benefitsRelevant: [String],
+          missingRequirements: [String],
+          nextSteps: [String]
+        }
+      ],
+      default: []
     }
   },
   {

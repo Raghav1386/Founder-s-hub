@@ -26,6 +26,11 @@ import msmeConfig from './configs/msme.js';
 import nswsConfig from './configs/nsws.js';
 import sidbiConfig from './configs/sidbi.js';
 import startupIndiaConfig from './configs/startupindia.js';
+import mySchemeConfig from './configs/myScheme.js';
+import nidhiConfig from './configs/nidhi.js';
+import biracConfig from './configs/birac.js';
+import tdbConfig from './configs/tdb.js';
+import agricultureConfig from './configs/agriculture.js';
 
 // Import crawler engine module and logger
 import { crawlSource } from './engine/crawlSource.js';
@@ -43,7 +48,12 @@ const allConfigs = [
     dpiitConfig,
     aimConfig,
     mshConfig,
-    nswsConfig
+    nswsConfig,
+    mySchemeConfig,
+    nidhiConfig,
+    biracConfig,
+    tdbConfig,
+    agricultureConfig
 ];
 
 /**
@@ -71,9 +81,12 @@ export async function crawlAll() {
     let mongoClient = null;
 
     try {
-        // Connect to MongoDB
+        // Connect to MongoDB with connection timeout fallback options
         logger.info(`Connecting to MongoDB at: ${mongoUri}`);
-        mongoClient = new MongoClient(mongoUri);
+        mongoClient = new MongoClient(mongoUri, {
+            serverSelectionTimeoutMS: 15000,
+            connectTimeoutMS: 15000
+        });
         await mongoClient.connect();
 
         const db = mongoClient.db(dbName);

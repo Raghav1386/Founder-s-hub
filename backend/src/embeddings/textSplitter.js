@@ -18,12 +18,7 @@ const textSplitter = new RecursiveCharacterTextSplitter({
     chunkOverlap: 200,
 });
 
-/**
- * Splits a markdown text string into clean chunks.
- * 
- * @param {string} markdown - The raw markdown content of the document.
- * @returns {Promise<Array<string>>} An array of plain text chunk strings.
- */
+
 export async function splitMarkdown(markdown) {
     if (!markdown || typeof markdown !== 'string' || markdown.trim().length === 0) {
         return [];

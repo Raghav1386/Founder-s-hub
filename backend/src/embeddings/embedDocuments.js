@@ -48,8 +48,12 @@ export async function runEmbeddingPipeline() {
 
     try {
         // Step 2: Ensure Qdrant Vector Collection exists (1024 dimensions for Jina v3)
-        const vectorDimensions = jinaEmbeddings.dimensions || 1024;
-        await ensureCollectionExists(COLLECTION_NAME, vectorDimensions);
+        try {
+            const vectorDimensions = jinaEmbeddings.dimensions || 1024;
+            await ensureCollectionExists(COLLECTION_NAME, vectorDimensions);
+        } catch (qdrantErr) {
+            console.warn(`⚠️ Qdrant vector DB warning (${qdrantErr.message}). Pipeline will use MongoDB direct fallback.`);
+        }
 
         // Step 3: Query MongoDB documents ready for embedding (pending_embedding or previously failed)
         const documents = await Document.find({

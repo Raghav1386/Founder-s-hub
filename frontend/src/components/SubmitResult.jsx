@@ -292,48 +292,153 @@ export default function SubmitResult({ formData, onEditStep, onResetForm }) {
         </div>
       )}
 
-      {/* Submission Status & AI Results display */}
+      {/* Submission Status & AI Scheme Match Results display */}
       {status === 'success' && apiResponse && (
-        <div className="p-5 bg-emerald-950/40 border border-emerald-500/40 rounded-xl space-y-4 animate-fadeIn">
-          <div className="flex items-center gap-2.5 text-emerald-400 font-bold text-base">
-            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-            <span>Submitted Successfully to POST /api/founder/analyze!</span>
+        <div className="p-5 sm:p-6 bg-emerald-950/30 border border-emerald-500/40 rounded-2xl space-y-6 animate-fadeIn">
+          <div className="flex items-center justify-between border-b border-emerald-900/60 pb-4">
+            <div className="flex items-center gap-2.5 text-emerald-400 font-bold text-lg">
+              <CheckCircle2 className="w-6 h-6 text-emerald-400 shrink-0" />
+              <span>Full AI Retrieval & Eligibility Analysis Complete!</span>
+            </div>
+            <span className="text-xs font-semibold text-emerald-300 bg-emerald-950 px-3 py-1 rounded-full border border-emerald-800">
+              HTTP 200 OK
+            </span>
           </div>
 
-          <div className="bg-slate-900/90 p-4 rounded-lg border border-emerald-900/60 space-y-3 text-xs text-slate-300">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-2">
-              <span className="text-slate-400">Endpoint Call Status:</span>
-              <span className="font-semibold text-emerald-400">HTTP 200 OK</span>
-            </div>
-
-            <div className="space-y-2">
-              <span className="font-semibold text-indigo-300 text-xs uppercase tracking-wider block">
-                Simulated AI Founder Insights:
+          {/* AI Structured Founder Profile Summary */}
+          {apiResponse.data?.founderProfile && (
+            <div className="p-4 bg-slate-900/90 rounded-xl border border-indigo-900/50 space-y-3">
+              <span className="font-bold text-xs uppercase tracking-wider text-indigo-300 flex items-center gap-1.5">
+                <Sparkles className="w-4 h-4 text-amber-400" /> AI Generated Founder Profile
               </span>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                <div className="p-2.5 bg-slate-950/70 rounded border border-slate-800">
-                  <span className="font-bold text-slate-200 block">DPIIT Qualification</span>
-                  <span className="text-slate-400">
-                    {formData.dpiitRecognition === 'Yes'
-                      ? 'DPIIT status active. Eligible for 80-IAC tax exemption.'
-                      : 'Eligible to apply for Startup India DPIIT recognition.'}
-                  </span>
+              <p className="text-sm text-slate-200 leading-relaxed italic bg-slate-950/60 p-3 rounded-lg border border-slate-800/80">
+                "{apiResponse.data.founderProfile.summary}"
+              </p>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-1">
+                <div className="p-2 bg-slate-950/60 rounded border border-slate-800">
+                  <span className="text-slate-400 block">Sector</span>
+                  <span className="font-semibold text-white">{apiResponse.data.founderProfile.sector}</span>
                 </div>
-                <div className="p-2.5 bg-slate-950/70 rounded border border-slate-800">
-                  <span className="font-bold text-slate-200 block">Grant Match Score</span>
-                  <span className="text-slate-400">
-                    High match for Startup India Seed Fund Scheme (SISFS) & state policies in {formData.stateUt || 'India'}.
+                <div className="p-2 bg-slate-950/60 rounded border border-slate-800">
+                  <span className="text-slate-400 block">Sub-Sector</span>
+                  <span className="font-semibold text-white">{apiResponse.data.founderProfile.subSector}</span>
+                </div>
+                <div className="p-2 bg-slate-950/60 rounded border border-slate-800">
+                  <span className="text-slate-400 block">Business Model</span>
+                  <span className="font-semibold text-white">{apiResponse.data.founderProfile.businessModel}</span>
+                </div>
+                <div className="p-2 bg-slate-950/60 rounded border border-slate-800">
+                  <span className="text-slate-400 block">Confidence Score</span>
+                  <span className="font-semibold text-emerald-400">
+                    {Math.round((apiResponse.data.founderProfile.confidenceScore || 0.9) * 100)}%
                   </span>
                 </div>
               </div>
             </div>
+          )}
+
+          {/* Matched Government Schemes List */}
+          <div className="space-y-4 pt-1">
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <Rocket className="w-5 h-5 text-indigo-400" />
+                Matched Government Schemes & Eligibility ({apiResponse.data?.matchedSchemes?.length || 0})
+              </h3>
+              <span className="text-xs text-slate-400">Sorted by Eligibility Score</span>
+            </div>
+
+            {Array.isArray(apiResponse.data?.matchedSchemes) && apiResponse.data.matchedSchemes.length > 0 ? (
+              <div className="space-y-4">
+                {apiResponse.data.matchedSchemes.map((scheme, idx) => (
+                  <div
+                    key={scheme.documentId || idx}
+                    className="p-4 bg-slate-900/90 rounded-xl border border-slate-800 space-y-3 hover:border-indigo-500/50 transition-all shadow-lg"
+                  >
+                    {/* Title & Score Badge */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={scheme.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-bold text-base text-indigo-300 hover:text-indigo-200 hover:underline flex items-center gap-1.5"
+                          >
+                            {scheme.title}
+                          </a>
+                          <span className="text-[10px] font-semibold uppercase tracking-wider bg-slate-800 text-slate-400 px-2 py-0.5 rounded border border-slate-700">
+                            {scheme.source}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`text-xs font-extrabold px-3 py-1 rounded-full border ${
+                            scheme.eligibilityScore >= 80
+                              ? 'bg-emerald-950/80 text-emerald-300 border-emerald-700/60'
+                              : scheme.eligibilityScore >= 60
+                              ? 'bg-amber-950/80 text-amber-300 border-amber-700/60'
+                              : 'bg-rose-950/80 text-rose-300 border-rose-700/60'
+                          }`}
+                        >
+                          {scheme.eligibilityScore}% Match &bull; {scheme.eligibilityStatus}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Reasoning */}
+                    <p className="text-xs text-slate-300 leading-relaxed">{scheme.reasoning}</p>
+
+                    {/* Benefits & Next Steps Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">
+                      {/* Benefits */}
+                      {Array.isArray(scheme.benefitsRelevant) && scheme.benefitsRelevant.length > 0 && (
+                        <div className="p-3 bg-slate-950/50 rounded-lg border border-slate-800/80 space-y-1.5">
+                          <span className="font-semibold text-emerald-400 block text-[11px] uppercase tracking-wider">
+                            Key Relevant Benefits:
+                          </span>
+                          <ul className="space-y-1 text-slate-300">
+                            {scheme.benefitsRelevant.map((b, i) => (
+                              <li key={i} className="flex items-start gap-1.5">
+                                <span className="text-emerald-400 font-bold">&bull;</span>
+                                <span>{b}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {/* Next Steps */}
+                      {Array.isArray(scheme.nextSteps) && scheme.nextSteps.length > 0 && (
+                        <div className="p-3 bg-slate-950/50 rounded-lg border border-slate-800/80 space-y-1.5">
+                          <span className="font-semibold text-indigo-300 block text-[11px] uppercase tracking-wider">
+                            Recommended Next Steps:
+                          </span>
+                          <ul className="space-y-1 text-slate-300">
+                            {scheme.nextSteps.map((step, i) => (
+                              <li key={i} className="flex items-start gap-1.5">
+                                <span className="text-indigo-400 font-bold">{i + 1}.</span>
+                                <span>{step}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-slate-400 italic">No matched schemes found.</p>
+            )}
           </div>
 
           <div className="flex flex-wrap gap-3 pt-2">
             <button
               type="button"
               onClick={onResetForm}
-              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all"
+              className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" /> Start New Application
             </button>
