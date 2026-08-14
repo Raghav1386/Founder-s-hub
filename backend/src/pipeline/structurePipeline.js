@@ -54,19 +54,24 @@ async function invokeStructuringLlm(geminiLlm, groqLlm, prompt, maxRetries = 3) 
             }
         } catch (error) {
             const errorMsg = error.message || '';
-            const isDailyQuotaExceeded = errorMsg.includes('GenerateRequestsPerDayPerProjectPerModel-FreeTier') || errorMsg.includes('Quota exceeded');
+            console.warn(`\n[Gemini Error Details]: ${errorMsg}`);
+            
+            const isDailyQuotaExceeded = errorMsg.includes('GenerateRequestsPerDayPerProjectPerModel-FreeTier') || 
+                                         errorMsg.includes('limit: 0, model');
+            const isPerMinuteLimit = errorMsg.includes('GenerateRequestsPerMinute') || errorMsg.includes('429') || errorMsg.includes('Too Many Requests') || errorMsg.includes('Quota exceeded');
 
             if (isDailyQuotaExceeded) {
-                console.warn(`\n⚠️ [Gemini Quota Reached] Falling back to ChatGroq (llama-3.1-8b-instant) for structuring...`);
+                console.warn(`⚠️ [Gemini Daily Quota Reached] Falling back to ChatGroq (llama-3.1-8b-instant) for structuring...`);
                 geminiQuotaExceeded = true;
-            } else if (attempt < maxRetries) {
-                let waitSeconds = 10;
+            } else if (isPerMinuteLimit && attempt <= maxRetries) {
+                let waitSeconds = 15;
                 const match = errorMsg.match(/retry in ([0-9.]+)s/i);
                 if (match && match[1]) {
                     waitSeconds = Math.ceil(parseFloat(match[1])) + 2;
                 }
-                console.warn(`⏳ [Gemini 429] Waiting ${waitSeconds}s before retry attempt ${attempt + 1}/${maxRetries}...`);
+                console.warn(`⏳ [Gemini Per-Minute Rate Limit 429] Pausing ${waitSeconds}s before retry attempt ${attempt}/${maxRetries}...`);
                 await sleep(waitSeconds * 1000);
+                attempt--;
                 continue;
             }
         }
@@ -149,7 +154,7 @@ export async function runStructuringPipeline() {
         if (groqApiKey) {
             const groqModel = new ChatGroq({
                 apiKey: groqApiKey,
-                model: 'llama-3.1-8b-instant',
+                model: 'llama-3.3-70b-versatile',
                 temperature: 0.1
             });
             groqLlm = groqModel.withStructuredOutput(schemeSchema, { name: 'government_scheme_extraction' });

@@ -16,7 +16,11 @@ export const schemeSchema = z.object({
         
     eligibility: z.object({
         dpiitRequired: z
-            .boolean()
+            .union([z.boolean(), z.string()])
+            .transform((val) => {
+                if (typeof val === 'string') return val.toLowerCase() === 'true';
+                return Boolean(val);
+            })
             .describe('True if DPIIT startup recognition is mandatory/required to apply, false otherwise.'),
             
         startupStages: z
@@ -34,7 +38,7 @@ export const schemeSchema = z.object({
         entityTypes: z
             .array(z.string())
             .describe('Eligible entity types, e.g. ["Private Limited", "LLP", "Sole Proprietorship", "Individual"].')
-    }).describe('Eligibility criteria for the scheme.'),
+    }).passthrough().describe('Eligibility criteria for the scheme.'),
 
     benefits: z
         .array(z.string())
@@ -65,6 +69,6 @@ export const schemeSchema = z.object({
     keywords: z
         .array(z.string())
         .describe('Relevant keywords, tags, or domain terms associated with this document for search.')
-});
+}).passthrough();
 
 export default schemeSchema;
