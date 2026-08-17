@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import SchemeDetailModal from './SchemeDetailModal';
 import {
   Send,
   Loader2,
@@ -17,7 +18,8 @@ import {
   IndianRupee,
   Copy,
   Check,
-  FileText
+  FileText,
+  Eye
 } from 'lucide-react';
 
 export default function SubmitResult({ formData, onEditStep, onResetForm }) {
@@ -25,6 +27,7 @@ export default function SubmitResult({ formData, onEditStep, onResetForm }) {
   const [apiResponse, setApiResponse] = useState(null);
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState('summary'); // 'summary' | 'json'
+  const [selectedSchemeForModal, setSelectedSchemeForModal] = useState(null);
 
   const handleCopyJson = () => {
     navigator.clipboard.writeText(JSON.stringify(formData, null, 2));
@@ -93,46 +96,48 @@ export default function SubmitResult({ formData, onEditStep, onResetForm }) {
         </p>
       </div>
 
-      {/* Tabs toggle */}
-      <div className="flex items-center justify-between border-b border-slate-800">
-        <div className="flex gap-2">
+      {/* Tabs toggle (Only accessible before schemes are loaded) */}
+      {status !== 'success' && (
+        <div className="flex items-center justify-between border-b border-slate-800">
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setActiveTab('summary')}
+              className={`pb-3 text-sm font-semibold border-b-2 transition-all ${
+                activeTab === 'summary'
+                  ? 'border-indigo-500 text-indigo-400'
+                  : 'border-transparent text-slate-400 hover:text-slate-300'
+              }`}
+            >
+              Form Overview
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('json')}
+              className={`pb-3 text-sm font-semibold border-b-2 transition-all flex items-center gap-1.5 ${
+                activeTab === 'json'
+                  ? 'border-indigo-500 text-indigo-400'
+                  : 'border-transparent text-slate-400 hover:text-slate-300'
+              }`}
+            >
+              <Code className="w-3.5 h-3.5" />
+              JSON Payload
+            </button>
+          </div>
+
           <button
             type="button"
-            onClick={() => setActiveTab('summary')}
-            className={`pb-3 text-sm font-semibold border-b-2 transition-all ${
-              activeTab === 'summary'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-slate-400 hover:text-slate-300'
-            }`}
+            onClick={handleCopyJson}
+            className="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1 bg-slate-800/60 px-2.5 py-1 rounded-lg border border-slate-700/60 transition-all mb-2 cursor-pointer"
           >
-            Form Overview
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab('json')}
-            className={`pb-3 text-sm font-semibold border-b-2 transition-all flex items-center gap-1.5 ${
-              activeTab === 'json'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-slate-400 hover:text-slate-300'
-            }`}
-          >
-            <Code className="w-3.5 h-3.5" />
-            JSON Payload
+            {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? 'Copied JSON' : 'Copy JSON'}
           </button>
         </div>
+      )}
 
-        <button
-          type="button"
-          onClick={handleCopyJson}
-          className="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1 bg-slate-800/60 px-2.5 py-1 rounded-lg border border-slate-700/60 transition-all mb-2"
-        >
-          {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-          {copied ? 'Copied JSON' : 'Copy JSON'}
-        </button>
-      </div>
-
-      {/* Content based on Active Tab */}
-      {activeTab === 'summary' ? (
+      {/* Content based on Active Tab (JSON payload disabled when schemes are loaded) */}
+      {activeTab === 'summary' || status === 'success' ? (
         <div className="space-y-4">
           {/* Card 1: Identity & Location */}
           <div className="p-4 bg-slate-900/70 rounded-xl border border-slate-800/80 space-y-3">
@@ -374,13 +379,12 @@ export default function SubmitResult({ formData, onEditStep, onResetForm }) {
 
                       <div className="flex items-center gap-2">
                         <span
-                          className={`text-xs font-extrabold px-3 py-1 rounded-full border ${
-                            scheme.eligibilityScore >= 80
+                          className={`text-xs font-extrabold px-3 py-1 rounded-full border ${scheme.eligibilityScore >= 80
                               ? 'bg-emerald-950/80 text-emerald-300 border-emerald-700/60'
                               : scheme.eligibilityScore >= 60
-                              ? 'bg-amber-950/80 text-amber-300 border-amber-700/60'
-                              : 'bg-rose-950/80 text-rose-300 border-rose-700/60'
-                          }`}
+                                ? 'bg-amber-950/80 text-amber-300 border-amber-700/60'
+                                : 'bg-rose-950/80 text-rose-300 border-rose-700/60'
+                            }`}
                         >
                           {scheme.eligibilityScore}% Match &bull; {scheme.eligibilityStatus}
                         </span>
@@ -426,6 +430,18 @@ export default function SubmitResult({ formData, onEditStep, onResetForm }) {
                         </div>
                       )}
                     </div>
+
+                    {/* View Scheme Details Action Button */}
+                    <div className="pt-2 flex justify-end border-t border-slate-800/60">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedSchemeForModal(scheme)}
+                        className="text-xs font-semibold text-indigo-300 hover:text-indigo-200 flex items-center gap-1.5 bg-indigo-950/80 hover:bg-indigo-900/80 px-3.5 py-1.5 rounded-lg border border-indigo-800/60 transition-all cursor-pointer shadow"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-indigo-400" />
+                        <span>View Full Guidelines & Details</span>
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -466,7 +482,7 @@ export default function SubmitResult({ formData, onEditStep, onResetForm }) {
             {status === 'submitting' ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Submitting to /api/founder/analyze...
+                Analyzing
               </>
             ) : (
               <>
@@ -476,6 +492,15 @@ export default function SubmitResult({ formData, onEditStep, onResetForm }) {
             )}
           </button>
         </div>
+      )}
+
+      {/* Scheme Detail Modal View */}
+      {selectedSchemeForModal && (
+        <SchemeDetailModal
+          schemeMatch={selectedSchemeForModal}
+          documentId={selectedSchemeForModal.documentId}
+          onClose={() => setSelectedSchemeForModal(null)}
+        />
       )}
     </div>
   );

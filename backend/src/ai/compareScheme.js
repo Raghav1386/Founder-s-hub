@@ -80,8 +80,7 @@ function createComparisonChain() {
 
   const groqModel = new ChatGroq({
     apiKey: apiKey,
-    model: 'llama-3.1-8b-instant',
-    modelName: 'llama-3.1-8b-instant',
+    model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
     temperature: 0.1
   });
 

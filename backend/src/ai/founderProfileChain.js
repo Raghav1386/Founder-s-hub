@@ -95,8 +95,7 @@ export function createFounderProfileChain() {
   // Initialize ChatGroq instance
   const groqModel = new ChatGroq({
     apiKey: apiKey,
-    model: 'llama-3.3-70b-versatile',
-    modelName: 'llama-3.3-70b-versatile',
+    model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
     temperature: 0.1
   });
 

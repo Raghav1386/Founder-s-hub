@@ -154,7 +154,7 @@ export async function runStructuringPipeline() {
         if (groqApiKey) {
             const groqModel = new ChatGroq({
                 apiKey: groqApiKey,
-                model: 'llama-3.3-70b-versatile',
+                model: process.env.GROQ_MODEL || 'openai/gpt-oss-120b',
                 temperature: 0.1
             });
             groqLlm = groqModel.withStructuredOutput(schemeSchema, { name: 'government_scheme_extraction' });

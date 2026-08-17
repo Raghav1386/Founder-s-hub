@@ -14,6 +14,7 @@
  */
 
 import FounderProfile from '../models/FounderProfile.js';
+import Document from '../models/Document.js';
 import { analyzeFounderProfile } from '../ai/founderProfileChain.js';
 import { embedFounderSearchText } from '../ai/embedFounder.js';
 import { searchRelevantSchemes } from '../ai/searchSchemes.js';
@@ -142,4 +143,40 @@ export async function analyzeFounder(req, res) {
   }
 }
 
-export default { analyzeFounder };
+import mongoose from 'mongoose';
+
+/**
+ * GET /api/founder/scheme/:id
+ * Fetches full details for a specific scheme document by ID
+ */
+export async function getSchemeById(req, res) {
+  try {
+    const { id } = req.params;
+    if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(404).json({
+        success: false,
+        error: 'Scheme document not found.'
+      });
+    }
+    const document = await Document.findById(id).exec();
+    if (!document) {
+      return res.status(404).json({
+        success: false,
+        error: 'Scheme document not found.'
+      });
+    }
+    return res.status(200).json({
+      success: true,
+      data: document
+    });
+  } catch (error) {
+    console.error(`❌ Error fetching scheme details for ID ${req.params.id}:`, error);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to fetch scheme document details.',
+      details: error.message
+    });
+  }
+}
+
+export default { analyzeFounder, getSchemeById };

@@ -6,7 +6,7 @@
  */
 
 import express from 'express';
-import { analyzeFounder } from '../controllers/founderController.js';
+import { analyzeFounder, getSchemeById } from '../controllers/founderController.js';
 
 const router = express.Router();
 
@@ -15,5 +15,11 @@ const router = express.Router();
  * Accepts onboarding JSON, runs Groq LLM analysis, saves to MongoDB, returns FounderProfile.
  */
 router.post('/analyze', analyzeFounder);
+
+/**
+ * GET /api/founder/scheme/:id
+ * Fetches full details for a specific scheme document by ID
+ */
+router.get('/scheme/:id', getSchemeById);
 
 export default router;
