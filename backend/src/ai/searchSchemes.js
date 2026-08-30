@@ -2,19 +2,47 @@
  * searchSchemes.js (src/ai/searchSchemes.js)
  * 
  * Purpose:
- * Searches Qdrant vector database using founder vector embedding,
- * retrieves top 50 relevant chunks, filters out non-scheme utility pages (e.g. FAQs, Reports, Asset files),
- * deduplicates by documentId AND normalized title, and fetches full scheme documents from MongoDB.
- * Includes a robust MongoDB fallback if Qdrant is unreachable or returns 0 hits.
+ * Performs category-balanced vector similarity search in Qdrant vector database using 1024-d Jina query embedding.
+ * Guarantees equal representation of both Government Schemes & Grants AND Cloud & Tech Credit Programs.
  */
 
-import { qdrantClient } from '../embeddings/qdrant.js';
+import { qdrantClient, COLLECTION_NAME } from '../embeddings/qdrant.js';
 import Document from '../models/Document.js';
 
-const COLLECTION_NAME = process.env.QDRANT_COLLECTION || 'founderpilot_schemes';
+/**
+ * Decodes nested HTML entities in titles (e.g. &amp; -> &).
+ */
+function decodeHtmlEntities(str = '') {
+  if (!str) return '';
+  let decoded = str;
+  for (let i = 0; i < 5; i++) {
+    if (!decoded.includes('&')) break;
+    decoded = decoded
+      .replace(/&amp;/gi, '&')
+      .replace(/&quot;/gi, '"')
+      .replace(/&#39;/gi, "'")
+      .replace(/&lt;/gi, '<')
+      .replace(/&gt;/gi, '>');
+  }
+  return decoded.trim();
+}
 
 /**
- * Identifies and filters out non-scheme utility & portal pages (FAQs, Reports, Asset files, Notices).
+ * Normalizes non-English locale paths (e.g. /hr-hr/, /fr/, /es/) to standard English URL (/en-us/).
+ */
+function normalizeToEnglishUrl(urlStr = '') {
+  if (!urlStr) return '';
+  try {
+    const parsed = new URL(urlStr);
+    parsed.pathname = parsed.pathname.replace(/\/(hr-hr|et-ee|sv-se|de-de|fr-fr|es-la|es-es|pt-br|ko-kr|ja-jp|zh-cn|zh-tw|fr|de|es|it|pt|ja|ko|zh|ru|ar|tr|nl|pl|vi|th|id)\//i, '/en-us/');
+    return parsed.toString();
+  } catch {
+    return urlStr;
+  }
+}
+
+/**
+ * Identifies and filters out non-scheme utility & portal pages (FAQs, Reports, Blogs, Asset files, Notices).
  */
 function isNonSchemeUtilityPage(title = '', url = '') {
   const t = (title || '').toLowerCase();
@@ -37,6 +65,13 @@ function isNonSchemeUtilityPage(title = '', url = '') {
     'publications',
     'report',
     'reports',
+    '/blog',
+    'blog/',
+    'sidbi.in/blog',
+    'hyperlink-policy',
+    'microfinance-congress',
+    'captcha',
+    'onlineapplication',
     'understanding indian msme sector',
     'fixed deposit',
     'deposit',
@@ -50,6 +85,9 @@ function isNonSchemeUtilityPage(title = '', url = '') {
     'revised%20guidelines',
     'imb.html',
     'self-certification.html',
+    '.pdf',
+    '.zip',
+    'pdf',
     '.css',
     '.js',
     '.png',
@@ -63,27 +101,40 @@ function isNonSchemeUtilityPage(title = '', url = '') {
  * Normalizes title for deduplication.
  */
 function getTitleKey(title = '') {
-  return (title || '').trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+  return decodeHtmlEntities(title).trim().toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
 /**
- * Searches Qdrant for top matching scheme chunks, filters out utility pages,
- * deduplicates by documentId and title, and fetches full scheme documents from MongoDB.
+ * Determines if an opportunity is a Cloud or Tech Credit Program.
+ */
+function isCloudCreditOpportunity(payload = {}) {
+  const oType = (payload.opportunityType || '').toLowerCase();
+  const provider = (payload.provider || payload.source || '').toLowerCase();
+  
+  if (oType === 'cloud_credit') return true;
+
+  const cloudProviders = ['aws', 'microsoft', 'google', 'nvidia', 'mongodb', 'digitalocean', 'cloudflare', 'azure'];
+  return cloudProviders.some(p => provider.includes(p));
+}
+
+/**
+ * Searches Qdrant for top matching chunks using Category-Balanced Dual Retrieval.
+ * Guarantees a balanced mix of Government Schemes AND Cloud Credit Programs.
  * 
  * @param {Array<number>} vectorEmbedding - Query vector embedding.
- * @param {number} limit - Number of top chunks to retrieve from Qdrant (default: 50).
- * @returns {Promise<Array<Object>>} Unique scheme documents array.
+ * @param {number} totalLimit - Target number of unique opportunities (default: 15).
+ * @returns {Promise<Array<Object>>} Balanced unique scheme documents array.
  */
-export async function searchRelevantSchemes(vectorEmbedding, limit = 50) {
+export async function searchRelevantSchemes(vectorEmbedding, totalLimit = 15) {
   let searchHits = [];
   
-  // Step 1: Query Qdrant Vector DB with fallback error handling
+  // Step 1: Query Qdrant Vector DB for top 60 raw vector chunks
   try {
     if (vectorEmbedding && Array.isArray(vectorEmbedding) && vectorEmbedding.length > 0) {
-      console.log(`[INFO] [searchSchemes] Searching Qdrant collection "${COLLECTION_NAME}" for top ${limit} chunks...`);
+      console.log(`[INFO] [searchSchemes] Searching Qdrant collection "${COLLECTION_NAME}" for top 60 vector chunks...`);
       searchHits = await qdrantClient.search(COLLECTION_NAME, {
         vector: vectorEmbedding,
-        limit: limit,
+        limit: 60,
         with_payload: true
       });
       console.log(`[INFO] [searchSchemes] Retrieved ${searchHits ? searchHits.length : 0} raw vector chunk hits from Qdrant.`);
@@ -93,105 +144,148 @@ export async function searchRelevantSchemes(vectorEmbedding, limit = 50) {
     searchHits = [];
   }
 
-  // Filter out noise utility pages and deduplicate by documentId AND titleKey
-  const uniqueDocMap = new Map();
+  const cloudHits = [];
+  const schemeHits = [];
   const seenTitleKeys = new Set();
+  const seenDocIds = new Set();
   let filteredOutCount = 0;
 
   if (searchHits && searchHits.length > 0) {
     for (const hit of searchHits) {
       const payload = hit.payload || {};
       const docId = payload.documentId;
-      const title = payload.title || '';
-      const url = payload.url || '';
+      const title = decodeHtmlEntities(payload.title || '');
+      const rawUrl = payload.url || '';
+      const url = normalizeToEnglishUrl(rawUrl);
       const titleKey = getTitleKey(title);
 
-      // Check if this chunk belongs to a non-scheme utility page
       if (isNonSchemeUtilityPage(title, url)) {
         filteredOutCount++;
         continue;
       }
 
-      // Skip duplicate titles or duplicate docIds
-      if (seenTitleKeys.has(titleKey) || (docId && uniqueDocMap.has(docId))) {
+      if (seenTitleKeys.has(titleKey) || (docId && seenDocIds.has(docId))) {
         continue;
       }
 
       if (docId) {
         seenTitleKeys.add(titleKey);
-        uniqueDocMap.set(docId, {
+        seenDocIds.add(docId);
+
+        const candidateItem = {
           documentId: docId,
           similarityScore: hit.score,
           chunkText: payload.text || '',
           title: title,
           source: payload.source || '',
-          url: url
-        });
-      }
+          url: url,
+          opportunityType: payload.opportunityType || (isCloudCreditOpportunity(payload) ? 'cloud_credit' : 'scheme'),
+          provider: payload.provider || payload.source || ''
+        };
 
-      if (uniqueDocMap.size >= 12) {
-        break;
+        if (isCloudCreditOpportunity(payload)) {
+          cloudHits.push(candidateItem);
+        } else {
+          schemeHits.push(candidateItem);
+        }
       }
     }
   }
 
-  let uniqueDocIds = Array.from(uniqueDocMap.keys());
+  // Step 2: Category-Balanced Candidate Fusion (Target: ~7 Cloud Credits + ~8 Govt Schemes)
+  const balancedMap = new Map();
+  const targetCloudCount = Math.min(cloudHits.length, Math.ceil(totalLimit / 2));
+  
+  // Add top Cloud Credit hits
+  for (let i = 0; i < targetCloudCount; i++) {
+    const item = cloudHits[i];
+    balancedMap.set(item.documentId, item);
+  }
 
-  // Step 2: Fallback to MongoDB query if Qdrant hits were empty or filtered out
+  // Add top Government Scheme hits
+  for (const item of schemeHits) {
+    if (balancedMap.size >= totalLimit) break;
+    balancedMap.set(item.documentId, item);
+  }
+
+  // If we still have room, add remaining Cloud Credit hits
+  for (const item of cloudHits) {
+    if (balancedMap.size >= totalLimit) break;
+    if (!balancedMap.has(item.documentId)) {
+      balancedMap.set(item.documentId, item);
+    }
+  }
+
+  let uniqueDocIds = Array.from(balancedMap.keys());
+
+  // Step 3: MongoDB Fallback if vector hits were empty
   if (uniqueDocIds.length === 0) {
-    console.log(`[INFO] [searchSchemes] Fetching government scheme documents directly from MongoDB...`);
+    console.log(`[INFO] [searchSchemes] Fetching documents directly from MongoDB...`);
     const fallbackDocs = await Document.find({
       documentStatus: { $ne: 'deleted' },
       markdown: { $ne: '' }
     })
-      .limit(30)
+      .limit(50)
       .lean();
 
-    // Filter fallback documents
     for (const doc of fallbackDocs) {
-      const titleKey = getTitleKey(doc.title);
-      if (!isNonSchemeUtilityPage(doc.title, doc.url) && !seenTitleKeys.has(titleKey)) {
+      const cleanTitle = decodeHtmlEntities(doc.title || '');
+      const cleanUrl = normalizeToEnglishUrl(doc.url || '');
+      const titleKey = getTitleKey(cleanTitle);
+      
+      if (!isNonSchemeUtilityPage(cleanTitle, cleanUrl) && !seenTitleKeys.has(titleKey)) {
         const dId = doc._id.toString();
-        if (!uniqueDocMap.has(dId)) {
+        if (!balancedMap.has(dId)) {
           seenTitleKeys.add(titleKey);
-          uniqueDocMap.set(dId, {
+          balancedMap.set(dId, {
             documentId: dId,
             similarityScore: 0.75,
             chunkText: doc.markdown ? doc.markdown.slice(0, 500) : '',
-            title: doc.title || 'Government Scheme',
-            source: doc.source || 'Government Portal',
-            url: doc.url || ''
+            title: cleanTitle,
+            source: doc.source || 'Portal',
+            url: cleanUrl,
+            opportunityType: doc.opportunityType || 'scheme',
+            provider: doc.provider || doc.source || ''
           });
         }
       }
-      if (uniqueDocMap.size >= 10) break;
+      if (balancedMap.size >= totalLimit) break;
     }
-    uniqueDocIds = Array.from(uniqueDocMap.keys());
+    uniqueDocIds = Array.from(balancedMap.keys());
   }
 
-  console.log(`[INFO] [searchSchemes] Filtered out ${filteredOutCount} noise chunks. Deduplicated into ${uniqueDocIds.length} unique scheme documents.`);
+  console.log(`[INFO] [searchSchemes] Category Fusion: Selected ${uniqueDocIds.length} balanced opportunities (${cloudHits.length} Cloud Credits & ${schemeHits.length} Govt Schemes available).`);
 
-  // Step 3: Fetch full scheme documents from MongoDB
+  // Step 4: Fetch full documents from MongoDB
   const mongoDocs = await Document.find({ _id: { $in: uniqueDocIds } }).lean();
 
-  // Combine MongoDB document data with Qdrant vector similarity metadata
-  const schemes = uniqueDocIds.map((docId) => {
-    const qdrantMeta = uniqueDocMap.get(docId);
-    const mongoDoc = mongoDocs.find((d) => d._id.toString() === docId) || {};
+  const docMap = new Map();
+  mongoDocs.forEach((d) => docMap.set(d._id.toString(), d));
 
-    return {
-      documentId: docId,
-      title: mongoDoc.title || qdrantMeta.title || 'Untitled Government Scheme',
-      source: mongoDoc.source || qdrantMeta.source || 'Government Portal',
-      url: mongoDoc.url || qdrantMeta.url || '',
-      markdown: mongoDoc.markdown || qdrantMeta.chunkText || '',
-      structured: mongoDoc.structured || null,
-      similarityScore: qdrantMeta.similarityScore || 0.8
-    };
-  });
+  const finalResults = [];
 
-  console.log(`[SUCCESS] [searchSchemes] Successfully retrieved ${schemes.length} unique scheme records from MongoDB.`);
-  return schemes;
+  for (const docId of uniqueDocIds) {
+    const meta = balancedMap.get(docId);
+    const mongoDoc = docMap.get(docId);
+
+    if (mongoDoc) {
+      finalResults.push({
+        _id: mongoDoc._id,
+        id: mongoDoc._id,
+        title: decodeHtmlEntities(mongoDoc.structured?.schemeName || mongoDoc.title || meta.title),
+        url: normalizeToEnglishUrl(mongoDoc.url || meta.url),
+        source: mongoDoc.source || meta.source,
+        opportunityType: mongoDoc.opportunityType || meta.opportunityType || 'scheme',
+        provider: mongoDoc.provider || meta.provider || mongoDoc.source || 'Official',
+        structured: mongoDoc.structured || {},
+        markdown: mongoDoc.markdown || '',
+        similarityScore: meta.similarityScore || 0,
+        matchedChunk: meta.chunkText || ''
+      });
+    }
+  }
+
+  return finalResults;
 }
 
-export default searchRelevantSchemes;
+export default { searchRelevantSchemes };

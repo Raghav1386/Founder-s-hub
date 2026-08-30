@@ -207,6 +207,8 @@ export async function crawlSource(config, dbCollection, crawlRunId) {
                 title: pageResult.title || 'Untitled',
                 url: url,
                 source: sourceName,
+                opportunityType: sourceConfig.opportunityType || 'scheme',
+                provider: sourceConfig.provider || null,
                 markdown: cleanedMarkdown
             };
 

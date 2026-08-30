@@ -77,8 +77,8 @@ FOUNDER ONBOARDING DATA:
 INSTRUCTIONS:
 1. Synthesize the startup description and answers into structured insights.
 2. Provide concise, professional, and precise values for all required fields.
-3. Formulate a targeted "searchText" string prefixing with scheme retrieval intent:
-   Example: "Government financial scheme grant subsidy seed fund incentive program for CleanTech startup in Karnataka. Stage: MVP. DPIIT: Yes. Seeking: Funding, Grant, Mentorship."
+3. Formulate a targeted "searchText" string incorporating all support types (e.g. Cloud & Tech Credits, AWS Activate, Azure Founders Hub, Google for Startups, Grants, Incubators, Seed Funding) and state/stage details.
+   Example: "Cloud credits, tech programs, AWS Activate, Azure Founders Hub, government seed grants and subsidies for AI SaaS startup in Karnataka. Stage: MVP. DPIIT: Yes. Seeking: Cloud Credits, Grants, Mentorship."
 `;
 
 const promptTemplate = PromptTemplate.fromTemplate(SYSTEM_PROMPT);

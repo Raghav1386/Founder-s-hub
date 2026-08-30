@@ -96,11 +96,11 @@ export async function analyzeFounder(req, res) {
 
     // Step 4: Evaluate Eligibility for Each Scheme Sequentially (1 at a time for 100% accuracy & zero rate limits)
     if (retrievedSchemes.length > 0) {
-      console.log(`[PIPELINE Step 4/5] Evaluating scheme eligibility with ChatGroq (Sequential 1-by-1)...`);
+      console.log(`[PIPELINE Step 4/5] Evaluating scheme eligibility with ChatGroq (Staggered Batches)...`);
       matchedSchemes = await compareAllSchemes(
         { onboarding, founderProfile: structuredProfile },
         retrievedSchemes,
-        1 // Concurrency limit 1 for 100% reliable evaluation with zero rate limits
+        2 // Concurrency 2 to maintain smooth Groq rate limits with max throughput
       );
     } else {
       console.warn(`[WARN] No relevant scheme documents retrieved from vector search.`);

@@ -26,11 +26,6 @@ if (rawUrl && rawUrl.startsWith('eyJ')) {
     rawUrl = null;
 }
 
-// If rawUrl is HTTPS, strip trailing :6333 port for cloud compatibility
-if (rawUrl && rawUrl.startsWith('https://') && rawUrl.includes(':6333')) {
-    rawUrl = rawUrl.replace(':6333', '');
-}
-
 let qdrantUrl = rawUrl || 'http://localhost:6333';
 
 // Only append port 6333 for non-cloud http URLs if missing
@@ -129,6 +124,8 @@ export async function storeChunksInQdrant(collectionName, chunksData) {
                 title: item.doc.title || 'Untitled',
                 source: item.doc.source || 'Unknown',
                 url: item.doc.url || '',
+                opportunityType: item.doc.opportunityType || 'scheme',
+                provider: item.doc.provider || item.doc.source || 'Unknown',
                 chunkIndex: item.chunkIndex,
                 text: item.text
             }
@@ -148,8 +145,10 @@ export async function storeChunksInQdrant(collectionName, chunksData) {
     console.log(`💾 Stored ${points.length} chunk vectors in Qdrant collection "${collectionName}".`);
 }
 
+export const COLLECTION_NAME = 'founderpilot_schemes';
 export default {
     qdrantClient,
     ensureCollectionExists,
-    storeChunksInQdrant
+    storeChunksInQdrant,
+    COLLECTION_NAME
 };

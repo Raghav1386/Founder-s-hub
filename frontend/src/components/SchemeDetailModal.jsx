@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import SchemeQaTab from './SchemeQaTab';
 import {
   X,
   ArrowLeft,
@@ -24,9 +25,9 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
   const [loading, setLoading] = useState(false);
   const [docDetails, setDocDetails] = useState(null);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'guidelines' | 'markdown'
+  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'qa' | 'guidelines' | 'markdown'
 
-  const targetId = documentId || schemeMatch?.documentId;
+  const targetId = documentId || schemeMatch?.documentId || schemeMatch?._id || schemeMatch?.id;
   const isValidMongoId = typeof targetId === 'string' && /^[0-9a-fA-F]{24}$/.test(targetId);
 
   // Lock background scroll when full screen page is open
@@ -160,6 +161,22 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
 
           <button
             type="button"
+            onClick={() => setActiveTab('qa')}
+            className={`pb-3 border-b-2 transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
+              activeTab === 'qa'
+                ? 'border-emerald-500 text-emerald-400 font-bold'
+                : 'border-transparent text-slate-400 hover:text-slate-200'
+            }`}
+          >
+            <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />
+            <span>AI Q&A Assistant</span>
+            <span className="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800/80 px-2 py-0.5 rounded-full font-bold">
+              AI Live
+            </span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setActiveTab('guidelines')}
             className={`pb-3 border-b-2 transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
               activeTab === 'guidelines'
@@ -203,6 +220,18 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
           </div>
         )}
 
+        {/* TAB: AI Q&A ASSISTANT */}
+        {activeTab === 'qa' && (
+          <div className="animate-fadeIn">
+            <SchemeQaTab
+              schemeId={targetId}
+              schemeTitle={title}
+              source={source}
+              url={url}
+            />
+          </div>
+        )}
+
         {/* TAB 1: MATCH ANALYSIS OVERVIEW */}
         {activeTab === 'overview' && schemeMatch && (
           <div className="space-y-6 animate-fadeIn">
@@ -215,6 +244,27 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
               <p className="text-sm sm:text-base text-slate-200 leading-relaxed italic bg-slate-950/80 p-4 rounded-xl border border-slate-800/80">
                 "{schemeMatch.reasoning}"
               </p>
+            </div>
+
+            {/* Quick AI Q&A Launcher Banner */}
+            <div className="p-5 bg-gradient-to-r from-emerald-950/80 via-slate-900 to-indigo-950/80 rounded-2xl border border-emerald-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-900/60 border border-emerald-700/80 flex items-center justify-center shrink-0">
+                  <Sparkles className="w-5 h-5 text-emerald-400 animate-pulse" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-100">Have specific questions about this opportunity?</h4>
+                  <p className="text-xs text-slate-400">Ask our grounded AI Assistant about your stage, funding limits, or required documents.</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveTab('qa')}
+                className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 text-xs shrink-0 cursor-pointer shadow-lg"
+              >
+                <span>Ask AI Assistant</span>
+                <ChevronRight className="w-4 h-4" />
+              </button>
             </div>
 
             {/* Benefits & Missing Requirements Grid */}

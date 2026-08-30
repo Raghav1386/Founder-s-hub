@@ -45,6 +45,8 @@ export async function saveDocument(pageData, dbCollection, crawlRunId = null) {
         title = 'Untitled Page',
         url,
         source = 'unknown',
+        opportunityType = 'scheme',
+        provider = null,
         markdown: rawMarkdown = ''
     } = pageData;
 
@@ -70,6 +72,8 @@ export async function saveDocument(pageData, dbCollection, crawlRunId = null) {
                 title: title,
                 url: url,
                 source: source,
+                opportunityType: opportunityType,
+                provider: provider,
                 markdown: markdown,
                 contentHash: newContentHash,
                 processingStatus: 'pending_structure',    // Flagged for document structuring pipeline
@@ -94,6 +98,8 @@ export async function saveDocument(pageData, dbCollection, crawlRunId = null) {
             const updateFields = {
                 title: title,
                 source: source,
+                opportunityType: opportunityType,
+                provider: provider,
                 markdown: markdown,
                 contentHash: newContentHash,
                 processingStatus: 'pending_structure',    // Re-flag as pending_structure for pipeline

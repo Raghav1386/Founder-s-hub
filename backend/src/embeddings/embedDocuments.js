@@ -118,10 +118,26 @@ export async function runEmbeddingPipeline() {
 
                 // Step 4d: Store vectors + payload in Qdrant Vector DB
                 console.log(`💾 Storing ${chunksData.length} vector points in Qdrant collection "${COLLECTION_NAME}"...`);
-                await storeChunksInQdrant(COLLECTION_NAME, chunksData);
+                
+                // Retry storing in Qdrant up to 3 times for network resilience
+                let stored = false;
+                const now = new Date();
+                for (let qAttempt = 1; qAttempt <= 3; qAttempt++) {
+                    try {
+                        await storeChunksInQdrant(COLLECTION_NAME, chunksData);
+                        stored = true;
+                        break;
+                    } catch (qErr) {
+                        console.warn(`[WARN] Qdrant store attempt ${qAttempt}/3 failed (${qErr.message}). Retrying in 2s...`);
+                        await new Promise(r => setTimeout(r, 2000));
+                    }
+                }
+
+                if (!stored) {
+                    throw new Error('Failed to upsert vector points into Qdrant after 3 attempts.');
+                }
 
                 // Step 5: Update MongoDB document status and embeddedAt timestamp
-                const now = new Date();
                 doc.processingStatus = 'completed';
                 doc.embeddedAt = now;
                 doc.lastEmbeddedAt = now;
@@ -133,10 +149,7 @@ export async function runEmbeddingPipeline() {
 
             } catch (error) {
                 console.error(`❌ Error embedding document "${doc.title}" (ID: ${doc._id}):`, error.message);
-                
-                // If it was a rate limit error, keep as pending_embedding so it can be safely re-run
-                const isRateLimit = error.message.includes('429') || error.message.includes('RATE_TOKEN_LIMIT_EXCEEDED');
-                doc.processingStatus = isRateLimit ? 'pending_embedding' : 'failed';
+                doc.processingStatus = 'pending_embedding';
                 await doc.save();
                 failCount++;
             }

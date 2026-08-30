@@ -7,6 +7,7 @@
 
 import express from 'express';
 import { analyzeFounder, getSchemeById } from '../controllers/founderController.js';
+import { answerSchemeQa } from '../controllers/schemeQaController.js';
 
 const router = express.Router();
 
@@ -21,5 +22,11 @@ router.post('/analyze', analyzeFounder);
  * Fetches full details for a specific scheme document by ID
  */
 router.get('/scheme/:id', getSchemeById);
+
+/**
+ * POST /api/founder/scheme/:id/qa
+ * Grounded AI Q&A Assistant endpoint for specific scheme or cloud credit document
+ */
+router.post('/scheme/:id/qa', answerSchemeQa);
 
 export default router;

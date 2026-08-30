@@ -32,6 +32,16 @@ import biracConfig from './configs/birac.js';
 import tdbConfig from './configs/tdb.js';
 import agricultureConfig from './configs/agriculture.js';
 
+// Import Cloud & Tech Credits configuration files
+import awsConfig from './configs/aws.js';
+import microsoftConfig from './configs/microsoft.js';
+import googleConfig from './configs/google.js';
+import nvidiaConfig from './configs/nvidia.js';
+import oracleConfig from './configs/oracle.js';
+import mongodbStartupsConfig from './configs/mongodbStartups.js';
+import digitaloceanConfig from './configs/digitalocean.js';
+import cloudflareConfig from './configs/cloudflare.js';
+
 // Import crawler engine module and logger
 import { crawlSource } from './engine/crawlSource.js';
 import { logger } from './engine/logger.js';
@@ -53,7 +63,16 @@ const allConfigs = [
     nidhiConfig,
     biracConfig,
     tdbConfig,
-    agricultureConfig
+    agricultureConfig,
+    // Cloud & Tech Credits
+    awsConfig,
+    microsoftConfig,
+    googleConfig,
+    nvidiaConfig,
+    oracleConfig,
+    mongodbStartupsConfig,
+    digitaloceanConfig,
+    cloudflareConfig
 ];
 
 /**

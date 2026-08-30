@@ -149,11 +149,27 @@ export function discoverLinks(links = [], currentDepth = 0, config = {}, visited
         }
 
         // STEP 6a: Check excluded URL patterns (static assets, UI forms, login, dashboard, etc.)
-        const DEFAULT_BLOCKED_EXTENSIONS = ['.pdf', '.zip', '.rar', '.exe', '.png', '.jpg', '.jpeg', '.mp4', '.xlsx', '.docx'];
+        const DEFAULT_BLOCKED_EXTENSIONS = ['.pdf', '.zip', '.rar', '.exe', '.png', '.jpg', '.jpeg', '.mp4', '.xlsx', '.docx', '.js', '.css'];
         const pathnameLower = parsedUrlObj.pathname.toLowerCase();
         const isStaticAsset = DEFAULT_BLOCKED_EXTENSIONS.some(ext => pathnameLower.endsWith(ext));
         if (isStaticAsset) {
             continue;
+        }
+
+        // Filter out multi-language locale query parameters (e.g. ?hl=de, ?lang=fr)
+        const searchLower = parsedUrlObj.search.toLowerCase();
+        if (searchLower.includes('hl=') || searchLower.includes('lang=') || searchLower.includes('locale=')) {
+            continue;
+        }
+
+        // Filter out non-English regional locale path prefixes (e.g. /pl-pl/, /nb-no/, /da-dk/, /de/, /fr/)
+        const localeMatch = pathnameLower.match(/\/([a-z]{2}(-[a-z]{2})?)\//);
+        if (localeMatch && localeMatch[1]) {
+            const loc = localeMatch[1];
+            const allowedLocales = ['en-us', 'en-in', 'en-gb', 'en-au', 'en-ca', 'en-eu', 'en'];
+            if (!allowedLocales.includes(loc)) {
+                continue;
+            }
         }
 
         const isExcluded = excludePatterns.some(pattern => {

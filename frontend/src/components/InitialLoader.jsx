@@ -53,7 +53,7 @@ export default function InitialLoader({ onComplete }) {
       <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
 
       <div className="max-w-md w-full space-y-8 relative z-10 text-center">
-        
+
         {/* Center Glowing Power Core */}
         <div className="relative w-24 h-24 mx-auto flex items-center justify-center">
           {/* Animated pulse rings */}
@@ -75,7 +75,7 @@ export default function InitialLoader({ onComplete }) {
         {/* Title */}
         <div className="space-y-2">
           <h2 className="text-2xl font-extrabold text-white tracking-tight flex items-center justify-center gap-2">
-            <span>FOUNDERPILOT</span>
+            <span>FOUNDER'S HUB</span>
             <span className="text-xs font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded">
               v2.5
             </span>

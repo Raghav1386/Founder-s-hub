@@ -40,6 +40,17 @@ const documentSchema = new mongoose.Schema(
             required: [true, 'Document source is required'],
             trim: true
         },
+        opportunityType: {
+            type: String,
+            enum: ['scheme', 'cloud_credit', 'grant', 'incubator', 'accelerator', 'other'],
+            default: 'scheme',
+            index: true
+        },
+        provider: {
+            type: String,
+            default: null,
+            index: true
+        },
         markdown: {
             type: String,
             default: ''
