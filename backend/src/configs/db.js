@@ -19,6 +19,7 @@ export async function connectDB() {
     try {
         const connection = await mongoose.connect(mongoUri, {
             dbName,
+            family: 4, // Force IPv4 resolution to prevent Node 20/22 cloud IPv6 DNS timeouts
             serverSelectionTimeoutMS: 15000,
             connectTimeoutMS: 15000
         });
@@ -28,7 +29,6 @@ export async function connectDB() {
         console.error(`[ERROR] Primary MongoDB connection failed: ${error.message}`);
         console.error(`👉 Verify MONGODB_URI environment variable and MongoDB Atlas Network Access (0.0.0.0/0).`);
         
-        // Attempt local 127.0.0.1 fallback only if no remote MONGODB_URI is specified
         if (!process.env.MONGODB_URI) {
             try {
                 const localUri = 'mongodb://127.0.0.1:27017/founderpilot';
