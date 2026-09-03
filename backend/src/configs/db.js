@@ -3,12 +3,6 @@
  * 
  * Purpose:
  * Configures and establishes the connection to the MongoDB database using Mongoose.
- * 
- * Responsibilities:
- * 1. Read the MongoDB connection URI from process.env.MONGODB_URI.
- * 2. Connect to MongoDB using Mongoose.
- * 3. Log a success message once connected.
- * 4. Log an error and terminate the process (process.exit(1)) if the initial connection fails.
  */
 
 import mongoose from 'mongoose';
@@ -23,7 +17,11 @@ export async function connectDB() {
     const dbName = process.env.MONGODB_DB_NAME || 'founderpilot';
 
     try {
-        const connection = await mongoose.connect(mongoUri, { dbName, serverSelectionTimeoutMS: 5000 });
+        const connection = await mongoose.connect(mongoUri, {
+            dbName,
+            serverSelectionTimeoutMS: 15000,
+            connectTimeoutMS: 15000
+        });
         console.log(`[SUCCESS] MongoDB connected successfully to database "${connection.connection.name}" on host ${connection.connection.host}`);
         return connection;
     } catch (error) {
