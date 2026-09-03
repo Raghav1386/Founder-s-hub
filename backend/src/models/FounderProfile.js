@@ -10,6 +10,13 @@ import mongoose from 'mongoose';
 
 const founderProfileSchema = new mongoose.Schema(
   {
+    // Linked authenticated user ID (optional for guest evaluations)
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      index: true
+    },
+
     // Raw onboarding form answers
     onboarding: {
       startupName: { type: String, required: true, trim: true },

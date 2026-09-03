@@ -22,12 +22,22 @@ import {
   Eye
 } from 'lucide-react';
 
-export default function SubmitResult({ formData, onEditStep, onResetForm }) {
-  const [status, setStatus] = useState('idle'); // 'idle' | 'submitting' | 'success' | 'error'
-  const [apiResponse, setApiResponse] = useState(null);
+import { useAuth } from '../context/AuthContext';
+
+export default function SubmitResult({ formData, initialResult, onEditStep, onResetForm }) {
+  const { idToken, fetchUserHistory } = useAuth();
+  const [status, setStatus] = useState(initialResult ? 'success' : 'idle'); // 'idle' | 'submitting' | 'success' | 'error'
+  const [apiResponse, setApiResponse] = useState(initialResult || null);
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState('summary'); // 'summary' | 'json'
   const [selectedSchemeForModal, setSelectedSchemeForModal] = useState(null);
+
+  React.useEffect(() => {
+    if (initialResult) {
+      setApiResponse(initialResult);
+      setStatus('success');
+    }
+  }, [initialResult]);
 
   const handleCopyJson = () => {
     navigator.clipboard.writeText(JSON.stringify(formData, null, 2));
@@ -38,12 +48,14 @@ export default function SubmitResult({ formData, onEditStep, onResetForm }) {
   const handleSubmit = async () => {
     setStatus('submitting');
     try {
-      // Execute real fetch request to POST /api/founder/analyze as specified in prompt
+      const headers = { 'Content-Type': 'application/json' };
+      if (idToken) {
+        headers['Authorization'] = `Bearer ${idToken}`;
+      }
+
       const response = await fetch('/api/founder/analyze', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers,
         body: JSON.stringify(formData)
       });
 
@@ -51,6 +63,7 @@ export default function SubmitResult({ formData, onEditStep, onResetForm }) {
         const data = await response.json();
         setApiResponse(data);
         setStatus('success');
+        if (fetchUserHistory) fetchUserHistory();
       } else {
         // Backend API is not implemented yet in backend service, but fetch completed with response status.
         // We handle this gracefully by generating a simulated AI Analysis result for complete UX flow.

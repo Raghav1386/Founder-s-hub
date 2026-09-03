@@ -52,6 +52,7 @@ if (morgan) {
 }
 
 import founderRoutes from './src/routes/founderRoutes.js';
+import authRoutes from './src/routes/authRoutes.js';
 
 // Step 5: Health Check & API Routes
 /**
@@ -78,9 +79,10 @@ app.get('/health', (req, res) => {
 
 /**
  * API Routes
- * Mount /api/founder endpoints
+ * Mount /api/founder and /api/auth endpoints
  */
 app.use('/api/founder', founderRoutes);
+app.use('/api/auth', authRoutes);
 
 // Step 6: Start Server
 const PORT = process.env.PORT || 5000;

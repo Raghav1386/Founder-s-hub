@@ -113,6 +113,7 @@ export async function analyzeFounder(req, res) {
 
     console.log(`[PIPELINE Step 5/5] Saving founder profile & ${validMatchedSchemes.length} matched schemes to MongoDB...`);
     const newProfileDoc = new FounderProfile({
+      userId: req.user ? req.user._id : undefined,
       onboarding,
       founderProfile: structuredProfile,
       searchText: finalSearchText,

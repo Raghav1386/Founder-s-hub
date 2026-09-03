@@ -8,14 +8,16 @@
 import express from 'express';
 import { analyzeFounder, getSchemeById } from '../controllers/founderController.js';
 import { answerSchemeQa } from '../controllers/schemeQaController.js';
+import { verifyFirebaseToken } from '../middlewares/firebaseAuthMiddleware.js';
 
 const router = express.Router();
 
 /**
  * POST /api/founder/analyze
  * Accepts onboarding JSON, runs Groq LLM analysis, saves to MongoDB, returns FounderProfile.
+ * Requires authenticated founder account.
  */
-router.post('/analyze', analyzeFounder);
+router.post('/analyze', verifyFirebaseToken, analyzeFounder);
 
 /**
  * GET /api/founder/scheme/:id

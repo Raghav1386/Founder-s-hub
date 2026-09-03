@@ -8,6 +8,9 @@ import Step3Metrics from './components/Step3Metrics';
 import Step4Needs from './components/Step4Needs';
 import Step5Description from './components/Step5Description';
 import SubmitResult from './components/SubmitResult';
+import AuthModal from './components/AuthModal';
+import SavedHistoryModal from './components/SavedHistoryModal';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { ArrowLeft, ArrowRight, CheckCircle2, RotateCcw } from 'lucide-react';
 
 const INITIAL_FORM_DATA = {
@@ -22,12 +25,18 @@ const INITIAL_FORM_DATA = {
   description: ''
 };
 
-export default function App() {
+function MainApp() {
+  const { isAuthenticated } = useAuth();
   const [viewMode, setViewMode] = useState('landing'); // 'landing' | 'wizard'
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
+  const [savedAnalysisResult, setSavedAnalysisResult] = useState(null);
   const [errors, setErrors] = useState({});
   const [completedSteps, setCompletedSteps] = useState([]);
+
+  // Modals state
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
 
   // Single state update helper
   const updateFormData = (key, value) => {
@@ -118,18 +127,53 @@ export default function App() {
   // Reset entire form
   const handleResetForm = () => {
     setFormData(INITIAL_FORM_DATA);
+    setSavedAnalysisResult(null);
     setErrors({});
     setCompletedSteps([]);
     setCurrentStep(1);
   };
 
   const handleStartWizard = () => {
+    if (!isAuthenticated) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+    setSavedAnalysisResult(null);
     setViewMode('wizard');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleGoHome = () => {
     setViewMode('landing');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Handler for opening a saved history item directly in results view
+  const handleSelectHistoryItem = (item) => {
+    const onboarding = item.onboarding || {};
+    setFormData({
+      startupName: onboarding.startupName || '',
+      stateUt: onboarding.state || onboarding.stateUt || '',
+      isIncorporated: onboarding.incorporated || onboarding.isIncorporated || '',
+      dpiitRecognition: onboarding.dpiit || onboarding.dpiitRecognition || '',
+      startupStage: onboarding.stage || onboarding.startupStage || '',
+      teamSize: onboarding.teamSize || '',
+      supportNeeded: onboarding.supportNeeded || [],
+      fundingRequirement: onboarding.fundingRequired || onboarding.fundingRequirement || '',
+      description: onboarding.description || ''
+    });
+
+    setSavedAnalysisResult({
+      success: true,
+      data: {
+        profileId: item._id,
+        founderProfile: item.founderProfile,
+        matchedSchemes: item.matchedSchemes || []
+      }
+    });
+
+    setCurrentStep(6);
+    setViewMode('wizard');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -140,6 +184,8 @@ export default function App() {
         viewMode={viewMode}
         onGoHome={handleGoHome}
         onStartWizard={handleStartWizard}
+        onOpenAuthModal={() => setIsAuthModalOpen(true)}
+        onOpenHistoryModal={() => setIsHistoryModalOpen(true)}
       />
 
       {/* Render Main Content View */}
@@ -206,6 +252,7 @@ export default function App() {
             {currentStep === 6 && (
               <SubmitResult
                 formData={formData}
+                initialResult={savedAnalysisResult}
                 onEditStep={(stepNum) => setCurrentStep(stepNum)}
                 onResetForm={handleResetForm}
               />
@@ -267,6 +314,26 @@ export default function App() {
           </footer>
         </main>
       )}
+
+      {/* Global Modals */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+      />
+
+      <SavedHistoryModal
+        isOpen={isHistoryModalOpen}
+        onClose={() => setIsHistoryModalOpen(false)}
+        onSelectHistoryItem={handleSelectHistoryItem}
+      />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <MainApp />
+    </AuthProvider>
   );
 }

@@ -30,16 +30,16 @@ export const singleSchemeEvaluationZodSchema = z.object({
     .describe('2-3 sentence detailed explanation of why the founder qualifies and what specific criteria match.'),
   benefitsRelevant: z
     .array(z.string())
-    .min(2)
+    .default([])
     .describe('2-4 specific benefits (e.g. $100K cloud credits, ₹50 Lakh grant, tax exemption) relevant to this founder.'),
   missingRequirements: z
     .array(z.string())
+    .default([])
     .describe('1-3 missing prerequisites or guidelines the founder must prepare.'),
   nextSteps: z
     .array(z.string())
-    .min(3)
-    .max(5)
-    .describe('Exactly 3 to 4 distinct, highly actionable next steps for the founder to apply.')
+    .default([])
+    .describe('3 to 4 distinct, highly actionable next steps for the founder to apply.')
 });
 
 // Zod schema for the batch response
