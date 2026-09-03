@@ -8,6 +8,7 @@ import {
   onAuthStateChanged
 } from 'firebase/auth';
 import { auth, googleProvider } from '../configs/firebase';
+import { getApiUrl } from '../configs/api';
 
 const AuthContext = createContext(null);
 
@@ -24,7 +25,7 @@ export function AuthProvider({ children }) {
       const token = await firebaseUser.getIdToken();
       setIdToken(token);
 
-      const response = await fetch('/api/auth/sync', {
+      const response = await fetch(getApiUrl('/api/auth/sync'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,7 +52,7 @@ export function AuthProvider({ children }) {
     if (!auth.currentUser) return [];
     try {
       const token = await auth.currentUser.getIdToken();
-      const response = await fetch('/api/auth/history', {
+      const response = await fetch(getApiUrl('/api/auth/history'), {
         headers: {
           'Authorization': `Bearer ${token}`
         }

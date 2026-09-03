@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { getApiUrl } from '../configs/api';
 import {
   Sparkles,
   Send,
@@ -58,7 +59,7 @@ export default function SchemeQaTab({ schemeId, schemeTitle, source, url }) {
         .filter((m) => m.id !== 'welcome')
         .map((m) => ({ role: m.role, text: m.text }));
 
-      const response = await fetch(`/api/founder/scheme/${schemeId}/qa`, {
+      const response = await fetch(getApiUrl(`/api/founder/scheme/${schemeId}/qa`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 
 import { useAuth } from '../context/AuthContext';
+import { getApiUrl } from '../configs/api';
 
 export default function SubmitResult({ formData, initialResult, onEditStep, onResetForm }) {
   const { idToken, fetchUserHistory } = useAuth();
@@ -53,7 +54,7 @@ export default function SubmitResult({ formData, initialResult, onEditStep, onRe
         headers['Authorization'] = `Bearer ${idToken}`;
       }
 
-      const response = await fetch('/api/founder/analyze', {
+      const response = await fetch(getApiUrl('/api/founder/analyze'), {
         method: 'POST',
         headers,
         body: JSON.stringify(formData)

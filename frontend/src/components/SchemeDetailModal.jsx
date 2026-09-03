@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import SchemeQaTab from './SchemeQaTab';
+import { getApiUrl } from '../configs/api';
 import {
   X,
   ArrowLeft,
@@ -46,7 +47,7 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`/api/founder/scheme/${targetId}`);
+        const response = await fetch(getApiUrl(`/api/founder/scheme/${targetId}`));
         if (response.ok) {
           const json = await response.json();
           if (isMounted) {
