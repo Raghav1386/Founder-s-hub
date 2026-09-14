@@ -319,6 +319,12 @@ function MainApp() {
       <AuthModal
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
+        onSuccess={() => {
+          setIsAuthModalOpen(false);
+          setSavedAnalysisResult(null);
+          setViewMode('wizard');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
       />
 
       <SavedHistoryModal

@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-export default function AuthModal({ isOpen, onClose }) {
+export default function AuthModal({ isOpen, onClose, onSuccess }) {
   const { loginWithGoogle, loginWithEmail, registerWithEmail } = useAuth();
   const [activeTab, setActiveTab] = useState('login'); // 'login' | 'register'
   
@@ -33,7 +33,11 @@ export default function AuthModal({ isOpen, onClose }) {
     setError(null);
     try {
       await loginWithGoogle();
-      onClose();
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        onClose();
+      }
     } catch (err) {
       console.error('Google Sign In Error:', err);
       if (err.code === 'auth/popup-closed-by-user') {
@@ -60,7 +64,11 @@ export default function AuthModal({ isOpen, onClose }) {
         }
         await registerWithEmail(email, password, name, startupName);
       }
-      onClose();
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        onClose();
+      }
     } catch (err) {
       console.error('Auth Error:', err);
       let msg = err.message || 'Authentication failed.';
