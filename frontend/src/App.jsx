@@ -12,6 +12,7 @@ import AuthModal from './components/AuthModal';
 import SavedHistoryModal from './components/SavedHistoryModal';
 import PrivacyPolicyModal from './components/PrivacyPolicyModal';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { trackEvent } from './configs/analytics';
 import { ArrowLeft, ArrowRight, CheckCircle2, RotateCcw } from 'lucide-react';
 
 const INITIAL_FORM_DATA = {
@@ -104,7 +105,9 @@ function MainApp() {
       if (!completedSteps.includes(currentStep)) {
         setCompletedSteps((prev) => [...prev, currentStep]);
       }
-      setCurrentStep((prev) => Math.min(prev + 1, 6)); // Step 6 is Final Review & Submit
+      const nextStep = Math.min(currentStep + 1, 6);
+      setCurrentStep(nextStep);
+      trackEvent('step_changed', { step: nextStep });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -142,6 +145,7 @@ function MainApp() {
     }
     setSavedAnalysisResult(null);
     setViewMode('wizard');
+    trackEvent('wizard_started');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 

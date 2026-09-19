@@ -24,6 +24,7 @@ import {
 
 import { useAuth } from '../context/AuthContext';
 import { getApiUrl } from '../configs/api';
+import { trackEvent } from '../configs/analytics';
 
 export default function SubmitResult({ formData, initialResult, onEditStep, onResetForm }) {
   const { idToken, fetchUserHistory } = useAuth();
@@ -64,6 +65,11 @@ export default function SubmitResult({ formData, initialResult, onEditStep, onRe
         const data = await response.json();
         setApiResponse(data);
         setStatus('success');
+        trackEvent('analysis_completed', {
+          startupName: formData.startupName,
+          stage: formData.startupStage,
+          state: formData.stateUt
+        });
         if (fetchUserHistory) fetchUserHistory();
       } else {
         // Backend API is not implemented yet in backend service, but fetch completed with response status.

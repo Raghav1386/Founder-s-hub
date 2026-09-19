@@ -12,6 +12,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { trackEvent } from '../configs/analytics';
 
 export default function AuthModal({ isOpen, onClose, onSuccess }) {
   const { user, loginWithGoogle, loginWithEmail, registerWithEmail } = useAuth();
@@ -44,6 +45,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     setError(null);
     try {
       await loginWithGoogle();
+      trackEvent('user_signed_in', { method: 'google' });
       if (onSuccess) {
         onSuccess();
       } else {
@@ -69,11 +71,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     try {
       if (activeTab === 'login') {
         await loginWithEmail(email, password);
+        trackEvent('user_signed_in', { method: 'email' });
       } else {
         if (!name.trim()) {
           throw new Error('Please enter your full name.');
         }
         await registerWithEmail(email, password, name, startupName);
+        trackEvent('user_registered', { method: 'email' });
       }
       if (onSuccess) {
         onSuccess();
