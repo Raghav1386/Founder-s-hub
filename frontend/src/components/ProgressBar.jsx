@@ -26,7 +26,7 @@ export default function ProgressBar({ currentStep, totalSteps, completedSteps, o
       </div>
 
       {/* Step Indicators Breadcrumb */}
-      <div className="mt-6 grid grid-cols-5 gap-1.5 sm:gap-3">
+      <div className="mt-5 sm:mt-6 overflow-x-auto no-scrollbar flex sm:grid sm:grid-cols-5 gap-1.5 sm:gap-3 pb-1">
         {STEPS_CONFIG.map((step) => {
           const isCompleted = completedSteps.includes(step.id);
           const isCurrent = step.id === currentStep;
@@ -38,9 +38,9 @@ export default function ProgressBar({ currentStep, totalSteps, completedSteps, o
               type="button"
               onClick={() => isClickable && onStepClick(step.id)}
               disabled={!isClickable}
-              className={`flex flex-col items-center p-2 rounded-xl transition-all duration-200 text-left border ${
+              className={`flex flex-col items-center justify-center p-2 sm:p-2.5 rounded-xl transition-all duration-200 text-left border min-w-[50px] sm:min-w-0 flex-1 shrink-0 sm:shrink ${
                 isCurrent
-                  ? 'bg-indigo-950/60 border-indigo-500/80 ring-2 ring-indigo-500/30 text-white shadow-lg shadow-indigo-900/30'
+                  ? 'bg-indigo-950/80 border-indigo-500 ring-2 ring-indigo-500/30 text-white shadow-lg shadow-indigo-950/50'
                   : isCompleted
                   ? 'bg-slate-800/60 border-emerald-500/40 text-emerald-300 hover:bg-slate-800/90 cursor-pointer'
                   : 'bg-slate-900/40 border-slate-800/80 text-slate-500 cursor-not-allowed opacity-60'
@@ -58,7 +58,7 @@ export default function ProgressBar({ currentStep, totalSteps, completedSteps, o
                 >
                   {isCompleted ? <CheckCircle2 className="w-3.5 h-3.5 stroke-[2.5]" /> : step.id}
                 </div>
-                <span className="hidden sm:inline text-xs font-medium truncate">
+                <span className="hidden md:inline text-xs font-medium truncate">
                   {step.title}
                 </span>
               </div>

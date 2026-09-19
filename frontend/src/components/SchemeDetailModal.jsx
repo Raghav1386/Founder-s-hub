@@ -144,7 +144,7 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
         </div>
 
         {/* Tab Navigation Sub-Header */}
-        <div className="max-w-6xl mx-auto pt-4 mt-2 border-t border-slate-800/60 flex gap-6 text-sm font-semibold overflow-x-auto">
+        <div className="max-w-6xl mx-auto pt-3 mt-2 border-t border-slate-800/60 flex gap-4 sm:gap-6 text-xs sm:text-sm font-semibold overflow-x-auto no-scrollbar whitespace-nowrap">
           {schemeMatch && (
             <button
               type="button"

@@ -484,11 +484,11 @@ export default function SubmitResult({ formData, initialResult, onEditStep, onRe
 
       {/* Main Action Buttons */}
       {status !== 'success' && (
-        <div className="flex items-center justify-between pt-4 border-t border-slate-800">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-slate-800">
           <button
             type="button"
             onClick={() => onEditStep(5)}
-            className="px-4 py-2.5 text-slate-400 hover:text-white font-medium text-sm transition-all"
+            className="px-4 py-2.5 text-slate-400 hover:text-white font-medium text-sm transition-all text-center border border-slate-800 sm:border-none rounded-xl sm:rounded-none"
           >
             Back to Step 5
           </button>
@@ -497,17 +497,17 @@ export default function SubmitResult({ formData, initialResult, onEditStep, onRe
             type="button"
             onClick={handleSubmit}
             disabled={status === 'submitting'}
-            className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-bold text-sm rounded-xl shadow-lg shadow-indigo-900/50 flex items-center gap-2 transition-all disabled:opacity-50"
+            className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600 hover:from-emerald-400 hover:to-indigo-500 text-slate-950 font-extrabold text-sm rounded-xl shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer"
           >
             {status === 'submitting' ? (
               <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Analyzing
+                <Loader2 className="w-4 h-4 animate-spin text-slate-950" />
+                <span>Analyzing Profile...</span>
               </>
             ) : (
               <>
-                <Send className="w-4 h-4" />
-                Submit Application
+                <Send className="w-4 h-4 text-slate-950" />
+                <span>Submit & Run AI Match</span>
               </>
             )}
           </button>

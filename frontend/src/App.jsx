@@ -201,7 +201,7 @@ function MainApp() {
           onOpenPrivacyModal={() => setIsPrivacyModalOpen(true)}
         />
       ) : (
-        <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 animate-fadeIn">
+        <main className="flex-1 max-w-4xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-10 animate-fadeIn">
           {/* Step Progress Indicator Bar */}
           <ProgressBar
             currentStep={currentStep > 5 ? 5 : currentStep}
@@ -211,7 +211,7 @@ function MainApp() {
           />
 
           {/* Card Container */}
-          <div className="bg-slate-900/90 border border-slate-800/90 rounded-2xl shadow-2xl shadow-emerald-950/10 p-6 sm:p-10 backdrop-blur-xl relative overflow-hidden">
+          <div className="bg-slate-900/90 border border-slate-800/90 rounded-2xl sm:rounded-3xl shadow-2xl shadow-emerald-950/10 p-4 sm:p-10 backdrop-blur-xl relative overflow-hidden">
             {/* Top subtle gradient accent line */}
             <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-500" />
 
@@ -267,22 +267,22 @@ function MainApp() {
 
             {/* Navigation Controls (Steps 1 through 5) */}
             {currentStep <= 5 && (
-              <div className="flex items-center justify-between pt-8 mt-8 border-t border-slate-800/80">
+              <div className="flex items-center justify-between pt-5 sm:pt-8 mt-6 sm:mt-8 border-t border-slate-800/80 gap-2">
                 <button
                   type="button"
                   onClick={handlePrev}
                   disabled={currentStep === 1}
-                  className={`px-5 py-2.5 rounded-xl border text-sm font-semibold flex items-center gap-2 transition-all ${
+                  className={`px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl border text-xs sm:text-sm font-semibold flex items-center gap-1.5 sm:gap-2 transition-all ${
                     currentStep === 1
                       ? 'opacity-40 border-slate-800 text-slate-600 cursor-not-allowed'
                       : 'border-slate-700 bg-slate-800/80 hover:bg-slate-800 text-slate-200 hover:text-white cursor-pointer'
                   }`}
                 >
-                  <ArrowLeft className="w-4 h-4" />
-                  Previous
+                  <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <span>Previous</span>
                 </button>
 
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
                   <button
                     type="button"
                     onClick={handleResetForm}
@@ -296,17 +296,17 @@ function MainApp() {
                   <button
                     type="button"
                     onClick={handleNext}
-                    className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm rounded-xl shadow-lg shadow-emerald-500/20 flex items-center gap-2 transition-all cursor-pointer"
+                    className="px-4 sm:px-6 py-2 sm:py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm rounded-xl shadow-lg shadow-emerald-500/20 flex items-center gap-1.5 sm:gap-2 transition-all cursor-pointer"
                   >
                     {currentStep === 5 ? (
                       <>
-                        Review Application
-                        <CheckCircle2 className="w-4 h-4 text-slate-950" />
+                        <span>Review Profile</span>
+                        <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-950" />
                       </>
                     ) : (
                       <>
-                        Next Step
-                        <ArrowRight className="w-4 h-4" />
+                        <span>Next Step</span>
+                        <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       </>
                     )}
                   </button>

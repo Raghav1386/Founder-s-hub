@@ -108,10 +108,10 @@ export default function SchemeQaTab({ schemeId, schemeTitle, source, url }) {
   };
 
   return (
-    <div className="flex flex-col h-[650px] bg-slate-900/90 rounded-2xl border border-slate-800/80 overflow-hidden shadow-2xl">
+    <div className="flex flex-col h-[520px] sm:h-[650px] bg-slate-900/90 rounded-2xl border border-slate-800/80 overflow-hidden shadow-2xl">
       
       {/* Q&A Top Banner */}
-      <div className="bg-slate-950/80 border-b border-slate-800 px-6 py-4 flex items-center justify-between gap-4">
+      <div className="bg-slate-950/80 border-b border-slate-800 px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl bg-emerald-950/80 border border-emerald-800/80 flex items-center justify-center shrink-0">
             <Sparkles className="w-5 h-5 text-emerald-400" />
