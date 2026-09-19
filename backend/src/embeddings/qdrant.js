@@ -28,8 +28,8 @@ if (rawUrl && rawUrl.startsWith('eyJ')) {
 
 let qdrantUrl = rawUrl || 'http://localhost:6333';
 
-// Only append port 6333 for non-cloud http URLs if missing
-if (qdrantUrl.startsWith('http://') && !qdrantUrl.includes(':', 7)) {
+// Append port 6333 if missing from Qdrant URL
+if ((qdrantUrl.startsWith('http://') || qdrantUrl.startsWith('https://')) && !qdrantUrl.slice(8).includes(':')) {
     qdrantUrl = `${qdrantUrl}:6333`;
 }
 

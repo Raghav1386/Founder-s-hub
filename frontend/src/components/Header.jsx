@@ -8,7 +8,8 @@ import {
   LogOut,
   History,
   ChevronDown,
-  Lock
+  Lock,
+  ShieldCheck
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
@@ -42,10 +43,8 @@ export default function Header({ viewMode, onGoHome, onStartWizard, onOpenAuthMo
           onClick={onGoHome}
           className="flex items-center gap-3 text-left group cursor-pointer"
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-indigo-500 p-0.5 shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-            <div className="w-full h-full bg-[#070a12] rounded-[10px] flex items-center justify-center">
-              <Rocket className="w-5 h-5 text-emerald-400" />
-            </div>
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-indigo-500 p-0.5 shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform overflow-hidden">
+            <img src="/favicon.jpg" alt="Founder's Hub Logo" className="w-full h-full object-cover rounded-[10px]" />
           </div>
           <div>
             <h1 className="text-lg font-extrabold text-white tracking-tight leading-none flex items-center gap-2">

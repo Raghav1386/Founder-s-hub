@@ -10,6 +10,7 @@ import Step5Description from './components/Step5Description';
 import SubmitResult from './components/SubmitResult';
 import AuthModal from './components/AuthModal';
 import SavedHistoryModal from './components/SavedHistoryModal';
+import PrivacyPolicyModal from './components/PrivacyPolicyModal';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ArrowLeft, ArrowRight, CheckCircle2, RotateCcw } from 'lucide-react';
 
@@ -37,6 +38,7 @@ function MainApp() {
   // Modals state
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
 
   // Single state update helper
   const updateFormData = (key, value) => {
@@ -192,6 +194,7 @@ function MainApp() {
       {viewMode === 'landing' ? (
         <LandingPage
           onStartWizard={handleStartWizard}
+          onOpenPrivacyModal={() => setIsPrivacyModalOpen(true)}
         />
       ) : (
         <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-8 sm:py-12 animate-fadeIn">
@@ -331,6 +334,11 @@ function MainApp() {
         isOpen={isHistoryModalOpen}
         onClose={() => setIsHistoryModalOpen(false)}
         onSelectHistoryItem={handleSelectHistoryItem}
+      />
+
+      <PrivacyPolicyModal
+        isOpen={isPrivacyModalOpen}
+        onClose={() => setIsPrivacyModalOpen(false)}
       />
     </div>
   );

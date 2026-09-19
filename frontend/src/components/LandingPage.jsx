@@ -69,7 +69,7 @@ function WordReveal({ text, className = "" }) {
   );
 }
 
-export default function LandingPage({ onStartWizard }) {
+export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [ragQueryIndex, setRagQueryIndex] = useState(0);
@@ -803,12 +803,25 @@ export default function LandingPage({ onStartWizard }) {
       </section>
 
       {/* FOOTER */}
-      <footer className="py-12 px-4 sm:px-6 max-w-6xl mx-auto border-t border-slate-800/80 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer className="relative z-50 py-12 px-4 sm:px-6 max-w-6xl mx-auto border-t border-slate-800 text-xs text-slate-300 flex flex-col sm:flex-row items-center justify-between gap-4 font-sans bg-[#070a12]">
         <div className="flex items-center gap-2">
-          <span className="font-bold text-white text-sm">Founder's Hub</span>
-          <span>&bull; AI Startup Opportunity Discovery Engine</span>
+          <span className="font-bold text-white text-base tracking-tight">Founder's Hub</span>
+          <span className="text-slate-500">&bull; AI Startup Opportunity Discovery Engine</span>
         </div>
-        <p>&copy; {new Date().getFullYear()} Founder's Hub. Powered by Jina Embeddings, Qdrant Cloud & Groq AI.</p>
+        <div className="flex items-center gap-4">
+          <span className="text-slate-400 font-medium">&copy; {new Date().getFullYear()} Founder's Hub</span>
+          <span className="text-slate-600">&bull;</span>
+          <button
+            type="button"
+            onClick={() => {
+              if (onOpenPrivacyModal) onOpenPrivacyModal();
+            }}
+            className="inline-flex items-center gap-1.5 text-emerald-300 hover:text-emerald-200 font-bold cursor-pointer transition-all px-4 py-2 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/80 rounded-xl shadow-lg hover:shadow-emerald-500/20"
+          >
+            <Shield className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Privacy Policy</span>
+          </button>
+        </div>
       </footer>
 
     </div>

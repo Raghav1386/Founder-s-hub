@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
   Sparkles,
@@ -14,7 +14,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 
 export default function AuthModal({ isOpen, onClose, onSuccess }) {
-  const { loginWithGoogle, loginWithEmail, registerWithEmail } = useAuth();
+  const { user, loginWithGoogle, loginWithEmail, registerWithEmail } = useAuth();
   const [activeTab, setActiveTab] = useState('login'); // 'login' | 'register'
   
   // Form fields
@@ -25,6 +25,17 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Auto-close modal when user becomes authenticated
+  useEffect(() => {
+    if (user && isOpen) {
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        onClose();
+      }
+    }
+  }, [user, isOpen]);
 
   if (!isOpen) return null;
 
@@ -75,7 +86,13 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
       if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
         msg = 'Invalid email or password credentials.';
       } else if (err.code === 'auth/email-already-in-use') {
-        msg = 'An account with this email address already exists. Please sign in.';
+        msg = 'An account with this email address already exists. Redirecting to Sign In...';
+        setError(msg);
+        setTimeout(() => {
+          setActiveTab('login');
+          setError('Account already exists. Please enter your password to sign in.');
+        }, 1200);
+        return;
       } else if (err.code === 'auth/weak-password') {
         msg = 'Password should be at least 6 characters long.';
       }
@@ -102,8 +119,8 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
 
         {/* Modal Header */}
         <div className="p-6 pb-4 border-b border-slate-800/80 bg-slate-950/40">
-          <div className="flex items-center gap-2 text-indigo-400 text-xs font-bold uppercase tracking-wider mb-1">
-            <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />
+          <div className="flex items-center gap-2.5 text-indigo-400 text-xs font-bold uppercase tracking-wider mb-2">
+            <img src="/favicon.jpg" alt="Founder's Hub Logo" className="w-5 h-5 rounded-md object-cover border border-emerald-500/40" />
             <span>Founder Authorization</span>
           </div>
           <h2 className="text-xl font-bold text-white tracking-tight">

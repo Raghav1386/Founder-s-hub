@@ -67,8 +67,8 @@ export default function InitialLoader({ onComplete }) {
             transition={{ repeat: Infinity, duration: 8, ease: "linear" }}
             className="absolute inset-2 rounded-xl border border-dashed border-emerald-400/40"
           />
-          <div className="w-16 h-16 rounded-xl bg-slate-900 border border-emerald-500/60 flex items-center justify-center shadow-xl shadow-emerald-500/20">
-            <Rocket className="w-8 h-8 text-emerald-400" />
+          <div className="w-16 h-16 rounded-xl bg-slate-900 border border-emerald-500/60 flex items-center justify-center shadow-xl shadow-emerald-500/20 overflow-hidden p-1">
+            <img src="/favicon.jpg" alt="Founder's Hub Logo" className="w-full h-full object-cover rounded-lg" />
           </div>
         </div>
 
