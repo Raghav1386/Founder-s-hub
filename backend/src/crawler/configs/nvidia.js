@@ -17,12 +17,13 @@ export default {
         "inception",
         "benefits",
         "credits",
-        "gpu",
-        "ai",
-        "eligibility",
-        "faq"
+        "eligibility"
     ],
     excludePatterns: [
+        "podcast",
+        "autonomous-vehicles",
+        "sustainability",
+        "training",
         "login",
         "dashboard",
         "store",

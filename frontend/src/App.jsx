@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import LandingPage from './components/LandingPage';
+import Dashboard from './components/Dashboard';
+import SchemeDetailModal from './components/SchemeDetailModal';
 import ProgressBar from './components/ProgressBar';
 import Step1GeneralInfo from './components/Step1GeneralInfo';
 import Step2LegalStage from './components/Step2LegalStage';
@@ -28,8 +30,9 @@ const INITIAL_FORM_DATA = {
 };
 
 function MainApp() {
-  const { isAuthenticated } = useAuth();
-  const [viewMode, setViewMode] = useState('landing'); // 'landing' | 'wizard'
+  const { isAuthenticated, loading, fetchUserHistory } = useAuth();
+  const [viewMode, setViewMode] = useState('landing'); // 'landing' | 'dashboard' | 'wizard'
+  const [authChecked, setAuthChecked] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [savedAnalysisResult, setSavedAnalysisResult] = useState(null);
@@ -40,6 +43,30 @@ function MainApp() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const [selectedSchemeForModal, setSelectedSchemeForModal] = useState(null);
+
+  // Initial landing resolution: When user is authenticated, route directly to Dashboard
+  useEffect(() => {
+    if (!loading) {
+      if (isAuthenticated) {
+        if (!authChecked) {
+          setViewMode('dashboard');
+          setAuthChecked(true);
+        }
+      } else {
+        setViewMode('landing');
+        setAuthChecked(true);
+      }
+    }
+  }, [loading, isAuthenticated, authChecked]);
+
+  // Strict Real-Time Auth Guard: If unauthenticated, NEVER allow wizard or dashboard
+  useEffect(() => {
+    if (!loading && !isAuthenticated && viewMode !== 'landing') {
+      setViewMode('landing');
+      setIsAuthModalOpen(true);
+    }
+  }, [loading, isAuthenticated, viewMode]);
 
   // Single state update helper
   const updateFormData = (key, value) => {
@@ -138,15 +165,33 @@ function MainApp() {
     setCurrentStep(1);
   };
 
+  const handleGoDashboard = () => {
+    if (!isAuthenticated) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+    setViewMode('dashboard');
+    if (fetchUserHistory) fetchUserHistory();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleStartNewAnalysis = () => {
+    if (!isAuthenticated) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+    handleResetForm();
+    setViewMode('wizard');
+    trackEvent('wizard_started');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleStartWizard = () => {
     if (!isAuthenticated) {
       setIsAuthModalOpen(true);
       return;
     }
-    setSavedAnalysisResult(null);
-    setViewMode('wizard');
-    trackEvent('wizard_started');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    handleGoDashboard();
   };
 
   const handleGoHome = () => {
@@ -154,8 +199,40 @@ function MainApp() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Handler for re-running an analysis with pre-filled inputs
+  const handleReRunAnalysis = (item) => {
+    if (!isAuthenticated) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
+    const onboarding = item.onboarding || {};
+    setFormData({
+      startupName: onboarding.startupName || '',
+      stateUt: onboarding.state || onboarding.stateUt || '',
+      isIncorporated: onboarding.incorporated || onboarding.isIncorporated || '',
+      dpiitRecognition: onboarding.dpiit || onboarding.dpiitRecognition || '',
+      startupStage: onboarding.stage || onboarding.startupStage || '',
+      teamSize: onboarding.teamSize || '',
+      supportNeeded: onboarding.supportNeeded || [],
+      fundingRequirement: onboarding.fundingRequired || onboarding.fundingRequirement || '',
+      description: onboarding.description || ''
+    });
+
+    setSavedAnalysisResult(null);
+    setCompletedSteps([1, 2, 3, 4, 5]);
+    setCurrentStep(1);
+    setViewMode('wizard');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   // Handler for opening a saved history item directly in results view
   const handleSelectHistoryItem = (item) => {
+    if (!isAuthenticated) {
+      setIsAuthModalOpen(true);
+      return;
+    }
+
     const onboarding = item.onboarding || {};
     setFormData({
       startupName: onboarding.startupName || '',
@@ -189,16 +266,42 @@ function MainApp() {
       <Header
         viewMode={viewMode}
         onGoHome={handleGoHome}
-        onStartWizard={handleStartWizard}
+        onGoDashboard={handleGoDashboard}
+        onStartWizard={() => {
+          if (!isAuthenticated) {
+            setIsAuthModalOpen(true);
+          } else {
+            handleStartNewAnalysis();
+          }
+        }}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
-        onOpenHistoryModal={() => setIsHistoryModalOpen(true)}
+        onOpenHistoryModal={() => {
+          if (!isAuthenticated) {
+            setIsAuthModalOpen(true);
+          } else {
+            setIsHistoryModalOpen(true);
+          }
+        }}
       />
 
-      {/* Render Main Content View */}
-      {viewMode === 'landing' ? (
+      {/* Render Main Content View with Strict Auth Gating */}
+      {viewMode === 'landing' || (!isAuthenticated && !loading) ? (
         <LandingPage
-          onStartWizard={handleStartWizard}
+          onStartWizard={() => {
+            if (!isAuthenticated) {
+              setIsAuthModalOpen(true);
+            } else {
+              handleGoDashboard();
+            }
+          }}
           onOpenPrivacyModal={() => setIsPrivacyModalOpen(true)}
+        />
+      ) : viewMode === 'dashboard' ? (
+        <Dashboard
+          onStartNewAnalysis={handleStartNewAnalysis}
+          onSelectHistoryItem={handleSelectHistoryItem}
+          onReRunAnalysis={handleReRunAnalysis}
+          onOpenSchemeModal={(scheme) => setSelectedSchemeForModal(scheme)}
         />
       ) : (
         <main className="flex-1 max-w-4xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-10 animate-fadeIn">
@@ -261,7 +364,8 @@ function MainApp() {
                 formData={formData}
                 initialResult={savedAnalysisResult}
                 onEditStep={(stepNum) => setCurrentStep(stepNum)}
-                onResetForm={handleResetForm}
+                onResetForm={handleStartNewAnalysis}
+                onGoDashboard={handleGoDashboard}
               />
             )}
 
@@ -329,7 +433,8 @@ function MainApp() {
         onSuccess={() => {
           setIsAuthModalOpen(false);
           setSavedAnalysisResult(null);
-          setViewMode('wizard');
+          setViewMode('dashboard');
+          if (fetchUserHistory) fetchUserHistory();
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       />
@@ -344,6 +449,15 @@ function MainApp() {
         isOpen={isPrivacyModalOpen}
         onClose={() => setIsPrivacyModalOpen(false)}
       />
+
+      {/* Scheme Detail Modal for featured spotlight */}
+      {selectedSchemeForModal && (
+        <SchemeDetailModal
+          schemeMatch={selectedSchemeForModal}
+          documentId={selectedSchemeForModal.documentId}
+          onClose={() => setSelectedSchemeForModal(null)}
+        />
+      )}
     </div>
   );
 }

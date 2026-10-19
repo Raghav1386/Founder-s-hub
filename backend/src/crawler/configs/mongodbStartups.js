@@ -16,11 +16,13 @@ export default {
         "startups",
         "benefits",
         "credits",
-        "atlas",
-        "eligibility",
-        "faq"
+        "eligibility"
     ],
     excludePatterns: [
+        "library",
+        "resources",
+        "products",
+        "solutions/ai",
         "login",
         "cloud.mongodb.com",
         "dashboard",

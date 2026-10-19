@@ -13,7 +13,14 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-export default function Header({ viewMode, onGoHome, onStartWizard, onOpenAuthModal, onOpenHistoryModal }) {
+export default function Header({
+  viewMode,
+  onGoHome,
+  onGoDashboard,
+  onStartWizard,
+  onOpenAuthModal,
+  onOpenHistoryModal
+}) {
   const { user, mongoUser, logout, isAuthenticated, savedHistory } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -40,7 +47,7 @@ export default function Header({ viewMode, onGoHome, onStartWizard, onOpenAuthMo
         {/* Brand Logo & Name */}
         <button
           type="button"
-          onClick={onGoHome}
+          onClick={isAuthenticated ? onGoDashboard : onGoHome}
           className="flex items-center gap-2.5 sm:gap-3 text-left group cursor-pointer shrink-0"
         >
           <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-500 to-indigo-500 p-0.5 shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform overflow-hidden shrink-0">
@@ -62,23 +69,55 @@ export default function Header({ viewMode, onGoHome, onStartWizard, onOpenAuthMo
         {/* Navigation & Auth Action Buttons */}
         <div className="flex items-center gap-2 sm:gap-3">
           
-          {viewMode === 'wizard' ? (
+          {!isAuthenticated ? (
             <button
               type="button"
-              onClick={onGoHome}
-              className="px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer"
-            >
-              <Home className="w-3.5 h-3.5 text-indigo-400" />
-              <span className="hidden sm:inline">Back to Overview</span>
-              <span className="sm:hidden">Home</span>
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={onStartWizard}
+              onClick={onOpenAuthModal}
               className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-extrabold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer shadow-lg shadow-emerald-500/20"
             >
               <span>Find Opportunities</span>
+              <ArrowRight className="w-3.5 h-3.5 hidden xs:inline" />
+            </button>
+          ) : viewMode === 'wizard' ? (
+            <button
+              type="button"
+              onClick={onGoDashboard}
+              className="px-2.5 sm:px-3.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer shadow-sm"
+            >
+              <Rocket className="w-3.5 h-3.5 text-indigo-400" />
+              <span className="hidden sm:inline">Back to Dashboard</span>
+              <span className="sm:hidden">Dashboard</span>
+            </button>
+          ) : viewMode === 'dashboard' ? (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={onGoHome}
+                className="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition-all flex items-center gap-1 cursor-pointer"
+                title="View platform features"
+              >
+                <Home className="w-3.5 h-3.5 text-slate-400" />
+                <span className="hidden sm:inline">Overview</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={onStartWizard}
+                className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-extrabold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer shadow-lg shadow-emerald-500/20"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>New Analysis</span>
+              </button>
+            </div>
+          ) : (
+            /* landing page mode */
+            <button
+              type="button"
+              onClick={onGoDashboard}
+              className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-extrabold bg-emerald-500 hover:bg-emerald-400 text-slate-950 transition-all flex items-center gap-1 sm:gap-1.5 cursor-pointer shadow-lg shadow-emerald-500/20"
+            >
+              <Rocket className="w-3.5 h-3.5 text-slate-950" />
+              <span>My Dashboard</span>
               <ArrowRight className="w-3.5 h-3.5 hidden xs:inline" />
             </button>
           )}
@@ -119,6 +158,18 @@ export default function Header({ viewMode, onGoHome, onStartWizard, onOpenAuthMo
                   </div>
 
                   <div className="py-1 space-y-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDropdownOpen(false);
+                        if (onGoDashboard) onGoDashboard();
+                      }}
+                      className="w-full text-left px-3 py-2 text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition-all flex items-center gap-2 cursor-pointer"
+                    >
+                      <Rocket className="w-4 h-4 text-emerald-400" />
+                      <span>Founder Dashboard</span>
+                    </button>
+
                     <button
                       type="button"
                       onClick={() => {

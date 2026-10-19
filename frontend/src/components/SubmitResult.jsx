@@ -26,7 +26,7 @@ import { useAuth } from '../context/AuthContext';
 import { getApiUrl } from '../configs/api';
 import { trackEvent } from '../configs/analytics';
 
-export default function SubmitResult({ formData, initialResult, onEditStep, onResetForm }) {
+export default function SubmitResult({ formData, initialResult, onEditStep, onResetForm, onGoDashboard }) {
   const { idToken, fetchUserHistory } = useAuth();
   const [status, setStatus] = useState(initialResult ? 'success' : 'idle'); // 'idle' | 'submitting' | 'success' | 'error'
   const [apiResponse, setApiResponse] = useState(initialResult || null);
@@ -471,6 +471,16 @@ export default function SubmitResult({ formData, initialResult, onEditStep, onRe
           </div>
 
           <div className="flex flex-wrap gap-3 pt-2">
+            {onGoDashboard && (
+              <button
+                type="button"
+                onClick={onGoDashboard}
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold flex items-center gap-2 transition-all cursor-pointer shadow-md"
+              >
+                <Rocket className="w-4 h-4 text-white" />
+                <span>Founder Dashboard</span>
+              </button>
+            )}
             <button
               type="button"
               onClick={onResetForm}

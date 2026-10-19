@@ -19,10 +19,10 @@
 
 /** Keywords in URL indicating high-value knowledge content (+2 points) */
 const KNOWLEDGE_URL_PATTERNS = [
-    'scheme', 'policy', 'guideline', 'startup', 'fund', 'finance', 'loan',
-    'subsidy', 'blog', 'article', 'challenge', 'initiative', 'notification',
-    'circular', 'faq', 'resource', 'report', 'publication', 'offering',
-    'incentive', 'opportunity', 'benefit', 'programme', 'program'
+    'scheme', 'policy', 'guideline', 'startup', 'fund', 'grant',
+    'subsidy', 'challenge', 'initiative', 'incubator', 'incubation',
+    'accelerator', 'incentive', 'opportunity', 'benefit', 'programme',
+    'program', 'credits', 'seed-fund', 'venture-capital'
 ];
 
 /** Keywords in URL indicating UI, authentication, or non-knowledge forms (-5 points) */
@@ -32,15 +32,16 @@ const NON_KNOWLEDGE_URL_PATTERNS = [
     'contact', 'subscribe', 'search', 'verify', 'certificate',
     'download-certificate', 'otp', 'digilocker', 'create-password',
     'reset-password', 'account', 'modal', 'popup', 'grievance', 'careers',
-    'tenders', 'captcha', 'auth'
+    'tenders', 'captcha', 'auth', 'userfaqs', 'hand_book', 'annualreports',
+    'microfinance-pulse', 'fixed-scheme', 'fixed-deposit', 'logo-form',
+    'show-user-list', 'case-studies', 'customer-stories', 'ai-podcast'
 ];
 
 /** Title keywords indicating useful knowledge content (+2 points) */
 const KNOWLEDGE_TITLE_PATTERNS = [
     /scheme/i, /guidelines?/i, /policy/i, /initiative/i, /fund(ing)?/i,
-    /subsidy/i, /program(me)?/i, /portal/i, /faq/i, /overview/i,
-    /report/i, /details?/i, /benefits?/i, /resource/i, /incentives?/i,
-    /opportunity/i, /offerings?/i, /support/i
+    /subsidy/i, /program(me)?/i, /grants?/i, /incubator/i, /incubation/i,
+    /accelerator/i, /incentives?/i, /credits?/i, /opportunity/i, /startup/i
 ];
 
 /** Title keywords indicating non-knowledge UI / authentication pages (-5 points) */
@@ -48,7 +49,9 @@ const NON_KNOWLEDGE_TITLE_PATTERNS = [
     /login/i, /register/i, /sign\s*in/i, /sign\s*up/i, /dashboard/i,
     /profile/i, /my\s*account/i, /password/i, /otp/i, /verification/i,
     /grievance/i, /contact\s*us/i, /privacy\s*policy/i, /terms\s*of\s*use/i,
-    /error/i, /404/i, /access\s*denied/i, /modal/i, /popup/i
+    /error/i, /404/i, /access\s*denied/i, /modal/i, /popup/i, /fixed\s*deposit/i,
+    /annual\s*report/i, /microfinance\s*pulse/i, /incident\s*faq/i, /services\s*faq/i,
+    /case\s*study/i, /customer\s*story/i
 ];
 
 /** Markdown keywords indicating rich scheme / policy / knowledge content (+2 points) */

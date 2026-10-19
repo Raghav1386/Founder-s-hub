@@ -85,9 +85,10 @@ ${truncatedMarkdown}`;
 
     // 1. Primary: Mistral AI Direct JSON Mode + Zod Validation
     if (mistralModel) {
+        const modelName = process.env.MISTRAL_MODEL || 'open-mistral-nemo';
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
             try {
-                console.log(`⏳ Sending markdown (${truncatedMarkdown.length} chars) to Mistral AI (mistral-small-latest)...`);
+                console.log(`⏳ Sending markdown (${truncatedMarkdown.length} chars) to Mistral AI (${modelName})...`);
                 const response = await mistralModel.invoke(mistralPrompt);
                 let rawText = response.content;
                 if (typeof rawText !== 'string') {
@@ -187,12 +188,13 @@ export async function runStructuringPipeline() {
         // Step 4: Initialize Mistral AI, Groq, and Gemini LLM models
         let mistralModel = null;
         if (mistralApiKey) {
+            const activeMistralModel = process.env.MISTRAL_MODEL || 'open-mistral-nemo';
             mistralModel = new ChatMistralAI({
                 apiKey: mistralApiKey,
-                model: process.env.MISTRAL_MODEL || 'mistral-small-latest',
+                model: activeMistralModel,
                 temperature: 0.1
             });
-            console.log('✅ Initialized Mistral AI structuring model (mistral-small-latest).');
+            console.log(`✅ Initialized Mistral AI structuring model (${activeMistralModel}).`);
         }
 
         let groqLlm = null;
@@ -267,8 +269,11 @@ export async function runStructuringPipeline() {
 
             } catch (error) {
                 console.error(`❌ Error structuring document "${doc.title}" (ID: ${doc._id}):`, error.message);
-                doc.processingStatus = 'failed';
-                await doc.save();
+                try {
+                    await Document.updateOne({ _id: doc._id }, { processingStatus: 'failed' });
+                } catch (saveErr) {
+                    // Ignore secondary save error
+                }
                 failCount++;
             }
         }

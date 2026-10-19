@@ -3,41 +3,24 @@ export default {
     baseUrl: "https://gem.gov.in",
     startUrls: [
         "https://gem.gov.in/Startup_Runway",
-        "https://gem.gov.in/business-opportunities",
-        "https://gem.gov.in/support/government_oms_circulars",
-        "https://gem.gov.in/support/buyers",
-        "https://gem.gov.in/userFaqs",
-        "https://gem.gov.in/gem_hand_book"
+        "https://gem.gov.in/business-opportunities"
     ],
     allowedDomains: [
         "gem.gov.in",
         "www.gem.gov.in"
     ],
     includePatterns: [
-        "scheme",
-        "policy",
-        "guideline",
         "startup",
-        "fund",
-        "finance",
-        "loan",
-        "subsidy",
-        "blog",
-        "article",
-        "challenge",
-        "initiative",
-        "notification",
-        "circular",
-        "faq",
-        "resource",
-        "report",
-        "publication",
-        "offering",
-        "incentive",
+        "runway",
+        "scheme",
         "opportunity",
-        "runway"
+        "incentive"
     ],
     excludePatterns: [
+        "hand_book",
+        "userFaqs",
+        "support",
+        "circulars",
         "login",
         "logout",
         "register",

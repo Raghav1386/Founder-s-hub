@@ -16,12 +16,13 @@ export default {
         "startups",
         "benefits",
         "credits",
-        "azure",
         "founders-hub",
-        "faq",
+        "pegasus",
         "eligibility"
     ],
     excludePatterns: [
+        "products",
+        "explore",
         "login",
         "signin",
         "portal",

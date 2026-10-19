@@ -42,7 +42,7 @@ const documentSchema = new mongoose.Schema(
         },
         opportunityType: {
             type: String,
-            enum: ['scheme', 'cloud_credit', 'grant', 'incubator', 'accelerator', 'other'],
+            enum: ['scheme', 'government_scheme', 'cloud_credit', 'grant', 'incubator', 'accelerator', 'other'],
             default: 'scheme',
             index: true
         },
