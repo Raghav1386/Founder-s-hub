@@ -1,17 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Terminal, Cpu, Database, CheckCircle2, Rocket, Sparkles } from 'lucide-react';
+import { Terminal, Cpu, Database, CheckCircle2, Sparkles } from 'lucide-react';
 
 export default function InitialLoader({ onComplete }) {
   const [progress, setProgress] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
 
   const logs = [
-    { text: "Initializing FounderPilot AI Core Engine...", icon: Cpu },
-    { text: "Connecting to Qdrant Cloud Vector Database...", icon: Database },
-    { text: "Indexing 100+ Govt Schemes, BIRAC BIG, DST NIDHI & SIDBI...", icon: Terminal },
-    { text: "Loading Jina Embeddings v3 (1024-d Vector Space)...", icon: Sparkles },
-    { text: "Startup Opportunity Discovery Engine Ready.", icon: CheckCircle2 }
+    { text: "01 // Initializing Founder's Hub discovery pipeline...", icon: Cpu },
+    { text: "02 // Connecting to verified Qdrant vector collection...", icon: Database },
+    { text: "03 // Indexing 216+ startup programs, Tier-1 cloud credits & capital schemes...", icon: Terminal },
+    { text: "04 // Calibrating semantic embedding coordinates...", icon: Sparkles },
+    { text: "05 // Discovery engine operational. Ready.", icon: CheckCircle2 }
   ];
 
   useEffect(() => {
@@ -21,13 +21,13 @@ export default function InitialLoader({ onComplete }) {
           clearInterval(timer);
           setTimeout(() => {
             onComplete();
-          }, 400);
+          }, 300);
           return 100;
         }
-        const next = prev + Math.floor(Math.random() * 8) + 4;
+        const next = prev + Math.floor(Math.random() * 8) + 6;
         return next > 100 ? 100 : next;
       });
-    }, 80);
+    }, 60);
 
     return () => clearInterval(timer);
   }, [onComplete]);
@@ -45,76 +45,62 @@ export default function InitialLoader({ onComplete }) {
   return (
     <motion.div
       initial={{ opacity: 1 }}
-      exit={{ opacity: 0, y: -40, scale: 0.98 }}
-      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      className="fixed inset-0 z-[10000] bg-[#050811] text-slate-100 flex flex-col items-center justify-center p-6 select-none"
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      className="fixed inset-0 z-[10000] bg-[var(--color-ink)] text-[var(--color-text-primary)] flex flex-col items-center justify-center p-4 select-none font-sans"
     >
-      {/* Background Noise & Grid Line Glow */}
-      <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
+      <div className="max-w-md w-full bg-[var(--color-surface-1)] border border-[var(--color-line)] rounded-[4px] p-6 sm:p-8 relative z-10 text-center space-y-5">
 
-      <div className="max-w-md w-full space-y-8 relative z-10 text-center">
-
-        {/* Center Glowing Power Core */}
-        <div className="relative w-24 h-24 mx-auto flex items-center justify-center">
-          {/* Animated pulse rings */}
-          <motion.div
-            animate={{ scale: [1, 1.3, 1], opacity: [0.3, 0.7, 0.3] }}
-            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-            className="absolute inset-0 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 blur-sm"
-          />
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ repeat: Infinity, duration: 8, ease: "linear" }}
-            className="absolute inset-2 rounded-xl border border-dashed border-emerald-400/40"
-          />
-          <div className="w-16 h-16 rounded-xl bg-slate-900 border border-emerald-500/60 flex items-center justify-center shadow-xl shadow-emerald-500/20 overflow-hidden p-1">
-            <img src="/favicon.jpg" alt="Founder's Hub Logo" className="w-full h-full object-cover rounded-lg" />
-          </div>
+        {/* Existing Favicon Logo Asset */}
+        <div className="w-9 h-9 mx-auto rounded-[3px] bg-[var(--color-surface-2)] border border-[var(--color-line)] flex items-center justify-center overflow-hidden p-0.5">
+          <img src="/favicon.jpg" alt="Logo" className="w-full h-full object-cover" />
         </div>
 
-        {/* Title */}
-        <div className="space-y-2">
-          <h2 className="text-2xl font-extrabold text-white tracking-tight flex items-center justify-center gap-2">
-            <span>FOUNDER'S HUB</span>
-            <span className="text-xs font-mono font-bold bg-emerald-950 text-emerald-400 border border-emerald-800 px-2 py-0.5 rounded">
-              v2.5
+        {/* Wordmark Title */}
+        <div className="space-y-1">
+          <div className="flex items-center justify-center gap-2">
+            <h2 className="font-display font-bold text-lg text-[var(--color-text-primary)] tracking-tight">
+              Founder's Hub
+            </h2>
+            <span className="font-mono text-[9px] uppercase tracking-widest text-[var(--color-signal)] px-1.5 py-0.2 rounded-[2px] bg-[var(--color-surface-2)] border border-[var(--color-line)]">
+              Console
             </span>
-          </h2>
-          <p className="text-xs font-mono text-slate-400">
-            AI STARTUP OPPORTUNITY DISCOVERY ENGINE
+          </div>
+          <p className="font-mono text-[11px] text-[var(--color-text-dim)] uppercase tracking-wider">
+            Startup Opportunity Discovery Engine
           </p>
         </div>
 
-        {/* Progress Bar Container */}
-        <div className="space-y-3">
-          <div className="h-2 w-full bg-slate-900 rounded-full border border-slate-800/80 overflow-hidden p-0.5">
+        {/* Progress Bar Hairline */}
+        <div className="space-y-2 pt-1">
+          <div className="h-1 w-full bg-[var(--color-surface-2)] rounded-[1px] overflow-hidden">
             <motion.div
-              className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 rounded-full"
+              className="h-full bg-[var(--color-signal)]"
               initial={{ width: '0%' }}
               animate={{ width: `${progress}%` }}
               transition={{ ease: 'easeOut' }}
             />
           </div>
 
-          <div className="flex items-center justify-between text-xs font-mono">
-            <span className="text-slate-400">STATUS: INITIALIZING</span>
-            <span className="font-extrabold text-emerald-400">{progress}%</span>
+          <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-[var(--color-text-dim)]">
+            <span>Index Status</span>
+            <span className="text-[var(--color-signal)] font-semibold">{progress}%</span>
           </div>
         </div>
 
-        {/* Terminal Logs Showcase */}
-        <div className="p-4 bg-slate-950/80 rounded-xl border border-slate-800/90 text-left font-mono text-xs text-slate-300 space-y-2 h-20 flex flex-col justify-center shadow-inner">
+        {/* Monospaced Log Stream */}
+        <div className="p-3 bg-[var(--color-surface-2)] rounded-[3px] border border-[var(--color-line)] text-left font-mono text-xs text-[var(--color-text-primary)] h-12 flex flex-col justify-center">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
-              initial={{ opacity: 0, y: 10 }}
+              initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.3 }}
-              className="flex items-center gap-2.5 text-emerald-400 font-medium"
+              exit={{ opacity: 0, y: -4 }}
+              transition={{ duration: 0.15 }}
+              className="flex items-center gap-2 text-xs truncate"
             >
-              <CurrentIcon className="w-4 h-4 shrink-0 text-emerald-400" />
-              <span className="truncate">{logs[currentStep]?.text}</span>
+              <CurrentIcon className="w-3.5 h-3.5 shrink-0 text-[var(--color-signal)]" />
+              <span className="truncate text-[var(--color-text-muted)] text-[11px]">{logs[currentStep]?.text}</span>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -122,9 +108,9 @@ export default function InitialLoader({ onComplete }) {
         <button
           type="button"
           onClick={onComplete}
-          className="text-[11px] font-mono text-slate-500 hover:text-slate-300 underline transition-all cursor-pointer"
+          className="font-mono text-[10px] text-[var(--color-text-dim)] hover:text-[var(--color-text-primary)] uppercase tracking-wider transition-colors cursor-pointer"
         >
-          Skip Intro &rarr;
+          Skip initialization &rarr;
         </button>
 
       </div>

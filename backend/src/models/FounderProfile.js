@@ -78,6 +78,9 @@ const founderProfileSchema = new mongoose.Schema(
   }
 );
 
+// Compound index to accelerate user history queries sorted by recency
+founderProfileSchema.index({ userId: 1, createdAt: -1 });
+
 export const FounderProfile =
   mongoose.models.FounderProfile || mongoose.model('FounderProfile', founderProfileSchema);
 

@@ -8,25 +8,21 @@ import {
   ExternalLink,
   CheckCircle2,
   AlertTriangle,
-  FileText,
   Sparkles,
   ShieldCheck,
-  Building2,
   IndianRupee,
   Calendar,
   Layers,
-  HelpCircle,
   ChevronRight,
   Loader2,
-  Award,
-  BookOpen
+  Award
 } from 'lucide-react';
 
 export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) {
   const [loading, setLoading] = useState(false);
   const [docDetails, setDocDetails] = useState(null);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'qa' | 'guidelines' | 'markdown'
+  const [activeTab, setActiveTab] = useState('overview');
 
   const targetId = documentId || schemeMatch?.documentId || schemeMatch?._id || schemeMatch?.id;
   const isValidMongoId = typeof targetId === 'string' && /^[0-9a-fA-F]{24}$/.test(targetId);
@@ -55,7 +51,7 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
           }
         }
       } catch (err) {
-        // Preserve schemeMatch view fallback
+        // Fallback to schemeMatch
       } finally {
         if (isMounted) {
           setLoading(false);
@@ -70,17 +66,16 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
     };
   }, [targetId, isValidMongoId]);
 
-  // Combined data between matched analysis and fetched MongoDB document
   const title = schemeMatch?.title || docDetails?.title || 'Scheme Details';
   const source = schemeMatch?.source || docDetails?.source || 'Government Portal';
   const url = schemeMatch?.url || docDetails?.url;
   const structured = docDetails?.structured || {};
 
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] bg-slate-950 overflow-y-auto min-h-screen w-full animate-fadeIn flex flex-col text-slate-200">
+    <div className="fixed inset-0 z-[9999] bg-[var(--color-ink)] overflow-y-auto min-h-screen w-full animate-fadeIn flex flex-col text-[var(--color-text)]">
       
-      {/* Top Full Screen Header Bar (Sticky) */}
-      <div className="sticky top-0 z-20 bg-slate-900 border-b border-slate-800 px-4 sm:px-8 py-4 shadow-2xl">
+      {/* Top Header Bar */}
+      <div className="sticky top-0 z-20 bg-[var(--color-surface-1)] border-b border-[var(--color-line)] px-4 sm:px-8 py-4">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           
           {/* Left: Back Button & Title */}
@@ -88,135 +83,119 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
             <button
               type="button"
               onClick={onClose}
-              className="mt-0.5 p-2.5 bg-indigo-950 hover:bg-indigo-900 text-indigo-200 hover:text-white rounded-xl transition-all flex items-center gap-2 text-xs font-bold shrink-0 cursor-pointer shadow-lg border border-indigo-800/80"
+              className="mt-0.5 p-2 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-1)] text-[var(--color-text)] rounded-[3px] transition-colors flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider shrink-0 cursor-pointer border border-[var(--color-line)]"
             >
-              <ArrowLeft className="w-4 h-4 text-indigo-400" />
-              <span>Back to Results</span>
+              <ArrowLeft className="w-3.5 h-3.5 text-[var(--color-signal)]" />
+              <span>Back</span>
             </button>
 
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[10px] font-extrabold uppercase tracking-wider bg-indigo-950 text-indigo-300 border border-indigo-800/80 px-2.5 py-0.5 rounded-md">
+                <span className="text-[10px] font-mono uppercase tracking-wider bg-[var(--color-surface-2)] text-[var(--color-muted)] border border-[var(--color-line)] px-2 py-0.5 rounded-[2px]">
                   {source}
                 </span>
                 {schemeMatch && (
                   <span
-                    className={`text-xs font-extrabold px-3 py-0.5 rounded-full border ${
+                    className={`text-xs font-mono font-semibold px-2.5 py-0.5 rounded-[3px] border ${
                       schemeMatch.eligibilityScore >= 80
-                        ? 'bg-emerald-950 text-emerald-300 border-emerald-700'
+                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
                         : schemeMatch.eligibilityScore >= 60
-                        ? 'bg-amber-950 text-amber-300 border-amber-700'
-                        : 'bg-rose-950 text-rose-300 border-rose-700'
+                        ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                        : 'bg-red-500/10 text-red-300 border-red-500/30'
                     }`}
                   >
-                    {schemeMatch.eligibilityScore}% Match &bull; {schemeMatch.eligibilityStatus}
+                    [{schemeMatch.eligibilityScore}% MATCH &bull; {schemeMatch.eligibilityStatus}]
                   </span>
                 )}
               </div>
-              <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-snug">
+              <h1 className="text-lg sm:text-2xl font-bold text-[var(--color-text)] tracking-tight leading-snug">
                 {title}
               </h1>
             </div>
           </div>
 
           {/* Right: Actions */}
-          <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
+          <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-center">
             {url && (
               <a
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-all shadow-lg hover:shadow-indigo-500/20"
+                className="px-3.5 py-2 bg-[var(--color-signal)] hover:brightness-110 text-[#0E1119] rounded-[3px] text-xs font-mono font-semibold uppercase tracking-wider flex items-center gap-2 transition-colors"
               >
-                <span>Apply on Official Portal</span>
+                <span>Portal Access</span>
                 <ExternalLink className="w-3.5 h-3.5" />
               </a>
             )}
             <button
               type="button"
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-xl transition-all cursor-pointer"
-              title="Close Page"
+              className="p-2 text-[var(--color-muted)] hover:text-[var(--color-text)] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-1)] rounded-[3px] transition-colors cursor-pointer border border-[var(--color-line)]"
+              title="Close"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
         {/* Tab Navigation Sub-Header */}
-        <div className="max-w-6xl mx-auto pt-3 mt-2 border-t border-slate-800/60 flex gap-4 sm:gap-6 text-xs sm:text-sm font-semibold overflow-x-auto no-scrollbar whitespace-nowrap">
+        <div className="max-w-6xl mx-auto pt-3 mt-2 border-t border-[var(--color-line)] flex gap-4 sm:gap-6 text-xs font-mono uppercase tracking-wider overflow-x-auto no-scrollbar whitespace-nowrap">
           {schemeMatch && (
             <button
               type="button"
               onClick={() => setActiveTab('overview')}
-              className={`pb-3 border-b-2 transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
+              className={`pb-2.5 border-b-2 transition-colors flex items-center gap-2 shrink-0 cursor-pointer ${
                 activeTab === 'overview'
-                  ? 'border-indigo-500 text-indigo-400'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
+                  ? 'border-[var(--color-signal)] text-[var(--color-signal)] font-semibold'
+                  : 'border-transparent text-[var(--color-muted)] hover:text-[var(--color-text)]'
               }`}
             >
-              <Award className="w-4 h-4" />
-              <span>Match Analysis</span>
+              <Award className="w-3.5 h-3.5" />
+              <span>[ Match Telemetry ]</span>
             </button>
           )}
 
           <button
             type="button"
             onClick={() => setActiveTab('qa')}
-            className={`pb-3 border-b-2 transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
+            className={`pb-2.5 border-b-2 transition-colors flex items-center gap-2 shrink-0 cursor-pointer ${
               activeTab === 'qa'
-                ? 'border-emerald-500 text-emerald-400 font-bold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-[var(--color-signal)] text-[var(--color-signal)] font-semibold'
+                : 'border-transparent text-[var(--color-muted)] hover:text-[var(--color-text)]'
             }`}
           >
-            <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />
-            <span>AI Q&A Assistant</span>
-            <span className="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-800/80 px-2 py-0.5 rounded-full font-bold">
-              AI Live
-            </span>
+            <Sparkles className="w-3.5 h-3.5 text-[var(--color-signal)]" />
+            <span>[ AI Policy Q&A ]</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab('guidelines')}
-            className={`pb-3 border-b-2 transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
+            className={`pb-2.5 border-b-2 transition-colors flex items-center gap-2 shrink-0 cursor-pointer ${
               activeTab === 'guidelines'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-[var(--color-signal)] text-[var(--color-signal)] font-semibold'
+                : 'border-transparent text-[var(--color-muted)] hover:text-[var(--color-text)]'
             }`}
           >
-            <ShieldCheck className="w-4 h-4" />
-            <span>Scheme Guidelines Matrix</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('markdown')}
-            className={`pb-3 border-b-2 transition-all flex items-center gap-2 shrink-0 cursor-pointer ${
-              activeTab === 'markdown'
-                ? 'border-indigo-500 text-indigo-400'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            <BookOpen className="w-4 h-4" />
-            <span>Full Documentation Text</span>
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>[ Guidelines Matrix ]</span>
           </button>
         </div>
       </div>
 
-      {/* Main Full Page Body Content */}
+      {/* Main Page Body Content */}
       <div className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-8 space-y-6">
         
         {loading && (
-          <div className="flex flex-col items-center justify-center py-20 space-y-3 bg-slate-900/60 rounded-2xl border border-slate-800">
-            <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
-            <span className="text-xs text-slate-400">Loading complete scheme guidelines from database...</span>
+          <div className="flex flex-col items-center justify-center py-20 space-y-3 bg-[var(--color-surface-1)] rounded-[4px] border border-[var(--color-line)]">
+            <Loader2 className="w-6 h-6 text-[var(--color-signal)] animate-spin" />
+            <span className="text-xs font-mono text-[var(--color-muted)]">Retrieving complete policy guidelines...</span>
           </div>
         )}
 
         {error && !loading && (
-          <div className="p-4 bg-rose-950/40 border border-rose-800/60 rounded-xl text-rose-300 text-xs flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-rose-400" />
+          <div className="p-4 bg-red-500/10 border border-red-500/30 rounded-[3px] text-red-300 text-xs font-mono flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
             <span>{error}</span>
           </div>
         )}
@@ -238,33 +217,33 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
           <div className="space-y-6 animate-fadeIn">
             
             {/* Reasoning Card */}
-            <div className="p-6 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-3 shadow-lg">
-              <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-400" /> AI Founder-Scheme Compatibility Evaluation
+            <div className="p-5 sm:p-6 bg-[var(--color-surface-1)] rounded-[4px] border border-[var(--color-line)] space-y-3">
+              <span className="text-xs font-mono font-semibold text-[var(--color-signal)] uppercase tracking-wider flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5" /> AI Compatibility Evaluation
               </span>
-              <p className="text-sm sm:text-base text-slate-200 leading-relaxed italic bg-slate-950/80 p-4 rounded-xl border border-slate-800/80">
+              <p className="text-xs sm:text-sm text-[var(--color-text)] leading-relaxed italic bg-[var(--color-surface-2)] p-4 rounded-[3px] border border-[var(--color-line)] font-mono">
                 "{schemeMatch.reasoning}"
               </p>
             </div>
 
             {/* Quick AI Q&A Launcher Banner */}
-            <div className="p-5 bg-gradient-to-r from-emerald-950/80 via-slate-900 to-indigo-950/80 rounded-2xl border border-emerald-800/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+            <div className="p-4 sm:p-5 bg-[var(--color-surface-1)] rounded-[4px] border border-[var(--color-line)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-900/60 border border-emerald-700/80 flex items-center justify-center shrink-0">
-                  <Sparkles className="w-5 h-5 text-emerald-400 animate-pulse" />
+                <div className="w-8 h-8 rounded-[3px] bg-[var(--color-surface-2)] border border-[var(--color-line)] flex items-center justify-center shrink-0 text-[var(--color-signal)]">
+                  <Sparkles className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-100">Have specific questions about this opportunity?</h4>
-                  <p className="text-xs text-slate-400">Ask our grounded AI Assistant about your stage, funding limits, or required documents.</p>
+                  <h4 className="text-sm font-bold text-[var(--color-text)]">Have specific queries about this opportunity?</h4>
+                  <p className="text-xs font-mono text-[var(--color-muted)]">Ask our grounded AI policy assistant about eligibility limits or compliance.</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setActiveTab('qa')}
-                className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl transition-all flex items-center justify-center gap-2 text-xs shrink-0 cursor-pointer shadow-lg"
+                className="bg-[var(--color-signal)] hover:brightness-110 text-[#0E1119] font-mono text-xs uppercase tracking-wider font-semibold px-4 py-2 rounded-[3px] transition-colors flex items-center justify-center gap-1.5 shrink-0 cursor-pointer"
               >
-                <span>Ask AI Assistant</span>
-                <ChevronRight className="w-4 h-4" />
+                <span>Launch Policy Q&A</span>
+                <ChevronRight className="w-3.5 h-3.5" />
               </button>
             </div>
 
@@ -272,42 +251,42 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
               {/* Benefits */}
-              <div className="p-6 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-3.5 shadow-lg">
-                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4" /> Key Relevant Benefits
+              <div className="p-5 sm:p-6 bg-[var(--color-surface-1)] rounded-[4px] border border-[var(--color-line)] space-y-3.5">
+                <span className="text-xs font-mono font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" /> Key Relevant Benefits
                 </span>
                 {Array.isArray(schemeMatch.benefitsRelevant) && schemeMatch.benefitsRelevant.length > 0 ? (
-                  <ul className="space-y-2 text-xs sm:text-sm">
+                  <ul className="space-y-2 text-xs">
                     {schemeMatch.benefitsRelevant.map((b, i) => (
-                      <li key={i} className="flex items-start gap-2.5 p-2 bg-slate-950/50 rounded-lg border border-slate-800/60">
+                      <li key={i} className="flex items-start gap-2.5 p-2.5 bg-[var(--color-surface-2)] rounded-[3px] border border-[var(--color-line)]">
                         <span className="text-emerald-400 font-bold mt-0.5">&bull;</span>
-                        <span className="text-slate-300 leading-normal">{b}</span>
+                        <span className="text-[var(--color-text)] leading-normal">{b}</span>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <span className="text-xs text-slate-500 italic">No specific benefits listed.</span>
+                  <span className="text-xs font-mono text-[var(--color-muted)] italic">No specific benefits listed.</span>
                 )}
               </div>
 
               {/* Missing Requirements */}
-              <div className="p-6 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-3.5 shadow-lg">
-                <span className="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4" /> Missing Requirements / Prerequisites
+              <div className="p-5 sm:p-6 bg-[var(--color-surface-1)] rounded-[4px] border border-[var(--color-line)] space-y-3.5">
+                <span className="text-xs font-mono font-semibold text-amber-300 uppercase tracking-wider flex items-center gap-2">
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-400" /> Missing Requirements / Prerequisites
                 </span>
                 {Array.isArray(schemeMatch.missingRequirements) && schemeMatch.missingRequirements.length > 0 ? (
-                  <ul className="space-y-2 text-xs sm:text-sm">
+                  <ul className="space-y-2 text-xs">
                     {schemeMatch.missingRequirements.map((req, i) => (
-                      <li key={i} className="flex items-start gap-2.5 p-2 bg-slate-950/50 rounded-lg border border-slate-800/60">
+                      <li key={i} className="flex items-start gap-2.5 p-2.5 bg-[var(--color-surface-2)] rounded-[3px] border border-[var(--color-line)]">
                         <span className="text-amber-400 font-bold mt-0.5">&bull;</span>
-                        <span className="text-slate-300 leading-normal">{req}</span>
+                        <span className="text-[var(--color-text)] leading-normal">{req}</span>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <div className="p-3 bg-emerald-950/40 border border-emerald-800/60 rounded-xl text-emerald-300 text-xs font-medium flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                    <span>All startup prerequisites met for this scheme!</span>
+                  <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-[3px] text-emerald-300 text-xs font-mono flex items-center gap-2">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>All startup prerequisites met for this opportunity!</span>
                   </div>
                 )}
               </div>
@@ -315,17 +294,17 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
 
             {/* Recommended Next Steps */}
             {Array.isArray(schemeMatch.nextSteps) && schemeMatch.nextSteps.length > 0 && (
-              <div className="p-6 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-4 shadow-lg">
-                <span className="text-xs font-bold text-indigo-300 uppercase tracking-wider flex items-center gap-2">
-                  <ChevronRight className="w-4 h-4 text-indigo-400" /> Actionable Next Steps
+              <div className="p-5 sm:p-6 bg-[var(--color-surface-1)] rounded-[4px] border border-[var(--color-line)] space-y-4">
+                <span className="text-xs font-mono font-semibold text-[var(--color-signal)] uppercase tracking-wider flex items-center gap-2">
+                  <ChevronRight className="w-3.5 h-3.5" /> Actionable Next Steps
                 </span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                   {schemeMatch.nextSteps.map((step, i) => (
-                    <div key={i} className="p-3.5 bg-slate-950/80 rounded-xl border border-slate-800 flex items-start gap-3">
-                      <span className="font-bold text-indigo-400 bg-indigo-950 px-2 py-0.5 rounded text-xs shrink-0">
-                        Step {i + 1}
+                    <div key={i} className="p-3 bg-[var(--color-surface-2)] rounded-[3px] border border-[var(--color-line)] flex items-start gap-2.5">
+                      <span className="font-mono font-semibold text-[var(--color-signal)] bg-[var(--color-surface-1)] px-1.5 py-0.5 rounded-[2px] border border-[var(--color-line)] text-[10px] shrink-0">
+                        {String(i + 1).padStart(2, '0')}
                       </span>
-                      <span className="text-slate-300 leading-relaxed">{step}</span>
+                      <span className="text-[var(--color-text)] leading-relaxed">{step}</span>
                     </div>
                   ))}
                 </div>
@@ -340,11 +319,11 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
             
             {/* Scheme Summary */}
             {structured.summary && (
-              <div className="p-6 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-2 shadow-lg">
-                <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider">
+              <div className="p-5 sm:p-6 bg-[var(--color-surface-1)] rounded-[4px] border border-[var(--color-line)] space-y-2">
+                <span className="text-xs font-mono font-semibold text-[var(--color-signal)] uppercase tracking-wider">
                   Summary Overview
                 </span>
-                <p className="text-sm text-slate-300 leading-relaxed">
+                <p className="text-xs sm:text-sm text-[var(--color-text)] leading-relaxed">
                   {structured.summary}
                 </p>
               </div>
@@ -352,103 +331,103 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
 
             {/* Funding & Key Criteria Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-1.5 shadow-lg">
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <IndianRupee className="w-4 h-4 text-emerald-400" /> Funding Support Amount
+              <div className="p-4 bg-[var(--color-surface-1)] rounded-[4px] border border-[var(--color-line)] space-y-1.5">
+                <span className="text-[11px] font-mono text-[var(--color-muted)] uppercase tracking-wider flex items-center gap-1.5">
+                  <IndianRupee className="w-3.5 h-3.5 text-emerald-400" /> Funding Support Amount
                 </span>
-                <span className="text-base font-bold text-emerald-300 block">
+                <span className="text-base font-bold text-emerald-400 block font-mono">
                   {structured.funding?.amount || 'Refer to Official Portal'}
                 </span>
-                <span className="text-xs text-slate-500">
+                <span className="text-[10px] font-mono text-[var(--color-muted)]">
                   Instrument: {structured.funding?.type || 'N/A'}
                 </span>
               </div>
 
-              <div className="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-1.5 shadow-lg">
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-indigo-400" /> DPIIT Status Required
+              <div className="p-4 bg-[var(--color-surface-1)] rounded-[4px] border border-[var(--color-line)] space-y-1.5">
+                <span className="text-[11px] font-mono text-[var(--color-muted)] uppercase tracking-wider flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[var(--color-signal)]" /> DPIIT Status Required
                 </span>
-                <span className="text-base font-bold text-white block">
+                <span className="text-base font-bold text-[var(--color-text)] block font-mono">
                   {structured.eligibility?.dpiitRequired ? 'Yes (Mandatory)' : 'No (Open to all)'}
                 </span>
-                <span className="text-xs text-slate-500">Startup India Recognition</span>
+                <span className="text-[10px] font-mono text-[var(--color-muted)]">Startup India Recognition</span>
               </div>
 
-              <div className="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-1.5 shadow-lg">
-                <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <Calendar className="w-4 h-4 text-amber-400" /> Intake Timeline / Deadline
+              <div className="p-4 bg-[var(--color-surface-1)] rounded-[4px] border border-[var(--color-line)] space-y-1.5">
+                <span className="text-[11px] font-mono text-[var(--color-muted)] uppercase tracking-wider flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-amber-400" /> Intake Timeline / Deadline
                 </span>
-                <span className="text-base font-bold text-amber-300 block">
+                <span className="text-base font-bold text-amber-300 block font-mono">
                   {structured.deadline || 'Rolling Intake'}
                 </span>
-                <span className="text-xs text-slate-500">Application Cycle</span>
+                <span className="text-[10px] font-mono text-[var(--color-muted)]">Application Cycle</span>
               </div>
             </div>
 
             {/* Eligibility Parameters Matrix */}
             {structured.eligibility && (
-              <div className="p-6 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-4 shadow-lg">
-                <span className="text-xs font-bold text-indigo-400 uppercase tracking-wider flex items-center gap-2">
-                  <Layers className="w-4 h-4" /> Eligibility Requirements Matrix
+              <div className="p-5 sm:p-6 bg-[var(--color-surface-1)] rounded-[4px] border border-[var(--color-line)] space-y-4">
+                <span className="text-xs font-mono font-semibold text-[var(--color-signal)] uppercase tracking-wider flex items-center gap-2">
+                  <Layers className="w-3.5 h-3.5" /> Eligibility Requirements Matrix
                 </span>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
-                  <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
-                    <span className="text-slate-400 font-semibold block mb-2">Target Industry Sectors</span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                  <div className="p-3.5 bg-[var(--color-surface-2)] rounded-[3px] border border-[var(--color-line)]">
+                    <span className="text-[var(--color-text)] font-mono font-semibold block mb-2">Target Industry Sectors</span>
                     <div className="flex flex-wrap gap-1.5">
                       {Array.isArray(structured.eligibility.sectors) && structured.eligibility.sectors.length > 0 ? (
                         structured.eligibility.sectors.map((sec, i) => (
-                          <span key={i} className="bg-slate-800 text-slate-200 px-2.5 py-1 rounded-md text-xs border border-slate-700">
+                          <span key={i} className="bg-[var(--color-surface-1)] text-[var(--color-text)] px-2 py-0.5 rounded-[2px] font-mono text-[11px] border border-[var(--color-line)]">
                             {sec}
                           </span>
                         ))
                       ) : (
-                        <span className="text-slate-500 italic">Open to All Sectors</span>
+                        <span className="text-[var(--color-muted)] font-mono italic">Open to All Sectors</span>
                       )}
                     </div>
                   </div>
 
-                  <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
-                    <span className="text-slate-400 font-semibold block mb-2">Applicable Startup Stages</span>
+                  <div className="p-3.5 bg-[var(--color-surface-2)] rounded-[3px] border border-[var(--color-line)]">
+                    <span className="text-[var(--color-text)] font-mono font-semibold block mb-2">Applicable Startup Stages</span>
                     <div className="flex flex-wrap gap-1.5">
                       {Array.isArray(structured.eligibility.startupStages) && structured.eligibility.startupStages.length > 0 ? (
                         structured.eligibility.startupStages.map((stg, i) => (
-                          <span key={i} className="bg-indigo-950 text-indigo-300 px-2.5 py-1 rounded-md text-xs border border-indigo-800/60">
+                          <span key={i} className="bg-[var(--color-surface-1)] text-[var(--color-signal)] px-2 py-0.5 rounded-[2px] font-mono text-[11px] border border-[var(--color-line)]">
                             {stg}
                           </span>
                         ))
                       ) : (
-                        <span className="text-slate-500 italic">All Stages</span>
+                        <span className="text-[var(--color-muted)] font-mono italic">All Stages</span>
                       )}
                     </div>
                   </div>
 
-                  <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
-                    <span className="text-slate-400 font-semibold block mb-2">Eligible Entity Types</span>
+                  <div className="p-3.5 bg-[var(--color-surface-2)] rounded-[3px] border border-[var(--color-line)]">
+                    <span className="text-[var(--color-text)] font-mono font-semibold block mb-2">Eligible Entity Types</span>
                     <div className="flex flex-wrap gap-1.5">
                       {Array.isArray(structured.eligibility.entityTypes) && structured.eligibility.entityTypes.length > 0 ? (
                         structured.eligibility.entityTypes.map((ent, i) => (
-                          <span key={i} className="bg-slate-800 text-slate-200 px-2.5 py-1 rounded-md text-xs border border-slate-700">
+                          <span key={i} className="bg-[var(--color-surface-1)] text-[var(--color-text)] px-2 py-0.5 rounded-[2px] font-mono text-[11px] border border-[var(--color-line)]">
                             {ent}
                           </span>
                         ))
                       ) : (
-                        <span className="text-slate-500 italic">All Entity Types</span>
+                        <span className="text-[var(--color-muted)] font-mono italic">All Entity Types</span>
                       )}
                     </div>
                   </div>
 
-                  <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800">
-                    <span className="text-slate-400 font-semibold block mb-2">Applicable States / UTs</span>
+                  <div className="p-3.5 bg-[var(--color-surface-2)] rounded-[3px] border border-[var(--color-line)]">
+                    <span className="text-[var(--color-text)] font-mono font-semibold block mb-2">Applicable States / UTs</span>
                     <div className="flex flex-wrap gap-1.5">
                       {Array.isArray(structured.eligibility.states) && structured.eligibility.states.length > 0 ? (
                         structured.eligibility.states.map((st, i) => (
-                          <span key={i} className="bg-slate-800 text-slate-200 px-2.5 py-1 rounded-md text-xs border border-slate-700">
+                          <span key={i} className="bg-[var(--color-surface-1)] text-[var(--color-text)] px-2 py-0.5 rounded-[2px] font-mono text-[11px] border border-[var(--color-line)]">
                             {st}
                           </span>
                         ))
                       ) : (
-                        <span className="text-slate-500 italic">All India</span>
+                        <span className="text-[var(--color-muted)] font-mono italic">All India</span>
                       )}
                     </div>
                   </div>
@@ -461,14 +440,14 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
               
               {/* Application Procedure */}
               {Array.isArray(structured.applicationProcess) && structured.applicationProcess.length > 0 && (
-                <div className="p-6 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-3 shadow-lg">
-                  <span className="text-xs font-bold text-indigo-300 uppercase tracking-wider">
+                <div className="p-5 sm:p-6 bg-[var(--color-surface-1)] rounded-[4px] border border-[var(--color-line)] space-y-3">
+                  <span className="text-xs font-mono font-semibold text-[var(--color-signal)] uppercase tracking-wider">
                     Step-by-Step Application Procedure
                   </span>
-                  <ol className="space-y-2 text-xs sm:text-sm text-slate-300">
+                  <ol className="space-y-2 text-xs text-[var(--color-text)]">
                     {structured.applicationProcess.map((step, i) => (
-                      <li key={i} className="flex items-start gap-2.5 p-2 bg-slate-950/50 rounded-lg border border-slate-800/60">
-                        <span className="font-bold text-indigo-400 shrink-0">{i + 1}.</span>
+                      <li key={i} className="flex items-start gap-2.5 p-2.5 bg-[var(--color-surface-2)] rounded-[3px] border border-[var(--color-line)]">
+                        <span className="font-mono font-semibold text-[var(--color-signal)] shrink-0">{i + 1}.</span>
                         <span className="leading-relaxed">{step}</span>
                       </li>
                     ))}
@@ -478,14 +457,14 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
 
               {/* Required Documents */}
               {Array.isArray(structured.requiredDocuments) && structured.requiredDocuments.length > 0 && (
-                <div className="p-6 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-3 shadow-lg">
-                  <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">
+                <div className="p-5 sm:p-6 bg-[var(--color-surface-1)] rounded-[4px] border border-[var(--color-line)] space-y-3">
+                  <span className="text-xs font-mono font-semibold text-emerald-400 uppercase tracking-wider">
                     Required Application Documents
                   </span>
-                  <ul className="space-y-2 text-xs sm:text-sm text-slate-300">
+                  <ul className="space-y-2 text-xs text-[var(--color-text)]">
                     {structured.requiredDocuments.map((docItem, i) => (
-                      <li key={i} className="flex items-start gap-2.5 p-2 bg-slate-950/50 rounded-lg border border-slate-800/60">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                      <li key={i} className="flex items-start gap-2.5 p-2.5 bg-[var(--color-surface-2)] rounded-[3px] border border-[var(--color-line)]">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
                         <span className="leading-relaxed">{docItem}</span>
                       </li>
                     ))}
@@ -496,10 +475,10 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
 
             {/* Keywords */}
             {Array.isArray(structured.keywords) && structured.keywords.length > 0 && (
-              <div className="p-4 bg-slate-900/70 rounded-2xl border border-slate-800/80 flex flex-wrap items-center gap-2 text-xs">
-                <span className="text-slate-400 font-semibold mr-1">Domain Tags:</span>
+              <div className="p-4 bg-[var(--color-surface-1)] rounded-[4px] border border-[var(--color-line)] flex flex-wrap items-center gap-2 text-xs">
+                <span className="text-[var(--color-muted)] font-mono text-[11px] mr-1">Telemetry Tags:</span>
                 {structured.keywords.map((kw, i) => (
-                  <span key={i} className="bg-slate-800 text-indigo-300 px-2.5 py-1 rounded-full text-xs border border-slate-700">
+                  <span key={i} className="bg-[var(--color-surface-2)] text-[var(--color-text)] px-2 py-0.5 rounded-[2px] font-mono text-[11px] border border-[var(--color-line)]">
                     #{kw}
                   </span>
                 ))}
@@ -507,35 +486,18 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
             )}
           </div>
         )}
-
-        {/* TAB 3: FULL DOCUMENT MARKDOWN TEXT */}
-        {activeTab === 'markdown' && (
-          <div className="space-y-4 animate-fadeIn">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-                Raw Extracted Web Page Markdown Content
-              </span>
-              <span className="text-xs text-slate-500">
-                URL: {docDetails?.url}
-              </span>
-            </div>
-            <div className="p-6 bg-slate-900 rounded-2xl border border-slate-800 font-mono text-xs text-slate-300 leading-relaxed max-h-[65vh] overflow-y-auto whitespace-pre-wrap shadow-inner">
-              {docDetails?.markdown || 'No raw markdown text stored for this document.'}
-            </div>
-          </div>
-        )}
       </div>
 
       {/* Bottom Page Footer Bar */}
-      <div className="mt-auto bg-slate-900 border-t border-slate-800 px-4 sm:px-8 py-4">
+      <div className="mt-auto bg-[var(--color-surface-1)] border-t border-[var(--color-line)] px-4 sm:px-8 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white rounded-xl text-xs font-bold flex items-center gap-2 transition-all cursor-pointer border border-slate-700/60"
+            className="px-3.5 py-1.5 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-1)] text-[var(--color-text)] rounded-[3px] text-xs font-mono uppercase tracking-wider flex items-center gap-2 transition-colors cursor-pointer border border-[var(--color-line)]"
           >
-            <ArrowLeft className="w-4 h-4 text-indigo-400" />
-            <span>Return to Results Dashboard</span>
+            <ArrowLeft className="w-3.5 h-3.5 text-[var(--color-signal)]" />
+            <span>Return to Dashboard</span>
           </button>
           
           {url && (
@@ -543,7 +505,7 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
               href={url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 hover:underline"
+              className="text-xs font-mono text-[var(--color-signal)] hover:underline flex items-center gap-1.5"
             >
               <span>{url}</span>
               <ExternalLink className="w-3.5 h-3.5" />

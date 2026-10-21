@@ -1,73 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import InitialLoader from './InitialLoader';
+import TrajectoryLine from './TrajectoryLine';
 import {
-  X,
   ArrowRight,
+  ExternalLink,
   Shield,
-  Sparkles,
   Search,
   CheckCircle2,
   FileText,
   Award,
   Layers,
   ChevronRight,
-  ExternalLink,
   Cpu,
   Building,
   Database,
   Cloud,
   Zap,
   Globe,
-  Filter,
   Bot,
   Terminal,
   Clock,
-  Lock,
-  Compass,
-  ArrowUpRight,
-  TrendingUp,
-  Activity
+  ArrowUpRight
 } from 'lucide-react';
 
-// Custom fluid bezier physics curve
-const smoothTransition = { duration: 0.7, ease: [0.16, 1, 0.3, 1] };
-
-// Scroll Fade-Up Reveal wrapper component
-function ScrollReveal({ children, delay = 0, className = "" }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 35 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-60px" }}
-      transition={{ ...smoothTransition, delay }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-// Word-by-word reveal for headlines
-function WordReveal({ text, className = "" }) {
-  const words = text.split(" ");
-  return (
-    <span className={`inline-block ${className}`}>
-      {words.map((word, i) => (
-        <motion.span
-          key={i}
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: i * 0.04, ease: [0.16, 1, 0.3, 1] }}
-          className="inline-block mr-[0.25em]"
-        >
-          {word}
-        </motion.span>
-      ))}
-    </span>
-  );
-}
+const studioEase = [0.22, 1, 0.36, 1];
 
 export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
   const [loading, setLoading] = useState(true);
@@ -78,478 +35,368 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
     setLoading(false);
   };
 
-  // Sample interactive RAG queries
   const ragQueries = [
     {
-      query: "Can an early-stage AgriTech startup in Karnataka with no revenue get DST NIDHI-PRAYAS grant?",
-      answer: "Yes. DST NIDHI-PRAYAS provides up to ₹10 Lakhs in non-dilutive grant support for proof-of-concept and prototype development. Pre-revenue startups and innovators incorporated as Private Limited or registered entities are eligible, provided they operate through a recognized TBI incubator.",
-      source: "DST NIDHI Guidelines 2026 (Section 4.2)",
-      sourceUrl: "http://nidhi-prayas.org/",
-      score: "96% Confidence Match",
+      query: "Can an early-stage AgriTech startup in Karnataka with zero revenue receive the DST NIDHI-PRAYAS prototype grant?",
+      answer: "Yes. DST NIDHI-PRAYAS provides up to ₹10 Lakhs in non-dilutive grant funding specifically for idea-to-prototype development. Pre-revenue startups registered as Private Limited or LLP are eligible, provided the project is hosted at a recognized TBI incubator.",
+      source: "DST NIDHI-PRAYAS Operating Guidelines (Section 4.2)",
+      sourceUrl: "http://www.nidhi-prayas.org/",
+      score: "96%",
       badge: "DST NIDHI"
     },
     {
-      query: "What is the maximum grant available for biotech startups under BIRAC BIG scheme?",
-      answer: "BIRAC Biotechnology Ignition Grant (BIG) offers up to ₹50 Lakhs in non-dilutive grant-in-aid for 18 months. Startups must be incorporated for less than 5 years with at least 51% Indian equity ownership.",
-      source: "BIRAC BIG Scheme Document v3.1",
-      sourceUrl: "https://birac.nic.in/bionest.php",
-      score: "98% Confidence Match",
+      query: "What are the equity and incorporation limits for the BIRAC Biotechnology Ignition Grant (BIG)?",
+      answer: "BIRAC BIG provides up to ₹50 Lakhs in non-dilutive grant-in-aid for 18 months. Startups must be incorporated for less than 5 years and have at least 51% Indian shareholding.",
+      source: "BIRAC BIG Scheme Guidelines (Eligibility Criteria)",
+      sourceUrl: "https://birac.nic.in/big.php",
+      score: "98%",
       badge: "BIRAC BioNEST"
     },
     {
-      query: "Is DPIIT recognition mandatory for Startup India Seed Fund Scheme (SISFS)?",
-      answer: "Yes, DPIIT recognition is mandatory. Startups must be recognized by DPIIT, incorporated for less than 2 years, and have a business model with potential for commercialization and scaling.",
-      source: "Startup India Seed Fund Official Portal",
-      sourceUrl: "https://www.startupindia.gov.in/",
-      score: "99% Confidence Match",
-      badge: "StartupIndia"
+      query: "Is DPIIT recognition mandatory to apply for the Startup India Seed Fund Scheme (SISFS)?",
+      answer: "Yes. DPIIT recognition is a statutory prerequisite. The startup must be recognized by DPIIT, incorporated for less than 2 years, and demonstrate viable market potential.",
+      source: "Startup India Seed Fund Gazette Notification",
+      sourceUrl: "https://seedfund.startupindia.gov.in/",
+      score: "99%",
+      badge: "Startup India"
     }
   ];
 
   const categories = [
     {
-      id: 'schemes',
-      name: 'Government Schemes',
-      icon: Layers,
-      count: '42 Active Policies',
-      desc: 'Central & State startup incentive schemes, tax exemptions, and registration waivers.',
-      examples: ['SISFS Seed Support', 'DPIIT Tax Holiday (Sec 80-IAC)', 'State Startup Policies']
-    },
-    {
       id: 'grants',
       name: 'Non-Dilutive Grants',
-      icon: Award,
-      count: '₹500+ Cr Available',
-      desc: 'Zero-equity research, prototype, and commercialization grants from central ministries.',
+      count: '₹500+ Cr Pool',
+      desc: 'Zero-equity research, prototype, and commercialization grants from public innovation bodies and national funds.',
+      highlight: 'Up to ₹50L per venture',
       examples: ['BIRAC BIG (₹50L)', 'DST NIDHI-PRAYAS (₹10L)', 'TDB Commercialization Grant']
     },
     {
+      id: 'schemes',
+      name: 'Statutory Policies & Subsidies',
+      count: '42 Active Policies',
+      desc: 'Section 80-IAC tax holidays, patent fee concessions, and public procurement waivers.',
+      highlight: '100% Tax Exemption 3 Yrs',
+      examples: ['SISFS Seed Fund', 'DPIIT Section 80-IAC', 'GeM Startup Runway']
+    },
+    {
       id: 'incubators',
-      name: 'Incubator Networks',
-      icon: Building,
+      name: 'Incubator & BioNEST Networks',
       count: '120+ Verified Hubs',
-      desc: 'Top Technology Business Incubators (TBIs), BioNEST, and Atal Incubation Centres.',
-      examples: ['Atal Incubation Centres (AIC)', 'BioNEST Incubator Hubs', 'MeitY TIDE 2.0']
+      desc: 'DST-recognized Technology Business Incubators and Atal Incubation Centres offering lab space and EIR stipends.',
+      highlight: 'Lab access + EIR grants',
+      examples: ['Atal Incubation Centres', 'BioNEST Hubs', 'MeitY TIDE 2.0']
     },
     {
       id: 'accelerators',
-      name: 'Accelerators & GTM',
-      icon: Zap,
-      count: '35 Cohorts',
-      desc: 'Cohort-based scaling, market access, and international trade mentorship programs.',
-      examples: ['MeitY SAMRIDH Scheme', 'AIM Scale-up Cohort', 'Indo-US Tech Exchange']
+      name: 'Accelerators & Market Access',
+      count: '35 Active Cohorts',
+      desc: 'Structured scaling programs providing corporate pilots and global trade access.',
+      highlight: 'Co-investment & matching capital',
+      examples: ['MeitY SAMRIDH', 'AIM Scale-up Cohort', 'Indo-US Tech Exchange']
     },
     {
       id: 'credits',
-      name: 'Cloud & Tech Credits',
-      icon: Cloud,
-      count: '$250K+ per Startup',
-      desc: 'Infrastructure, API, and cloud computing credits from global technology partners.',
-      examples: ['AWS Activate ($100K)', 'GCP for Startups', 'Microsoft Founders Hub']
-    },
-    {
-      id: 'programs',
-      name: 'Startup Programs & Awards',
-      icon: Globe,
-      count: '18 Open Calls',
-      desc: 'National competitions, ministry challenges, and public sector procurement access.',
-      examples: ['National Startup Awards', 'RKVY-RAFTAAR Agri Challenge', 'GeM Portal Procurement']
+      name: 'Cloud & Compute Perks',
+      count: '$350K+ per Startup',
+      desc: 'Tier-1 GPU compute credits, AI API tokens, and development licenses from cloud partners.',
+      highlight: 'Up to $150K credits',
+      examples: ['AWS Activate ($100K)', 'Google for Startups Cloud', 'Microsoft Founders Hub']
     }
   ];
 
-  const filteredCategories = selectedCategory === 'all' 
-    ? categories 
-    : categories.filter(c => c.id === selectedCategory);
+  const marqueeItems = [
+    "Startup India Seed Fund (SISFS) &bull; ₹50 Lakhs",
+    "BIRAC Biotechnology Ignition Grant (BIG) &bull; ₹50 Lakhs",
+    "DST NIDHI-PRAYAS Prototype Support &bull; ₹10 Lakhs",
+    "MeitY SAMRIDH Scale-Up Program &bull; ₹40 Lakhs",
+    "Microsoft for Startups Founders Hub &bull; $150,000 Credits",
+    "AWS Activate Founders &bull; $100,000 Credits",
+    "DPIIT Section 80-IAC 3-Year Tax Exemption",
+    "GeM Portal Startup Runway Direct Procurement"
+  ];
+
+  const filteredCategories = selectedCategory === 'all'
+    ? categories
+    : categories.filter((c) => c.id === selectedCategory);
 
   return (
-    <div className="min-h-screen bg-[#070a12] text-slate-100 font-sans selection:bg-emerald-500 selection:text-slate-950 overflow-x-hidden">
+    <div className="relative min-h-screen bg-[var(--color-ink)] text-[var(--color-text-primary)] font-sans overflow-x-hidden selection:bg-[var(--color-signal)]/25">
       
-      {/* Site Opening Loading Screen */}
+      {/* Site Initialization Console */}
       <AnimatePresence>
         {loading && <InitialLoader onComplete={handleLoaderComplete} />}
       </AnimatePresence>
 
-      {/* Dynamic Background Noise Texture & Grid Line Accents */}
-      <div className="fixed inset-0 pointer-events-none opacity-20 bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:4rem_4rem]" />
+      {/* Trajectory Motif: Scroll-Driven Flight Path Indicator */}
+      <TrajectoryLine />
 
       {/* HERO SECTION */}
-      <section className="relative pt-16 pb-20 sm:pt-24 sm:pb-32 px-4 sm:px-6 max-w-6xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={smoothTransition}
-          className="space-y-6 text-center"
-        >
-          {/* Top Precision Pill Badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ ...smoothTransition, delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900/90 border border-slate-800 text-xs font-mono tracking-wide text-slate-300 shadow-inner"
-          >
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0" />
-            <span className="uppercase text-[11px] font-semibold tracking-wider text-slate-400">
-              AI Retrieval & Matching Engine
-            </span>
-            <span className="text-slate-600">&bull;</span>
-            <span className="text-emerald-400 font-semibold">100+ Live Govt Sources</span>
-          </motion.div>
+      <section className="relative pt-20 pb-20 sm:pt-28 sm:pb-28 px-4 sm:px-6 max-w-7xl mx-auto">
+        <div className="space-y-8">
+          
+          {/* Top Technical Metadata Tag */}
+          <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-[var(--color-text-dim)]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-signal)]" />
+            <span className="text-[var(--color-text-muted)]">Index Coverage</span>
+            <span>&bull;</span>
+            <span className="text-[var(--color-text-primary)]">216 Verified Statutory Schemes</span>
+            <span>&bull;</span>
+            <span className="text-[var(--color-spark)] font-semibold">Active Vector Space</span>
+          </div>
 
-          {/* Headline with Word Reveal */}
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white max-w-4xl mx-auto leading-[1.1]">
-            <WordReveal text="Find the right opportunities for your startup." />
-          </h1>
+          {/* Massive Typographic Headline with Kinetic Rolling Slot Reel */}
+          <div className="space-y-2 max-w-5xl">
+            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-[var(--color-text-primary)] leading-[0.98]">
+              The direct trajectory to verified startup{' '}
+              <span className="kinetic-slot-window text-[var(--color-signal)] inline-block">
+                <span className="kinetic-slot-reel flex flex-col">
+                  <span>capital.</span>
+                  <span>credits.</span>
+                  <span>grants.</span>
+                  <span>incubation.</span>
+                </span>
+              </span>
+            </h1>
+          </div>
 
           {/* Subheadline */}
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...smoothTransition, delay: 0.3 }}
-            className="text-lg sm:text-xl text-slate-400 max-w-2xl mx-auto font-normal leading-relaxed"
-          >
-            Stop searching dozens of fragmented government portals manually. FounderPilot continuously indexes and matches your startup against verified schemes, non-dilutive grants, incubators, accelerators, and cloud credits.
-          </motion.p>
+          <p className="text-base sm:text-lg text-[var(--color-text-muted)] max-w-2xl leading-relaxed">
+            Stop navigating fragmented portals and founder perk programs manually. Founder's Hub indexes verified schemes, non-dilutive capital, and Tier-1 cloud credits—evaluating your venture's exact eligibility in seconds.
+          </p>
 
-          {/* CTAs */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...smoothTransition, delay: 0.4 }}
-            className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4"
-          >
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
+          {/* Actions */}
+          <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
+            <button
               type="button"
               onClick={onStartWizard}
-              className="w-full sm:w-auto px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-base rounded-xl transition-all shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-2 cursor-pointer group"
+              className="studio-btn-primary h-12 px-6 text-sm sm:text-base font-medium"
+              data-cursor="Launch"
             >
-              <span>Find My Opportunities</span>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </motion.button>
+              <span>Evaluate My Startup</span>
+              <ArrowRight className="w-4 h-4 ml-1" />
+            </button>
 
             <a
-              href="#how-it-works"
-              className="w-full sm:w-auto px-6 py-4 bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white font-semibold text-base rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer"
+              href="#matrix"
+              className="studio-btn-secondary h-12 px-5 text-sm sm:text-base font-medium"
+              data-cursor="Inspect"
             >
-              <span>See How It Works</span>
+              <span>Inspect Opportunity Matrix</span>
             </a>
-          </motion.div>
-        </motion.div>
+          </div>
 
-        {/* CUSTOM VISUAL FLOW ARCHITECTURE: Founder Profile -> AI Matching -> Best Opportunities */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ ...smoothTransition, delay: 0.5 }}
-          className="mt-16 sm:mt-24 p-6 sm:p-8 bg-slate-900/80 rounded-2xl border border-slate-800 shadow-2xl relative overflow-hidden"
-        >
-          {/* Card Label */}
-          <div className="flex items-center justify-between border-b border-slate-800/80 pb-4 mb-6 text-xs font-mono text-slate-400">
+        </div>
+
+        {/* Real Live Evaluation Product Window (Framed in 1px Studio Hairline) */}
+        <div className="mt-14 sm:mt-20 studio-card p-4 sm:p-6 relative overflow-hidden">
+          
+          {/* Top Window Bar */}
+          <div className="flex items-center justify-between border-b border-[var(--color-line)] pb-3 mb-5 font-mono text-[11px] text-[var(--color-text-dim)] uppercase tracking-wider">
             <div className="flex items-center gap-2">
-              <Terminal className="w-4 h-4 text-emerald-400" />
-              <span>LIVE DEMO ARCHITECTURE &bull; REAL-TIME SEMANTIC RAG PIPELINE</span>
+              <Terminal className="w-3.5 h-3.5 text-[var(--color-signal)]" />
+              <span className="text-[var(--color-text-primary)] font-semibold">Live Evaluation Pipeline</span>
+              <span className="text-[var(--color-text-dim)]">/ Session #0842</span>
             </div>
-            <span className="text-emerald-400 font-semibold bg-emerald-950/60 px-2.5 py-0.5 rounded border border-emerald-800/60">
-              Active Index: Qdrant Vector DB (1024-d)
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-400" />
+              <span className="text-[var(--color-text-muted)]">Verified Qdrant Vector Match</span>
+            </div>
           </div>
 
-          {/* Flow Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
+          {/* 3-Column Studio Dossier Visual */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             
-            {/* NODE 1: FOUNDER PROFILE */}
-            <motion.div
-              whileHover={{ y: -4 }}
-              transition={smoothTransition}
-              className="p-5 bg-[#070a12] rounded-xl border border-slate-800/90 space-y-4 relative"
-            >
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                  <Database className="w-4 h-4 text-indigo-400" /> 1. Founder Profile
-                </span>
-                <span className="w-2 h-2 rounded-full bg-indigo-400" />
+            {/* Panel 1: Profile State */}
+            <div className="studio-card-nested p-4 space-y-3">
+              <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-[var(--color-text-dim)] border-b border-[var(--color-line)] pb-2">
+                <span>01 // Input Vector</span>
+                <span className="text-[var(--color-signal)]">Normalized</span>
               </div>
-              <div className="space-y-2 text-xs font-mono">
-                <div className="p-2 bg-slate-900/60 rounded border border-slate-800/80 flex justify-between">
-                  <span className="text-slate-400">Startup:</span>
-                  <span className="text-white font-bold">AgriTech AI</span>
+              <div className="space-y-1.5 text-xs">
+                <div className="flex justify-between py-1 border-b border-[var(--color-line)]/50">
+                  <span className="text-[var(--color-text-muted)]">Startup Name:</span>
+                  <span className="font-semibold text-[var(--color-text-primary)]">AgriSense Robotics</span>
                 </div>
-                <div className="p-2 bg-slate-900/60 rounded border border-slate-800/80 flex justify-between">
-                  <span className="text-slate-400">State / UT:</span>
-                  <span className="text-emerald-400">Karnataka</span>
+                <div className="flex justify-between py-1 border-b border-[var(--color-line)]/50">
+                  <span className="text-[var(--color-text-muted)]">State / UT:</span>
+                  <span className="text-[var(--color-text-primary)]">Karnataka</span>
                 </div>
-                <div className="p-2 bg-slate-900/60 rounded border border-slate-800/80 flex justify-between">
-                  <span className="text-slate-400">Stage / DPIIT:</span>
-                  <span className="text-indigo-300">Early Stage &bull; DPIIT Yes</span>
+                <div className="flex justify-between py-1 border-b border-[var(--color-line)]/50">
+                  <span className="text-[var(--color-text-muted)]">DPIIT Status:</span>
+                  <span className="text-emerald-400 font-mono">Recognized (DIPP98412)</span>
                 </div>
-                <div className="p-2 bg-slate-900/60 rounded border border-slate-800/80 flex justify-between">
-                  <span className="text-slate-400">Need:</span>
-                  <span className="text-amber-300">Grants & Subsidies</span>
+                <div className="flex justify-between py-1">
+                  <span className="text-[var(--color-text-muted)]">Stage:</span>
+                  <span className="text-[var(--color-text-primary)]">Prototype / Lab Trial</span>
                 </div>
               </div>
-            </motion.div>
+            </div>
 
-            {/* NODE 2: AI MATCHING ENGINE */}
-            <motion.div
-              whileHover={{ y: -4 }}
-              transition={smoothTransition}
-              className="p-5 bg-[#070a12] rounded-xl border border-emerald-500/40 space-y-4 relative shadow-lg shadow-emerald-500/5"
-            >
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-                  <Cpu className="w-4 h-4 text-emerald-400" /> 2. AI Matching Engine
-                </span>
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            {/* Panel 2: Vector & LLM Reasoning */}
+            <div className="studio-card-nested p-4 space-y-3 border-[var(--color-signal)]/30">
+              <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-[var(--color-signal)] border-b border-[var(--color-line)] pb-2">
+                <span>02 // Reasoning Engine</span>
+                <span className="text-[var(--color-spark)] font-semibold">&bull; Active</span>
               </div>
-
-              <div className="space-y-2.5 text-xs">
-                <div className="p-2.5 bg-emerald-950/30 rounded border border-emerald-800/50 space-y-1">
-                  <span className="text-[10px] font-mono text-emerald-400 block uppercase">Vector Search (Jina v3 1024-d)</span>
-                  <p className="text-slate-300 text-[11px] font-mono">Cosine Sim Distance: 0.942</p>
-                </div>
-                <div className="p-2.5 bg-slate-900/80 rounded border border-slate-800 space-y-1">
-                  <span className="text-[10px] font-mono text-indigo-400 block uppercase">Zod Rule-Based Evaluation</span>
-                  <p className="text-slate-300 text-[11px]">Strict State + Stage + DPIIT Coercion</p>
-                </div>
-                <div className="p-2.5 bg-slate-900/80 rounded border border-slate-800 space-y-1">
-                  <span className="text-[10px] font-mono text-amber-400 block uppercase">LLM Reasoning Engine</span>
-                  <p className="text-slate-300 text-[11px]">Groq `openai/gpt-oss-120b`</p>
-                </div>
-              </div>
-            </motion.div>
-
-            {/* NODE 3: BEST OPPORTUNITIES */}
-            <motion.div
-              whileHover={{ y: -4 }}
-              transition={smoothTransition}
-              className="p-5 bg-[#070a12] rounded-xl border border-slate-800/90 space-y-3 relative"
-            >
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-                  <Award className="w-4 h-4 text-amber-400" /> 3. Best Opportunities
-                </span>
-                <span className="w-2 h-2 rounded-full bg-amber-400" />
-              </div>
-
               <div className="space-y-2 text-xs">
-                <div className="p-2.5 bg-slate-900/90 rounded border border-emerald-700/60 flex items-center justify-between">
-                  <div>
-                    <span className="font-bold text-white block">BIRAC BIG Grant</span>
-                    <span className="text-[10px] text-slate-400">Non-dilutive ₹50 Lakhs</span>
-                  </div>
-                  <span className="font-extrabold text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded text-[11px]">
-                    98% Match
-                  </span>
+                <div className="p-2 bg-[var(--color-surface-1)] rounded-[2px] border border-[var(--color-line)]">
+                  <span className="font-mono text-[10px] text-[var(--color-text-dim)] uppercase block">Semantic Similarity</span>
+                  <p className="text-[var(--color-text-primary)] text-[11px] mt-0.5">High proximity to DST &amp; BIRAC bio-hardware clusters.</p>
                 </div>
-
-                <div className="p-2.5 bg-slate-900/90 rounded border border-emerald-700/60 flex items-center justify-between">
-                  <div>
-                    <span className="font-bold text-white block">DST NIDHI-PRAYAS</span>
-                    <span className="text-[10px] text-slate-400">Prototype Grant ₹10 Lakhs</span>
-                  </div>
-                  <span className="font-extrabold text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded text-[11px]">
-                    95% Match
-                  </span>
+                <div className="p-2 bg-[var(--color-surface-1)] rounded-[2px] border border-[var(--color-line)]">
+                  <span className="font-mono text-[10px] text-[var(--color-text-dim)] uppercase block">Statutory Rule Coercion</span>
+                  <p className="text-[var(--color-text-primary)] text-[11px] mt-0.5">Passed incorporation age &lt; 2 yrs and Karnataka domicile mandate.</p>
                 </div>
-
-                <div className="p-2.5 bg-slate-900/90 rounded border border-amber-700/60 flex items-center justify-between">
-                  <div>
-                    <span className="font-bold text-white block">Startup India Seed Fund</span>
-                    <span className="text-[10px] text-slate-400">Grant / Debt ₹50 Lakhs</span>
-                  </div>
-                  <span className="font-extrabold text-amber-300 bg-amber-950 px-2 py-0.5 rounded text-[11px]">
-                    88% Match
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-
-          </div>
-        </motion.div>
-      </section>
-
-      {/* PROBLEM SECTION */}
-      <section className="py-20 px-4 sm:px-6 max-w-6xl mx-auto border-t border-slate-800/80">
-        <ScrollReveal className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-          
-          <div className="space-y-6">
-            <span className="text-xs font-mono text-emerald-400 uppercase tracking-widest">
-              The Fundamental Problem
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight leading-tight">
-              Founders lose millions in non-dilutive funding because schemes are buried.
-            </h2>
-            <p className="text-slate-400 text-base leading-relaxed">
-              India has over 100+ active government schemes, grants, state policies, and incubation programs. But finding them requires wading through 40+ outdated ministry websites, downloading 80-page PDF guidelines, and guessing eligibility criteria.
-            </p>
-
-            <div className="space-y-3 pt-2">
-              <div className="flex items-start gap-3 p-3 bg-slate-900/60 rounded-xl border border-slate-800">
-                <X className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
-                <span className="text-xs text-slate-300 leading-snug">
-                  <strong className="text-white block font-semibold mb-0.5">Scattered across 40+ websites</strong>
-                  DPIIT, SIDBI, BIRAC, AIM, and state startup portals don't talk to each other.
-                </span>
-              </div>
-              <div className="flex items-start gap-3 p-3 bg-slate-900/60 rounded-xl border border-slate-800">
-                <X className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
-                <span className="text-xs text-slate-300 leading-snug">
-                  <strong className="text-white block font-semibold mb-0.5">Missed deadlines & strict rules</strong>
-                  Complex eligibility criteria (DPIIT status, incorporation age, state bounds) lead to rejected applications.
-                </span>
               </div>
             </div>
-          </div>
 
-          {/* Solution Comparison Card */}
-          <motion.div
-            whileHover={{ scale: 1.01 }}
-            transition={smoothTransition}
-            className="p-6 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-4 shadow-xl"
-          >
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" /> The FounderPilot Solution
-              </span>
-              <span className="text-[10px] bg-emerald-950 text-emerald-300 px-2 py-0.5 rounded border border-emerald-800">
-                Unified RAG Platform
-              </span>
+            {/* Panel 3: Recommended Opportunities */}
+            <div className="studio-card-nested p-4 space-y-3">
+              <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-[var(--color-text-dim)] border-b border-[var(--color-line)] pb-2">
+                <span>03 // Ranked Grants</span>
+                <span className="text-emerald-400 font-semibold">3 Matched</span>
+              </div>
+              <div className="space-y-2">
+                <div className="p-2 bg-[var(--color-surface-1)] rounded-[2px] border border-[var(--color-line)] flex items-center justify-between text-xs">
+                  <div>
+                    <span className="font-semibold text-[var(--color-text-primary)] block">BIRAC BIG Grant</span>
+                    <span className="font-mono text-[10px] text-[var(--color-text-dim)]">₹50L Non-dilutive</span>
+                  </div>
+                  <span className="font-mono text-[11px] font-semibold text-emerald-400 px-1.5 py-0.5 rounded-[2px] bg-emerald-950/40 border border-emerald-800/60">
+                    98%
+                  </span>
+                </div>
+
+                <div className="p-2 bg-[var(--color-surface-1)] rounded-[2px] border border-[var(--color-line)] flex items-center justify-between text-xs">
+                  <div>
+                    <span className="font-semibold text-[var(--color-text-primary)] block">DST NIDHI-PRAYAS</span>
+                    <span className="font-mono text-[10px] text-[var(--color-text-dim)]">₹10L Prototype</span>
+                  </div>
+                  <span className="font-mono text-[11px] font-semibold text-emerald-400 px-1.5 py-0.5 rounded-[2px] bg-emerald-950/40 border border-emerald-800/60">
+                    95%
+                  </span>
+                </div>
+
+                <div className="p-2 bg-[var(--color-surface-1)] rounded-[2px] border border-[var(--color-line)] flex items-center justify-between text-xs">
+                  <div>
+                    <span className="font-semibold text-[var(--color-text-primary)] block">Startup India Seed Fund</span>
+                    <span className="font-mono text-[10px] text-[var(--color-text-dim)]">₹50L Grant/Debt</span>
+                  </div>
+                  <span className="font-mono text-[11px] font-semibold text-[var(--color-signal)] px-1.5 py-0.5 rounded-[2px] bg-[var(--color-surface-2)] border border-[var(--color-signal)]/30">
+                    91%
+                  </span>
+                </div>
+              </div>
             </div>
 
-            <ul className="space-y-3 text-xs sm:text-sm">
-              <li className="flex items-start gap-3 p-3 bg-[#070a12] rounded-xl border border-slate-800">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-white block font-semibold">Unified Opportunity Index</strong>
-                  100+ official schemes continuously crawled and indexed into vector embeddings.
-                </div>
-              </li>
-
-              <li className="flex items-start gap-3 p-3 bg-[#070a12] rounded-xl border border-slate-800">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-white block font-semibold">Precision Match Scoring (0–100%)</strong>
-                  Rule-based Zod evaluation engine scores your exact startup profile against policy rules.
-                </div>
-              </li>
-
-              <li className="flex items-start gap-3 p-3 bg-[#070a12] rounded-xl border border-slate-800">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-white block font-semibold">Grounded Citations & Direct Links</strong>
-                  Every recommendation links directly to the official government portal with exact gazette references.
-                </div>
-              </li>
-            </ul>
-          </motion.div>
-
-        </ScrollReveal>
+          </div>
+        </div>
       </section>
 
-      {/* HOW IT WORKS SECTION */}
-      <section id="how-it-works" className="py-20 px-4 sm:px-6 max-w-6xl mx-auto border-t border-slate-800/80">
-        <ScrollReveal className="text-center space-y-4 max-w-2xl mx-auto mb-16">
-          <span className="text-xs font-mono text-emerald-400 uppercase tracking-widest">
-            3-Step Intelligence Workflow
+      {/* REAL CONTENT MARQUEE STRIP */}
+      <section className="border-y border-[var(--color-line)] bg-[var(--color-surface-1)] py-3 overflow-hidden select-none">
+        <div className="flex gap-8 whitespace-nowrap animate-none overflow-x-auto no-scrollbar font-mono text-xs uppercase tracking-wider text-[var(--color-text-muted)]">
+          {marqueeItems.concat(marqueeItems).map((item, idx) => (
+            <div key={idx} className="flex items-center gap-3 shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-signal)]" />
+              <span dangerouslySetInnerHTML={{ __html: item }} />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* WAYPOINT SECTION: THE TRAJECTORY WORKFLOW */}
+      <section id="how-it-works" className="py-24 px-4 sm:px-6 max-w-7xl mx-auto border-b border-[var(--color-line)]">
+        
+        {/* Section Header */}
+        <div className="space-y-3 mb-16 max-w-2xl">
+          <span className="font-mono text-[11px] uppercase tracking-widest text-[var(--color-signal)] block">
+            Waypoint Journey
           </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
-            How FounderPilot Matches Your Startup
+          <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-[var(--color-text-primary)]">
+            How evaluation progresses from input to official grant.
           </h2>
-          <p className="text-slate-400 text-sm sm:text-base">
-            From raw founder profile to verified government grant match in under 2 minutes.
+          <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
+            A continuous four-stage pipeline that eliminates bureaucratic friction and pinpoints exact statutory eligibility.
           </p>
-        </ScrollReveal>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* 4 Connected Waypoints */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           
-          {/* STEP 1 */}
-          <ScrollReveal delay={0.1}>
-            <motion.div
-              whileHover={{ y: -6 }}
-              transition={smoothTransition}
-              className="p-6 bg-slate-900/80 rounded-2xl border border-slate-800 space-y-4 relative shadow-lg"
-            >
-              <div className="w-10 h-10 rounded-xl bg-indigo-950 border border-indigo-800/60 flex items-center justify-center font-bold font-mono text-indigo-400 text-sm">
-                01
-              </div>
-              <h3 className="text-lg font-bold text-white">Tell Us About Your Startup</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Complete a 2-minute, 5-step profile describing your state, incorporation status, DPIIT recognition, stage, team size, and funding requirements.
-              </p>
-              <div className="pt-2 text-[11px] font-mono text-indigo-400 flex items-center gap-1">
-                <span>No pitch deck required</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </div>
-            </motion.div>
-          </ScrollReveal>
+          <div className="studio-card p-5 space-y-3">
+            <div className="flex items-center justify-between border-b border-[var(--color-line)] pb-3">
+              <span className="font-mono text-xs font-semibold text-[var(--color-signal)]">01 / Onboarding</span>
+              <span className="font-mono text-[10px] text-[var(--color-text-dim)] uppercase">2 Minutes</span>
+            </div>
+            <h3 className="font-bold text-base text-[var(--color-text-primary)]">Structured Profile Capture</h3>
+            <p className="text-xs text-[var(--color-text-muted)] leading-relaxed">
+              Define your venture's state domicile, incorporation structure, DPIIT certification, team size, and immediate capital intent without submitting pitch decks.
+            </p>
+          </div>
 
-          {/* STEP 2 */}
-          <ScrollReveal delay={0.2}>
-            <motion.div
-              whileHover={{ y: -6 }}
-              transition={smoothTransition}
-              className="p-6 bg-slate-900/80 rounded-2xl border border-emerald-500/30 space-y-4 relative shadow-lg shadow-emerald-500/5"
-            >
-              <div className="w-10 h-10 rounded-xl bg-emerald-950 border border-emerald-800/60 flex items-center justify-center font-bold font-mono text-emerald-400 text-sm">
-                02
-              </div>
-              <h3 className="text-lg font-bold text-white">AI Deep Vector Retrieval</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Jina Embeddings v3 converts your profile into 1024-d vectors, querying Qdrant Cloud across 1,000+ policy document chunks, followed by LLM reasoning.
-              </p>
-              <div className="pt-2 text-[11px] font-mono text-emerald-400 flex items-center gap-1">
-                <span>Qdrant + Jina + Groq Pipeline</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </div>
-            </motion.div>
-          </ScrollReveal>
+          <div className="studio-card p-5 space-y-3">
+            <div className="flex items-center justify-between border-b border-[var(--color-line)] pb-3">
+              <span className="font-mono text-xs font-semibold text-[var(--color-signal)]">02 / Embedding</span>
+              <span className="font-mono text-[10px] text-[var(--color-text-dim)] uppercase">Vector DB</span>
+            </div>
+            <h3 className="font-bold text-base text-[var(--color-text-primary)]">High-Dimensional Vector Search</h3>
+            <p className="text-xs text-[var(--color-text-muted)] leading-relaxed">
+              Your parameters are embedded into high-dimensional semantic vectors and matched against 216 indexed central and state policy documents in Qdrant.
+            </p>
+          </div>
 
-          {/* STEP 3 */}
-          <ScrollReveal delay={0.3}>
-            <motion.div
-              whileHover={{ y: -6 }}
-              transition={smoothTransition}
-              className="p-6 bg-slate-900/80 rounded-2xl border border-slate-800 space-y-4 relative shadow-lg"
-            >
-              <div className="w-10 h-10 rounded-xl bg-amber-950 border border-amber-800/60 flex items-center justify-center font-bold font-mono text-amber-400 text-sm">
-                03
-              </div>
-              <h3 className="text-lg font-bold text-white">Get Verified Matches & Links</h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
-                Receive ranked scheme recommendations with Match % scores, eligibility reasoning, required document checklists, and direct official portal links.
-              </p>
-              <div className="pt-2 text-[11px] font-mono text-amber-400 flex items-center gap-1">
-                <span>Direct application links</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </div>
-            </motion.div>
-          </ScrollReveal>
+          <div className="studio-card p-5 space-y-3">
+            <div className="flex items-center justify-between border-b border-[var(--color-line)] pb-3">
+              <span className="font-mono text-xs font-semibold text-[var(--color-signal)]">03 / Verification</span>
+              <span className="font-mono text-[10px] text-[var(--color-text-dim)] uppercase">LLM Rules</span>
+            </div>
+            <h3 className="font-bold text-base text-[var(--color-text-primary)]">Statutory Rule Coercion</h3>
+            <p className="text-xs text-[var(--color-text-muted)] leading-relaxed">
+              The reasoning engine parses legal restrictions: strict incorporation limits, sector bounds, DPIIT verification rules, and turnover thresholds.
+            </p>
+          </div>
+
+          <div className="studio-card p-5 space-y-3">
+            <div className="flex items-center justify-between border-b border-[var(--color-line)] pb-3">
+              <span className="font-mono text-xs font-semibold text-[var(--color-signal)]">04 / Action</span>
+              <span className="font-mono text-[10px] text-emerald-400 uppercase">Verified</span>
+            </div>
+            <h3 className="font-bold text-base text-[var(--color-text-primary)]">Grounded Recommendations</h3>
+            <p className="text-xs text-[var(--color-text-muted)] leading-relaxed">
+              Receive ranked opportunities with precise Match % scores, statutory reasoning, required document checklists, and direct links to official application portals.
+            </p>
+          </div>
 
         </div>
       </section>
 
-      {/* OPPORTUNITY CATEGORIES GRID */}
-      <section className="py-20 px-4 sm:px-6 max-w-6xl mx-auto border-t border-slate-800/80">
-        <ScrollReveal className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
-          <div>
-            <span className="text-xs font-mono text-emerald-400 uppercase tracking-widest block mb-2">
-              Comprehensive Coverage
+      {/* OPPORTUNITY MATRIX (BENTO / VARYING CELL GRID) */}
+      <section id="matrix" className="py-24 px-4 sm:px-6 max-w-7xl mx-auto border-b border-[var(--color-line)]">
+        
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+          <div className="space-y-2 max-w-xl">
+            <span className="font-mono text-[11px] uppercase tracking-widest text-[var(--color-signal)] block">
+              Indexed Matrix
             </span>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
-              Opportunity Categories Indexed
+            <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-[var(--color-text-primary)]">
+              Comprehensive Opportunity Coverage
             </h2>
+            <p className="text-sm text-[var(--color-text-muted)]">
+              Continuous indexing across ₹500+ Cr in startup schemes, non-dilutive grants, and Tier-1 cloud credits.
+            </p>
           </div>
 
-          {/* Category Filter Pills */}
-          <div className="flex flex-wrap gap-2">
+          {/* Category Filter Controls */}
+          <div className="flex flex-wrap gap-1.5">
             <button
               type="button"
               onClick={() => setSelectedCategory('all')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+              className={`px-3 py-1.5 font-mono text-[11px] uppercase rounded-[3px] transition-colors cursor-pointer ${
                 selectedCategory === 'all'
-                  ? 'bg-emerald-500 text-slate-950'
-                  : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                  ? 'bg-[var(--color-signal)] text-[var(--color-accent-text)] font-semibold'
+                  : 'bg-[var(--color-surface-1)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] border border-[var(--color-line)]'
               }`}
             >
               All Categories
@@ -559,268 +406,283 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
                 key={c.id}
                 type="button"
                 onClick={() => setSelectedCategory(c.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                className={`px-3 py-1.5 font-mono text-[11px] uppercase rounded-[3px] transition-colors cursor-pointer ${
                   selectedCategory === c.id
-                    ? 'bg-emerald-500 text-slate-950'
-                    : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+                    ? 'bg-[var(--color-signal)] text-[var(--color-accent-text)] font-semibold'
+                    : 'bg-[var(--color-surface-1)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] border border-[var(--color-line)]'
                 }`}
               >
                 {c.name}
               </button>
             ))}
           </div>
-        </ScrollReveal>
-
-        {/* Categories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredCategories.map((cat, idx) => {
-            const IconComp = cat.icon;
-            return (
-              <ScrollReveal key={cat.id} delay={idx * 0.05}>
-                <motion.div
-                  whileHover={{ y: -6, scale: 1.01 }}
-                  transition={smoothTransition}
-                  className="p-6 bg-slate-900/80 rounded-2xl border border-slate-800 space-y-4 hover:border-emerald-500/40 transition-all shadow-lg"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="p-2.5 bg-[#070a12] rounded-xl border border-slate-800">
-                      <IconComp className="w-5 h-5 text-emerald-400" />
-                    </div>
-                    <span className="text-[11px] font-mono font-bold text-emerald-400 bg-emerald-950 px-2.5 py-0.5 rounded border border-emerald-800/60">
-                      {cat.count}
-                    </span>
-                  </div>
-
-                  <div>
-                    <h3 className="text-base font-bold text-white">{cat.name}</h3>
-                    <p className="text-xs text-slate-400 mt-1 leading-relaxed">{cat.desc}</p>
-                  </div>
-
-                  <div className="pt-2 border-t border-slate-800/80 space-y-1.5">
-                    <span className="text-[10px] font-mono uppercase text-slate-500 block">Sample Indexed Programs:</span>
-                    <div className="flex flex-wrap gap-1">
-                      {cat.examples.map((ex, i) => (
-                        <span key={i} className="text-[11px] bg-[#070a12] text-slate-300 px-2 py-0.5 rounded border border-slate-800">
-                          {ex}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </motion.div>
-              </ScrollReveal>
-            );
-          })}
         </div>
-      </section>
 
-      {/* AI / RAG QUESTION DEMO SECTION */}
-      <section className="py-20 px-4 sm:px-6 max-w-6xl mx-auto border-t border-slate-800/80">
-        <ScrollReveal>
-          <div className="p-8 sm:p-12 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-8 relative shadow-2xl">
-            
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+        {/* Bento Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredCategories.map((cat) => (
+            <div
+              key={cat.id}
+              className="studio-card p-5 space-y-4 flex flex-col justify-between"
+            >
               <div>
-                <span className="text-xs font-mono text-emerald-400 uppercase tracking-widest block mb-1">
-                  Grounded Scheme QA Engine
-                </span>
-                <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                  Ask Questions Grounded in Official Policy Documents
-                </h2>
-              </div>
+                <div className="flex items-center justify-between border-b border-[var(--color-line)] pb-3">
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--color-signal)]">
+                    {cat.highlight}
+                  </span>
+                  <span className="font-mono text-[10px] text-[var(--color-text-dim)]">
+                    {cat.count}
+                  </span>
+                </div>
 
-              {/* Toggle RAG Sample Query */}
-              <div className="flex items-center gap-2">
-                {ragQueries.map((_, idx) => (
-                  <button
-                    key={idx}
-                    type="button"
-                    onClick={() => setRagQueryIndex(idx)}
-                    className={`w-8 h-8 rounded-lg font-mono text-xs font-bold transition-all cursor-pointer ${
-                      ragQueryIndex === idx
-                        ? 'bg-emerald-500 text-slate-950'
-                        : 'bg-slate-800 text-slate-400 hover:text-white'
-                    }`}
-                  >
-                    Q{idx + 1}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Interactive Query Box */}
-            <div className="space-y-6">
-              
-              {/* User Question */}
-              <div className="p-4 bg-[#070a12] rounded-xl border border-slate-800 space-y-2">
-                <span className="text-[11px] font-mono text-indigo-400 uppercase tracking-wider flex items-center gap-2">
-                  <Search className="w-3.5 h-3.5 text-indigo-400" /> Founder Query
-                </span>
-                <p className="text-sm font-semibold text-white">
-                  "{ragQueries[ragQueryIndex].query}"
+                <h3 className="font-bold text-base text-[var(--color-text-primary)] mt-3">
+                  {cat.name}
+                </h3>
+                <p className="text-xs text-[var(--color-text-muted)] mt-1 leading-relaxed">
+                  {cat.desc}
                 </p>
               </div>
 
-              {/* AI Grounded Response */}
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={ragQueryIndex}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  transition={smoothTransition}
-                  className="p-5 bg-[#070a12] rounded-xl border border-emerald-500/40 space-y-4 relative"
-                >
-                  <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <span className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-                      <Bot className="w-4 h-4 text-emerald-400" /> FounderPilot AI Grounded Response
-                    </span>
-                    <span className="text-xs font-mono text-emerald-400 bg-emerald-950 px-2.5 py-0.5 rounded border border-emerald-800">
-                      {ragQueries[ragQueryIndex].score}
-                    </span>
-                  </div>
-
-                  <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-normal">
-                    {ragQueries[ragQueryIndex].answer}
-                  </p>
-
-                  {/* Official Gazette Citation */}
-                  <div className="pt-3 border-t border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                    <div className="flex items-center gap-2 text-slate-400">
-                      <FileText className="w-3.5 h-3.5 text-indigo-400" />
-                      <span>Official Citation: <strong className="text-slate-200">{ragQueries[ragQueryIndex].source}</strong></span>
-                    </div>
-
-                    <a
-                      href={ragQueries[ragQueryIndex].sourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-emerald-400 hover:text-emerald-300 font-mono text-[11px] flex items-center gap-1 hover:underline"
-                    >
-                      <span>Verify Original Source</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-
-            </div>
-          </div>
-        </ScrollReveal>
-      </section>
-
-      {/* TRUST & VERIFIED GOVERNMENT SOURCES */}
-      <section className="py-20 px-4 sm:px-6 max-w-6xl mx-auto border-t border-slate-800/80">
-        <ScrollReveal className="text-center space-y-4 max-w-2xl mx-auto mb-16">
-          <span className="text-xs font-mono text-emerald-400 uppercase tracking-widest">
-            Verified Index Coverage
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
-            100+ Official Government Portals & Institutions
-          </h2>
-          <p className="text-slate-400 text-sm sm:text-base">
-            Every opportunity in our vector index comes directly from official government gazettes, ministry portals, and verified startup bodies.
-          </p>
-        </ScrollReveal>
-
-        {/* Source Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
-          {[
-            { name: 'Startup India', org: 'DPIIT / MoCI', badge: 'Central Portal' },
-            { name: 'SIDBI', org: 'Small Industries Dev Bank', badge: 'MSME Finance' },
-            { name: 'AIM', org: 'Atal Innovation Mission', badge: 'Incubators' },
-            { name: 'BIRAC', org: 'Dept of Biotechnology', badge: 'Biotech Grants' },
-            { name: 'DST NIDHI', org: 'Dept of Science & Tech', badge: 'PRAYAS / EIR' },
-            { name: 'myScheme', org: 'MeitY / NIC', badge: 'Govt Schemes' },
-            { name: 'Agri Ministry', org: 'MoA & FW', badge: 'RKVY-RAFTAAR' },
-            { name: 'TDB', org: 'Tech Dev Board', badge: 'Comm. Grants' },
-            { name: 'GeM', org: 'Govt e-Marketplace', badge: 'Procurement' },
-            { name: 'State Policies', org: '28 States & UTs', badge: 'State Incentives' }
-          ].map((src, i) => (
-            <ScrollReveal key={i} delay={i * 0.03}>
-              <motion.div
-                whileHover={{ y: -4, scale: 1.02 }}
-                transition={smoothTransition}
-                className="p-4 bg-slate-900/80 rounded-xl border border-slate-800 text-center space-y-1.5 hover:border-emerald-500/40 transition-all shadow-md"
-              >
-                <span className="text-[10px] font-mono text-emerald-400 uppercase tracking-wider block">
-                  {src.badge}
+              <div className="pt-3 border-t border-[var(--color-line)] space-y-1.5">
+                <span className="font-mono text-[9px] uppercase tracking-widest text-[var(--color-text-dim)] block">
+                  Sample Programs:
                 </span>
-                <strong className="text-sm font-bold text-white block">{src.name}</strong>
-                <span className="text-[10px] text-slate-500 block truncate">{src.org}</span>
-              </motion.div>
-            </ScrollReveal>
+                <div className="flex flex-wrap gap-1.5">
+                  {cat.examples.map((ex, i) => (
+                    <span
+                      key={i}
+                      className="font-mono text-[10px] bg-[var(--color-surface-2)] text-[var(--color-text-muted)] px-2 py-0.5 rounded-[2px] border border-[var(--color-line)]"
+                    >
+                      {ex}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
           ))}
         </div>
       </section>
 
-      {/* FINAL CALL TO ACTION */}
-      <section className="py-24 px-4 sm:px-6 max-w-6xl mx-auto border-t border-slate-800/80 text-center">
-        <ScrollReveal>
-          <div className="p-10 sm:p-16 bg-gradient-to-b from-slate-900/90 to-[#070a12] rounded-3xl border border-slate-800 space-y-8 shadow-2xl relative">
-            
-            <div className="space-y-4 max-w-3xl mx-auto">
-              <span className="text-xs font-mono text-emerald-400 uppercase tracking-widest">
-                Get Matched Today
+      {/* GROUNDED SCHEME Q&A ENGINE (INTERACTIVE STUDIO CONSOLE) */}
+      <section id="grounded-qa" className="py-24 px-4 sm:px-6 max-w-7xl mx-auto border-b border-[var(--color-line)]">
+        <div className="studio-card p-6 sm:p-10 space-y-6">
+          
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--color-line)] pb-5">
+            <div>
+              <span className="font-mono text-[11px] uppercase tracking-widest text-[var(--color-signal)] block mb-1">
+                Grounded Verification Console
               </span>
-              <h2 className="text-4xl sm:text-6xl font-extrabold text-white tracking-tight leading-tight">
-                Stop searching. Start building.
+              <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">
+                Ask Questions Grounded in Official Policy Documents
               </h2>
-              <p className="text-slate-400 text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
-                Match your startup against ₹500+ Cr in non-dilutive grants, incubation schemes, and cloud credits in less than 2 minutes.
+            </div>
+
+            {/* Toggle Questions */}
+            <div className="flex items-center gap-1.5 font-mono text-xs">
+              {ragQueries.map((_, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setRagQueryIndex(idx)}
+                  className={`w-8 h-8 rounded-[3px] font-semibold transition-colors cursor-pointer border ${
+                    ragQueryIndex === idx
+                      ? 'bg-[var(--color-signal)] text-[var(--color-accent-text)] border-[var(--color-signal)]'
+                      : 'bg-[var(--color-surface-2)] text-[var(--color-text-muted)] border-[var(--color-line)] hover:text-[var(--color-text-primary)]'
+                  }`}
+                >
+                  Q{idx + 1}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Interactive Query Box */}
+          <div className="space-y-4">
+            {/* User Query */}
+            <div className="p-4 bg-[var(--color-surface-2)] rounded-[3px] border border-[var(--color-line)] space-y-1">
+              <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--color-signal)] flex items-center gap-1.5">
+                <Search className="w-3.5 h-3.5" /> Founder Statutory Query
+              </span>
+              <p className="text-sm font-semibold text-[var(--color-text-primary)]">
+                "{ragQueries[ragQueryIndex].query}"
               </p>
             </div>
 
-            <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <motion.button
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.96 }}
-                type="button"
-                onClick={onStartWizard}
-                className="w-full sm:w-auto px-10 py-5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-lg rounded-xl transition-all shadow-xl shadow-emerald-500/20 flex items-center justify-center gap-3 cursor-pointer group"
-              >
-                <span>Find My Opportunities</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </motion.button>
-            </div>
+            {/* Grounded AI Response */}
+            <div className="p-5 bg-[var(--color-surface-1)] rounded-[3px] border border-[var(--color-line)] space-y-3">
+              <div className="flex items-center justify-between border-b border-[var(--color-line)] pb-2.5">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-[var(--color-text-dim)] flex items-center gap-1.5">
+                  <Bot className="w-3.5 h-3.5 text-[var(--color-signal)]" /> Grounded Policy Finding
+                </span>
+                <span className="font-mono text-xs font-semibold text-emerald-400 bg-emerald-950/50 px-2 py-0.5 rounded-[2px] border border-emerald-800/60">
+                  {ragQueries[ragQueryIndex].score} Match
+                </span>
+              </div>
 
-            <div className="pt-4 flex flex-wrap items-center justify-center gap-6 text-xs text-slate-500 font-mono">
-              <span className="flex items-center gap-1.5">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                100% Free & Immediate
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Shield className="w-4 h-4 text-emerald-400" />
-                Official Government Citations
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Clock className="w-4 h-4 text-emerald-400" />
-                2-Minute Profile Setup
-              </span>
+              <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
+                {ragQueries[ragQueryIndex].answer}
+              </p>
+
+              {/* Official Citation Link */}
+              <div className="pt-3 border-t border-[var(--color-line)] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                <div className="flex items-center gap-1.5 font-mono text-[11px] text-[var(--color-text-dim)]">
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>Official Citation: <strong className="text-[var(--color-text-primary)]">{ragQueries[ragQueryIndex].source}</strong></span>
+                </div>
+
+                <a
+                  href={ragQueries[ragQueryIndex].sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-mono text-xs text-[var(--color-signal)] hover:underline flex items-center gap-1"
+                >
+                  <span>Verify Original Gazette</span>
+                  <ExternalLink className="w-3 h-3" />
+                </a>
+              </div>
             </div>
 
           </div>
-        </ScrollReveal>
+        </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="relative z-50 py-12 px-4 sm:px-6 max-w-6xl mx-auto border-t border-slate-800 text-xs text-slate-300 flex flex-col sm:flex-row items-center justify-between gap-4 font-sans bg-[#070a12]">
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-white text-base tracking-tight">Founder's Hub</span>
-          <span className="text-slate-500">&bull; AI Startup Opportunity Discovery Engine</span>
+      {/* INSTITUTIONAL COVERAGE DIRECTORY */}
+      <section className="py-24 px-4 sm:px-6 max-w-7xl mx-auto border-b border-[var(--color-line)]">
+        <div className="space-y-2 mb-10 max-w-xl">
+          <span className="font-mono text-[11px] uppercase tracking-widest text-[var(--color-signal)] block">
+            Statutory Sources
+          </span>
+          <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">
+            Verified Statutory Bodies &amp; Institutional Programs
+          </h2>
+          <p className="text-sm text-[var(--color-text-muted)]">
+            Every indexed opportunity maps directly to official gazettes, institutional funds, and cloud partner networks.
+          </p>
         </div>
-        <div className="flex items-center gap-4">
-          <span className="text-slate-400 font-medium">&copy; {new Date().getFullYear()} Founder's Hub</span>
-          <span className="text-slate-600">&bull;</span>
-          <button
-            type="button"
-            onClick={() => {
-              if (onOpenPrivacyModal) onOpenPrivacyModal();
-            }}
-            className="inline-flex items-center gap-1.5 text-emerald-300 hover:text-emerald-200 font-bold cursor-pointer transition-all px-4 py-2 bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-700/80 rounded-xl shadow-lg hover:shadow-emerald-500/20"
-          >
-            <Shield className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Privacy Policy</span>
-          </button>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+          {[
+            { name: 'Startup India', org: 'DPIIT / MoCI', badge: 'Central Body' },
+            { name: 'SIDBI', org: 'Small Industries Dev Bank', badge: 'MSME Finance' },
+            { name: 'AIM', org: 'Atal Innovation Mission', badge: 'Incubators' },
+            { name: 'BIRAC', org: 'Dept of Biotechnology', badge: 'Biotech Grants' },
+            { name: 'DST NIDHI', org: 'Dept of Science & Tech', badge: 'PRAYAS / EIR' },
+            { name: 'myScheme', org: 'MeitY / NIC', badge: 'National Schemes' },
+            { name: 'Agri Ministry', org: 'MoA & FW', badge: 'RKVY-RAFTAAR' },
+            { name: 'TDB', org: 'Tech Dev Board', badge: 'Commercialization' },
+            { name: 'GeM', org: 'Govt e-Marketplace', badge: 'Procurement' },
+            { name: 'State Policies', org: '28 States & UTs', badge: 'State Incentives' }
+          ].map((src, i) => (
+            <div
+              key={i}
+              className="p-3 bg-[var(--color-surface-1)] border border-[var(--color-line)] rounded-[3px] text-center space-y-1 hover:border-[var(--color-line-strong)] transition-colors"
+            >
+              <span className="font-mono text-[9px] uppercase tracking-wider text-[var(--color-signal)] block">
+                {src.badge}
+              </span>
+              <strong className="text-xs font-semibold text-[var(--color-text-primary)] block">
+                {src.name}
+              </strong>
+              <span className="font-mono text-[10px] text-[var(--color-text-dim)] block truncate">
+                {src.org}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* FINAL CALL TO ACTION (STUDIO SPLIT) */}
+      <section className="py-24 px-4 sm:px-6 max-w-7xl mx-auto">
+        <div className="studio-card p-8 sm:p-14 space-y-6">
+          <div className="space-y-3 max-w-2xl">
+            <span className="font-mono text-[11px] uppercase tracking-widest text-[var(--color-signal)] block">
+              Immediate Evaluation
+            </span>
+            <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[var(--color-text-primary)]">
+              Evaluate your venture in under two minutes.
+            </h2>
+            <p className="text-sm sm:text-base text-[var(--color-text-muted)] leading-relaxed">
+              Match your startup against verified non-dilutive grants, incubation schemes, and Tier-1 cloud credits.
+            </p>
+          </div>
+
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={onStartWizard}
+              className="studio-btn-primary h-12 px-8 text-base font-medium"
+              data-cursor="Evaluate"
+            >
+              <span>Launch Startup Evaluation</span>
+              <ArrowRight className="w-4 h-4 ml-1.5" />
+            </button>
+          </div>
+
+          <div className="pt-4 border-t border-[var(--color-line)] flex flex-wrap gap-6 font-mono text-[11px] uppercase tracking-wider text-[var(--color-text-dim)]">
+            <span className="flex items-center gap-1.5">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+              100% Free &amp; Immediate
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Shield className="w-3.5 h-3.5 text-[var(--color-signal)]" />
+              Statutory Gazette References
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-[var(--color-text-muted)]" />
+              Two-Minute Profile Setup
+            </span>
+          </div>
+        </div>
+      </section>
+
+      {/* LARGE STUDIO FOOTER */}
+      <footer className="border-t border-[var(--color-line)] bg-[var(--color-surface-1)] py-16 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto space-y-12">
+          
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-10 border-b border-[var(--color-line)]">
+            <div className="space-y-2">
+              <span className="font-display font-bold text-2xl sm:text-3xl text-[var(--color-text-primary)] block">
+                Founder's Hub
+              </span>
+              <p className="font-mono text-xs uppercase tracking-wider text-[var(--color-text-dim)]">
+                Startup Opportunity Discovery Engine &bull; Statutory &amp; Grant Matrix
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4 font-mono text-xs uppercase tracking-wider text-[var(--color-text-muted)]">
+              <button
+                type="button"
+                onClick={onStartWizard}
+                className="hover:text-[var(--color-signal)] transition-colors cursor-pointer"
+              >
+                Evaluation Wizard
+              </button>
+              <span>&bull;</span>
+              <a href="#how-it-works" className="hover:text-[var(--color-signal)] transition-colors">
+                Trajectory
+              </a>
+              <span>&bull;</span>
+              <a href="#matrix" className="hover:text-[var(--color-signal)] transition-colors">
+                Index Coverage
+              </a>
+              <span>&bull;</span>
+              <button
+                type="button"
+                onClick={() => {
+                  if (onOpenPrivacyModal) onOpenPrivacyModal();
+                }}
+                className="hover:text-[var(--color-signal)] transition-colors cursor-pointer"
+              >
+                Terms &amp; Conditions
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-[11px] text-[var(--color-text-dim)] uppercase tracking-wider">
+            <p>&copy; {new Date().getFullYear()} Founder's Hub. All scheme intelligence verified against official public gazettes and authorized partner frameworks.</p>
+            <p className="text-[var(--color-text-dim)]">Engineered for Indian Founders</p>
+          </div>
+
         </div>
       </footer>
 

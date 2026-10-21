@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import {
   X,
-  Sparkles,
   Mail,
   Lock,
   User,
   Building,
   ArrowRight,
   Loader2,
-  AlertTriangle,
-  CheckCircle2
+  AlertTriangle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { trackEvent } from '../configs/analytics';
 
 export default function AuthModal({ isOpen, onClose, onSuccess }) {
   const { user, loginWithGoogle, loginWithEmail, registerWithEmail } = useAuth();
-  const [activeTab, setActiveTab] = useState('login'); // 'login' | 'register'
+  const [activeTab, setActiveTab] = useState('login');
   
   // Form fields
   const [email, setEmail] = useState('');
@@ -27,7 +25,6 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Auto-close modal when user becomes authenticated
   useEffect(() => {
     if (user && isOpen) {
       if (onSuccess) {
@@ -107,41 +104,42 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fadeIn">
+    <div className="fixed inset-0 z-[99999] bg-black/75 flex items-center justify-center p-4 animate-fadeIn">
       
       {/* Modal Card */}
-      <div className="bg-slate-900 border border-slate-800/90 w-full max-w-md rounded-2xl shadow-2xl overflow-hidden text-slate-200 relative animate-scaleUp">
+      <div className="bg-[var(--color-surface-1)] border border-[var(--color-line)] w-full max-w-md rounded-[4px] overflow-hidden text-[var(--color-text)] relative animate-scaleUp">
         
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white bg-slate-800/60 hover:bg-slate-800 rounded-xl transition-all cursor-pointer z-10"
+          className="absolute top-4 right-4 p-1.5 text-[var(--color-muted)] hover:text-[var(--color-text)] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-1)] rounded-[3px] transition-colors cursor-pointer z-10 border border-[var(--color-line)]"
+          aria-label="Close"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Modal Header */}
-        <div className="p-6 pb-4 border-b border-slate-800/80 bg-slate-950/40">
-          <div className="flex items-center gap-2.5 text-indigo-400 text-xs font-bold uppercase tracking-wider mb-2">
-            <img src="/favicon.jpg" alt="Founder's Hub Logo" className="w-5 h-5 rounded-md object-cover border border-emerald-500/40" />
-            <span>Founder Authorization</span>
+        <div className="p-6 pb-4 border-b border-[var(--color-line)] bg-[var(--color-surface-2)]">
+          <div className="flex items-center gap-2 text-[var(--color-signal)] text-xs font-mono uppercase tracking-wider mb-2">
+            <img src="/favicon.jpg" alt="Logo" className="w-4 h-4 rounded-[2px] object-cover border border-[var(--color-line)]" />
+            <span>// Founder Portal Telemetry</span>
           </div>
-          <h2 className="text-xl font-bold text-white tracking-tight">
-            {activeTab === 'login' ? 'Welcome Back, Founder' : 'Create Founder Account'}
+          <h2 className="text-xl font-bold text-[var(--color-text)] tracking-tight">
+            {activeTab === 'login' ? 'Authenticate Account' : 'Initialize Founder Account'}
           </h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Sign in to save your startup analysis and access grounded scheme Q&A.
+          <p className="text-xs text-[var(--color-muted)] font-mono mt-1">
+            Access previous analyses, grounded scheme Q&amp;A, and eligibility dossiers.
           </p>
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 space-y-5">
+        <div className="p-6 space-y-4">
           
           {/* Error Alert */}
           {error && (
-            <div className="p-3 bg-rose-950/60 border border-rose-800/80 rounded-xl text-rose-300 text-xs flex items-center gap-2 animate-fadeIn">
-              <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+            <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-[3px] text-red-300 text-xs font-mono flex items-center gap-2 animate-fadeIn">
+              <AlertTriangle className="w-4 h-4 text-red-400 shrink-0" />
               <span>{error}</span>
             </div>
           )}
@@ -151,9 +149,8 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
             type="button"
             onClick={handleGoogleSignIn}
             disabled={loading}
-            className="w-full bg-slate-950 hover:bg-slate-800 text-slate-100 font-semibold py-3 px-4 rounded-xl border border-slate-700/80 transition-all flex items-center justify-center gap-3 cursor-pointer shadow-lg group hover:border-slate-600 text-xs sm:text-sm"
+            className="w-full bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-1)] text-[var(--color-text)] font-mono text-xs uppercase tracking-wider py-2.5 px-4 rounded-[3px] border border-[var(--color-line)] hover:border-[var(--color-signal)] transition-colors flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-50"
           >
-            {/* Google Multicolor SVG Icon */}
             <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
@@ -176,70 +173,70 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
           </button>
 
           {/* Divider */}
-          <div className="flex items-center gap-3 my-2">
-            <div className="flex-1 h-px bg-slate-800" />
-            <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest">
-              Or With Email
+          <div className="flex items-center gap-3 my-1">
+            <div className="flex-1 h-px bg-[var(--color-line)]" />
+            <span className="text-[10px] font-mono text-[var(--color-muted)] uppercase tracking-wider">
+              Or with email credentials
             </span>
-            <div className="flex-1 h-px bg-slate-800" />
+            <div className="flex-1 h-px bg-[var(--color-line)]" />
           </div>
 
           {/* Tabs Navigation */}
-          <div className="flex border-b border-slate-800 text-xs font-semibold">
+          <div className="flex border-b border-[var(--color-line)] text-xs font-mono">
             <button
               type="button"
               onClick={() => { setActiveTab('login'); setError(null); }}
-              className={`flex-1 py-2.5 text-center border-b-2 transition-all cursor-pointer ${
+              className={`flex-1 py-2 text-center uppercase tracking-wider border-b-2 transition-colors cursor-pointer ${
                 activeTab === 'login'
-                  ? 'border-indigo-500 text-indigo-400 font-bold'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
+                  ? 'border-[var(--color-signal)] text-[var(--color-signal)] font-semibold'
+                  : 'border-transparent text-[var(--color-muted)] hover:text-[var(--color-text)]'
               }`}
             >
-              Sign In
+              [ Sign In ]
             </button>
             <button
               type="button"
               onClick={() => { setActiveTab('register'); setError(null); }}
-              className={`flex-1 py-2.5 text-center border-b-2 transition-all cursor-pointer ${
+              className={`flex-1 py-2 text-center uppercase tracking-wider border-b-2 transition-colors cursor-pointer ${
                 activeTab === 'register'
-                  ? 'border-indigo-500 text-indigo-400 font-bold'
-                  : 'border-transparent text-slate-400 hover:text-slate-200'
+                  ? 'border-[var(--color-signal)] text-[var(--color-signal)] font-semibold'
+                  : 'border-transparent text-[var(--color-muted)] hover:text-[var(--color-text)]'
               }`}
             >
-              Create Account
+              [ Create Account ]
             </button>
           </div>
 
           {/* Email / Password Form */}
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-3.5">
             
             {activeTab === 'register' && (
               <>
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-400 block">Full Name</label>
+                  <label className="text-[10px] font-mono text-[var(--color-muted)] uppercase tracking-wider block">Full Name</label>
                   <div className="relative">
-                    <User className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
+                    <User className="w-3.5 h-3.5 absolute left-3 top-3 text-[var(--color-muted)]" />
                     <input
                       type="text"
                       required
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Raghav Anand"
-                      className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 text-slate-100 rounded-xl pl-9 pr-4 py-2.5 text-xs outline-none transition-all"
+                      className="w-full h-10 bg-[var(--color-surface-2)] border border-[var(--color-line)] focus:border-[var(--color-signal)] text-[var(--color-text)] rounded-[3px] pl-9 pr-3 text-xs outline-none transition-colors font-mono"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-400 block">Startup Name (Optional)</label>
+                  <label className="text-[10px] font-mono text-[var(--color-muted)] uppercase tracking-wider block">Startup Name (Optional)</label>
                   <div className="relative">
-                    <Building className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
+                    <Building className="w-3.5 h-3.5 absolute left-3 top-3 text-[var(--color-muted)]" />
                     <input
                       type="text"
                       value={startupName}
                       onChange={(e) => setStartupName(e.target.value)}
                       placeholder="NexusAI Labs"
-                      className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 text-slate-100 rounded-xl pl-9 pr-4 py-2.5 text-xs outline-none transition-all"
+                      className="w-full h-10 bg-[var(--color-surface-2)] border border-[var(--color-line)] focus:border-[var(--color-signal)] text-[var(--color-text)] rounded-[3px] pl-9 pr-3 text-xs outline-none transition-colors font-mono"
                     />
                   </div>
                 </div>
@@ -247,31 +244,31 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
             )}
 
             <div className="space-y-1">
-              <label className="text-[11px] font-semibold text-slate-400 block">Email Address</label>
+              <label className="text-[10px] font-mono text-[var(--color-muted)] uppercase tracking-wider block">Email Address</label>
               <div className="relative">
-                <Mail className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
+                <Mail className="w-3.5 h-3.5 absolute left-3 top-3 text-[var(--color-muted)]" />
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="founder@startup.com"
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 text-slate-100 rounded-xl pl-9 pr-4 py-2.5 text-xs outline-none transition-all"
+                  className="w-full h-10 bg-[var(--color-surface-2)] border border-[var(--color-line)] focus:border-[var(--color-signal)] text-[var(--color-text)] rounded-[3px] pl-9 pr-3 text-xs outline-none transition-colors font-mono"
                 />
               </div>
             </div>
 
             <div className="space-y-1">
-              <label className="text-[11px] font-semibold text-slate-400 block">Password</label>
+              <label className="text-[10px] font-mono text-[var(--color-muted)] uppercase tracking-wider block">Password</label>
               <div className="relative">
-                <Lock className="w-4 h-4 absolute left-3 top-3 text-slate-500" />
+                <Lock className="w-3.5 h-3.5 absolute left-3 top-3 text-[var(--color-muted)]" />
                 <input
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-slate-950 border border-slate-800 focus:border-indigo-500 text-slate-100 rounded-xl pl-9 pr-4 py-2.5 text-xs outline-none transition-all"
+                  className="w-full h-10 bg-[var(--color-surface-2)] border border-[var(--color-line)] focus:border-[var(--color-signal)] text-[var(--color-text)] rounded-[3px] pl-9 pr-3 text-xs outline-none transition-colors font-mono"
                 />
               </div>
             </div>
@@ -279,17 +276,17 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg text-xs sm:text-sm mt-2"
+              className="w-full bg-[var(--color-signal)] hover:brightness-110 disabled:opacity-50 text-[#0E1119] font-mono text-xs uppercase tracking-wider font-semibold h-10 px-4 rounded-[3px] transition-colors flex items-center justify-center gap-2 cursor-pointer mt-3"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Authenticating...</span>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#0E1119]" />
+                  <span>Authenticating Telemetry...</span>
                 </>
               ) : (
                 <>
-                  <span>{activeTab === 'login' ? 'Sign In to Hub' : 'Register Founder Account'}</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <span>{activeTab === 'login' ? 'Sign In' : 'Create Account'}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </>
               )}
             </button>
