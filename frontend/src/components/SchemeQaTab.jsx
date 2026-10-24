@@ -11,17 +11,38 @@ import {
   ExternalLink
 } from 'lucide-react';
 
-export default function SchemeQaTab({ schemeId, schemeTitle, source, url }) {
+export default function SchemeQaTab({
+  schemeId,
+  schemeTitle,
+  source,
+  url,
+  analysisId,
+  startupContext,
+  founderProfile
+}) {
+  const activeStartupName = startupContext?.startupName || founderProfile?.startupName;
+  const initialWelcome = activeStartupName
+    ? `Hello! I am your AI Policy Assistant for **${schemeTitle || 'this opportunity'}** (${source || 'Official Program'}).\n\nI have grounded the guidelines specifically for **${activeStartupName}**. Ask me how your venture's stage, location, or funding requirements align with the official scheme rules!`
+    : `Hello! I am your AI Policy Assistant for **${schemeTitle || 'this opportunity'}** (${source || 'Official Program'}).\n\nAsk me anything about eligibility rules, funding limits, stage requirements, or required application documents!`;
+
+  const initialFollowups = activeStartupName
+    ? [
+        `Is ${activeStartupName} eligible at our current stage?`,
+        'What are the exact funding or credit limits?',
+        'What specific documents do we need to apply?'
+      ]
+    : [
+        'Am I eligible at my current stage?',
+        'What are the exact funding or credit limits?',
+        'What documents are required to apply?'
+      ];
+
   const [messages, setMessages] = useState([
     {
       id: 'welcome',
       role: 'assistant',
-      text: `Hello! I am your AI Policy Assistant for **${schemeTitle || 'this opportunity'}** (${source || 'Official Program'}).\n\nAsk me anything about eligibility rules, funding limits, stage requirements, or required application documents!`,
-      suggestedFollowups: [
-        'Am I eligible at my current stage?',
-        'What are the exact funding or credit limits?',
-        'What documents are required to apply?'
-      ]
+      text: initialWelcome,
+      suggestedFollowups: initialFollowups
     }
   ]);
   const [inputQuestion, setInputQuestion] = useState('');
@@ -61,7 +82,10 @@ export default function SchemeQaTab({ schemeId, schemeTitle, source, url }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           question: questionText.trim(),
-          chatHistory
+          chatHistory,
+          analysisId: analysisId || null,
+          startupContext: startupContext || null,
+          founderProfile: founderProfile || null
         })
       });
 
@@ -120,8 +144,14 @@ export default function SchemeQaTab({ schemeId, schemeTitle, source, url }) {
                 Grounded
               </span>
             </h3>
-            <p className="text-[11px] font-mono text-[var(--color-muted)]">
-              Context: <span className="text-[var(--color-text)]">{schemeTitle}</span>
+            <p className="text-[11px] font-mono text-[var(--color-muted)] flex flex-wrap items-center gap-1.5">
+              <span>Opportunity: <span className="text-[var(--color-text)] font-medium">{schemeTitle}</span></span>
+              {activeStartupName && (
+                <>
+                  <span className="text-[var(--color-line-strong)]">&bull;</span>
+                  <span>Startup: <span className="text-[var(--color-signal)] font-semibold">{activeStartupName}</span></span>
+                </>
+              )}
             </p>
           </div>
         </div>

@@ -541,6 +541,9 @@ export default function SubmitResult({ formData, initialResult, onEditStep, onRe
         <SchemeDetailModal
           schemeMatch={selectedSchemeForModal}
           documentId={selectedSchemeForModal.documentId}
+          analysisId={apiResponse?.data?.profileId || initialResult?.data?.profileId || apiResponse?.profileId}
+          startupContext={formData}
+          founderProfile={apiResponse?.data?.founderProfile || initialResult?.data?.founderProfile}
           onClose={() => setSelectedSchemeForModal(null)}
         />
       )}

@@ -466,11 +466,14 @@ function MainApp() {
         onClose={() => setIsPrivacyModalOpen(false)}
       />
 
-      {/* Scheme Detail Modal for featured spotlight */}
+      {/* Scheme Detail Modal for featured spotlight or direct scheme inspections */}
       {selectedSchemeForModal && (
         <SchemeDetailModal
           schemeMatch={selectedSchemeForModal}
           documentId={selectedSchemeForModal.documentId}
+          analysisId={selectedSchemeForModal.analysisId || null}
+          startupContext={selectedSchemeForModal.startupContext || null}
+          founderProfile={selectedSchemeForModal.founderProfile || null}
           onClose={() => setSelectedSchemeForModal(null)}
         />
       )}

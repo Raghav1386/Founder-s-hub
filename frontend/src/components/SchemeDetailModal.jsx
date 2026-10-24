@@ -18,7 +18,14 @@ import {
   Award
 } from 'lucide-react';
 
-export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) {
+export default function SchemeDetailModal({
+  schemeMatch,
+  documentId,
+  analysisId,
+  startupContext,
+  founderProfile,
+  onClose
+}) {
   const [loading, setLoading] = useState(false);
   const [docDetails, setDocDetails] = useState(null);
   const [error, setError] = useState(null);
@@ -26,6 +33,10 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
 
   const targetId = documentId || schemeMatch?.documentId || schemeMatch?._id || schemeMatch?.id;
   const isValidMongoId = typeof targetId === 'string' && /^[0-9a-fA-F]{24}$/.test(targetId);
+
+  const resolvedAnalysisId = analysisId || schemeMatch?.analysisId;
+  const resolvedStartupContext = startupContext || schemeMatch?.startupContext;
+  const resolvedFounderProfile = founderProfile || schemeMatch?.founderProfile;
 
   // Lock background scroll when full screen page is open
   useEffect(() => {
@@ -208,6 +219,9 @@ export default function SchemeDetailModal({ schemeMatch, documentId, onClose }) 
               schemeTitle={title}
               source={source}
               url={url}
+              analysisId={resolvedAnalysisId}
+              startupContext={resolvedStartupContext}
+              founderProfile={resolvedFounderProfile}
             />
           </div>
         )}

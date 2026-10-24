@@ -12,6 +12,7 @@ import { PromptTemplate } from '@langchain/core/prompts';
 import { z } from 'zod';
 import mongoose from 'mongoose';
 import Document from '../models/Document.js';
+import FounderProfile from '../models/FounderProfile.js';
 
 // Zod Schema for Structured Q&A Output
 const qaResponseZodSchema = z.object({
@@ -30,9 +31,12 @@ Answer the startup founder's question accurately based on the opportunity contex
 FOUNDER STARTUP CONTEXT:
 - Startup Name: {startupName}
 - Location (State/UT): {state}
-- Stage: {stage}
+- Venture Stage: {stage}
 - DPIIT Recognition: {dpiit}
 - Sector & Tech: {sector}
+- Description / Pitch: {description}
+- Funding Requirement: {fundingRequired}
+- Specific Startup Linked: {hasStartupContext}
 
 SCHEME / OPPORTUNITY DETAILS:
 - Title: {schemeTitle}
@@ -52,9 +56,10 @@ FOUNDER'S QUESTION:
 
 INSTRUCTIONS:
 1. Provide a clear, accurate answer grounded in the scheme guidelines and metadata.
-2. Address how this founder's stage, location, or tech stack aligns with the scheme rules.
-3. If the answer is not contained in the context, state that clearly and advise checking the official portal link ({schemeUrl}).
-4. Provide exactly 3 short, relevant follow-up questions the founder can click next.
+2. If a specific startup is linked (Specific Startup Linked: Yes), specifically address how this founder's startup ({startupName}, Stage: {stage}, Location: {state}, DPIIT: {dpiit}) qualifies, what specific benefits or funding limits apply to them, or what missing prerequisites they need to fulfill for "{schemeTitle}".
+3. If no specific startup is linked (Specific Startup Linked: No), provide a clear, general overview of eligibility criteria and requirements without assuming founder parameters.
+4. If the answer is not contained in the context, state that clearly and advise checking the official portal link ({schemeUrl}).
+5. Provide exactly 3 short, relevant follow-up questions the founder can click next.
 `;
 
 const promptTemplate = PromptTemplate.fromTemplate(SCHEME_QA_PROMPT);
@@ -69,8 +74,7 @@ export async function answerSchemeQa(req, res) {
     const body = req.body || {};
     const question = body.question?.trim();
     const chatHistoryList = Array.isArray(body.chatHistory) ? body.chatHistory : [];
-    const founderProfile = body.founderProfile || {};
-    const onboarding = founderProfile.onboarding || body.onboarding || {};
+    const analysisId = body.analysisId || req.query.analysisId;
 
     if (!id || id === 'undefined' || !mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({
@@ -94,6 +98,32 @@ export async function answerSchemeQa(req, res) {
         error: 'Scheme document not found.'
       });
     }
+
+    // Step 2: Fetch specific analysis if analysisId is provided
+    let analysisDoc = null;
+    if (analysisId && mongoose.Types.ObjectId.isValid(analysisId)) {
+      try {
+        analysisDoc = await FounderProfile.findById(analysisId).lean();
+        if (analysisDoc) {
+          console.log(`🔎 [SCHEME QA] Resolved Analysis #${analysisId} for startup: "${analysisDoc.onboarding?.startupName}"`);
+        }
+      } catch (err) {
+        console.warn(`[WARN] Failed to load analysis ${analysisId}:`, err.message);
+      }
+    }
+
+    // Resolve startup profile data for this specific analysis (or fallback to passed startupContext)
+    const onboarding = analysisDoc?.onboarding || body.startupContext || body.onboarding || {};
+    const founderProfile = analysisDoc?.founderProfile || body.founderProfile || {};
+
+    const hasStartupContext = Boolean(onboarding.startupName && onboarding.startupName.trim());
+    const startupName = hasStartupContext ? onboarding.startupName.trim() : 'General Venture (No specific startup selected)';
+    const state = onboarding.state || onboarding.stateUt || 'All-India / Unspecified';
+    const stage = onboarding.stage || onboarding.startupStage || founderProfile.startupStage || 'Early Stage';
+    const dpiit = onboarding.dpiit || onboarding.dpiitRecognition || "Unspecified";
+    const sector = founderProfile.sector || onboarding.description || 'General Innovation';
+    const description = onboarding.description || founderProfile.summary || 'No description provided';
+    const fundingRequired = onboarding.fundingRequired || onboarding.fundingRequirement || 'Not specified';
 
     const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
@@ -131,17 +161,20 @@ export async function answerSchemeQa(req, res) {
 
     const chain = promptTemplate.pipe(structuredLlm);
 
-    console.log(`\n🤖 [SCHEME QA] Answering question for scheme "${schemeDoc.title}": "${question}"...`);
+    console.log(`\n🤖 [SCHEME QA] Answering for "${schemeDoc.title}". Bound to analysis: ${analysisDoc ? analysisDoc._id : (hasStartupContext ? 'In-Memory Context' : 'General')} (Startup: "${startupName}")`);
 
     let aiResult = null;
     for (let attempt = 1; attempt <= 3; attempt++) {
       try {
         aiResult = await chain.invoke({
-          startupName: onboarding.startupName || 'Startup Venture',
-          state: onboarding.state || 'Unspecified',
-          stage: onboarding.stage || 'Idea Stage',
-          dpiit: onboarding.dpiit || "Don't Know",
-          sector: founderProfile.sector || onboarding.description || 'General Tech',
+          startupName,
+          state,
+          stage,
+          dpiit,
+          sector,
+          description,
+          fundingRequired,
+          hasStartupContext: hasStartupContext ? 'Yes' : 'No',
           schemeTitle: schemeDoc.structured?.schemeName || schemeDoc.title || 'Scheme',
           schemeSource: schemeDoc.source || 'Official Portal',
           schemeUrl: schemeDoc.url || '#',

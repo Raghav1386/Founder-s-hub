@@ -471,7 +471,14 @@ export default function Dashboard({
                         {matched.slice(0, 3).map((sch, i) => (
                           <div
                             key={i}
-                            className="studio-card-nested px-3 py-1.5 text-xs flex items-center justify-between gap-2"
+                            onClick={() => onOpenSchemeModal && onOpenSchemeModal({
+                              ...sch,
+                              analysisId: item._id,
+                              startupContext: item.onboarding,
+                              founderProfile: item.founderProfile
+                            })}
+                            className="studio-card-nested px-3 py-1.5 text-xs flex items-center justify-between gap-2 hover:border-[var(--color-signal)]/60 cursor-pointer transition-colors"
+                            title="Click to inspect guidelines & AI Q&A grounded in this startup"
                           >
                             <span className="text-[var(--color-text-primary)] font-medium truncate">
                               {sch.title}
