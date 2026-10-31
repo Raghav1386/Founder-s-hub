@@ -6,19 +6,19 @@ export default function ProgressBar({ currentStep, totalSteps, completedSteps, o
   const percentage = Math.round((currentStep / totalSteps) * 100);
 
   return (
-    <div className="w-full mb-8">
+    <div className="w-full mb-6 sm:mb-8">
       {/* Top Meta info */}
-      <div className="flex items-center justify-between mb-2.5 font-mono text-xs">
-        <div className="flex items-center gap-2">
-          <span className="text-[var(--color-signal)] uppercase tracking-wider font-semibold">
-            Waypoint 0{currentStep} / 0{totalSteps}
+      <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-1 mb-2 font-mono text-[11px] sm:text-xs">
+        <div className="flex items-center gap-1.5 sm:gap-2 truncate mr-2">
+          <span className="text-[var(--color-signal)] uppercase tracking-wider font-semibold shrink-0">
+            Waypoint 0{currentStep}/0{totalSteps}
           </span>
           <span className="text-[var(--color-text-dim)]">&bull;</span>
-          <span className="text-[var(--color-text-primary)] font-medium">
+          <span className="text-[var(--color-text-primary)] font-medium truncate">
             {STEPS_CONFIG[currentStep - 1]?.title}
           </span>
         </div>
-        <span className="text-[var(--color-text-dim)] uppercase tracking-wider">
+        <span className="text-[var(--color-text-dim)] uppercase tracking-wider shrink-0 font-semibold">
           {percentage}% Complete
         </span>
       </div>
@@ -32,7 +32,7 @@ export default function ProgressBar({ currentStep, totalSteps, completedSteps, o
       </div>
 
       {/* Step Indicators Breadcrumb */}
-      <div className="mt-4 overflow-x-auto no-scrollbar flex sm:grid sm:grid-cols-5 gap-2 pb-1">
+      <div className="mt-3 sm:mt-4 overflow-x-auto no-scrollbar flex sm:grid sm:grid-cols-5 gap-1.5 sm:gap-2 pb-1">
         {STEPS_CONFIG.map((step) => {
           const isCompleted = completedSteps.includes(step.id);
           const isCurrent = step.id === currentStep;
@@ -44,7 +44,7 @@ export default function ProgressBar({ currentStep, totalSteps, completedSteps, o
               type="button"
               onClick={() => isClickable && onStepClick(step.id)}
               disabled={!isClickable}
-              className={`flex items-center gap-2 p-2 rounded-[3px] transition-colors text-left border min-w-[50px] sm:min-w-0 flex-1 shrink-0 sm:shrink font-mono ${
+              className={`flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 p-1.5 sm:p-2 rounded-[3px] transition-colors text-left border min-w-[44px] sm:min-w-0 flex-1 shrink-0 sm:shrink font-mono ${
                 isCurrent
                   ? 'bg-[var(--color-surface-2)] border-[var(--color-signal)] text-[var(--color-text-primary)] font-semibold'
                   : isCompleted

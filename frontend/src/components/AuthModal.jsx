@@ -104,28 +104,28 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-black/75 flex items-center justify-center p-4 animate-fadeIn">
+    <div className="fixed inset-0 z-[99999] bg-black/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-fadeIn">
       
       {/* Modal Card */}
-      <div className="bg-[var(--color-surface-1)] border border-[var(--color-line)] w-full max-w-md rounded-[4px] overflow-hidden text-[var(--color-text)] relative animate-scaleUp">
+      <div className="bg-[var(--color-surface-1)] border border-[var(--color-line)] w-full max-w-md max-h-[92vh] overflow-y-auto touch-scroll rounded-[4px] text-[var(--color-text)] relative animate-scaleUp">
         
         {/* Close Button */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 text-[var(--color-muted)] hover:text-[var(--color-text)] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-1)] rounded-[3px] transition-colors cursor-pointer z-10 border border-[var(--color-line)]"
+          className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 p-1.5 text-[var(--color-muted)] hover:text-[var(--color-text)] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-1)] rounded-[3px] transition-colors cursor-pointer z-10 border border-[var(--color-line)]"
           aria-label="Close"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Modal Header */}
-        <div className="p-6 pb-4 border-b border-[var(--color-line)] bg-[var(--color-surface-2)]">
-          <div className="flex items-center gap-2 text-[var(--color-signal)] text-xs font-mono uppercase tracking-wider mb-2">
+        <div className="p-4 sm:p-6 pb-3 sm:pb-4 border-b border-[var(--color-line)] bg-[var(--color-surface-2)]">
+          <div className="flex items-center gap-2 text-[var(--color-signal)] text-xs font-mono uppercase tracking-wider mb-1.5 sm:mb-2">
             <img src="/favicon.jpg" alt="Logo" className="w-4 h-4 rounded-[2px] object-cover border border-[var(--color-line)]" />
             <span>// Founder Portal Telemetry</span>
           </div>
-          <h2 className="text-xl font-bold text-[var(--color-text)] tracking-tight">
+          <h2 className="text-lg sm:text-xl font-bold text-[var(--color-text)] tracking-tight">
             {activeTab === 'login' ? 'Authenticate Account' : 'Initialize Founder Account'}
           </h2>
           <p className="text-xs text-[var(--color-muted)] font-mono mt-1">
@@ -134,7 +134,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
         </div>
 
         {/* Modal Body */}
-        <div className="p-6 space-y-4">
+        <div className="p-4 sm:p-6 space-y-3.5 sm:space-y-4">
           
           {/* Error Alert */}
           {error && (

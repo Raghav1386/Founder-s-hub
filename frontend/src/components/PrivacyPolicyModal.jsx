@@ -5,22 +5,22 @@ export default function PrivacyPolicyModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-black/75 flex items-center justify-center p-4 animate-fadeIn">
+    <div className="fixed inset-0 z-[99999] bg-black/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-fadeIn">
       {/* Modal Card */}
-      <div className="bg-[var(--color-surface-1)] border border-[var(--color-line)] w-full max-w-2xl max-h-[85vh] rounded-[4px] overflow-hidden text-[var(--color-text)] relative flex flex-col animate-scaleUp">
+      <div className="bg-[var(--color-surface-1)] border border-[var(--color-line)] w-full max-w-2xl max-h-[88vh] rounded-[4px] overflow-hidden text-[var(--color-text)] relative flex flex-col animate-scaleUp">
 
         {/* Modal Header */}
-        <div className="p-5 sm:p-6 border-b border-[var(--color-line)] bg-[var(--color-surface-2)] flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-[var(--color-surface-1)] border border-[var(--color-line)] rounded-[3px] text-[var(--color-signal)]">
-              <ShieldCheck className="w-5 h-5" />
+        <div className="p-4 sm:p-6 border-b border-[var(--color-line)] bg-[var(--color-surface-2)] flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="p-1.5 sm:p-2 bg-[var(--color-surface-1)] border border-[var(--color-line)] rounded-[3px] text-[var(--color-signal)] shrink-0">
+              <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <div>
-              <h2 className="text-base sm:text-lg font-bold text-[var(--color-text)] tracking-tight flex items-center gap-2">
-                Terms &amp; Conditions &bull; Privacy Protocol
+            <div className="min-w-0">
+              <h2 className="text-sm sm:text-lg font-bold text-[var(--color-text)] tracking-tight truncate">
+                Terms &amp; Privacy Protocol
               </h2>
-              <p className="text-xs font-mono text-[var(--color-muted)]">
-                Last updated: {new Date().toLocaleDateString(undefined, { month: 'long', year: 'numeric' })} &bull; Founder's Hub
+              <p className="text-[10px] sm:text-xs font-mono text-[var(--color-muted)] truncate">
+                Updated {new Date().toLocaleDateString(undefined, { month: 'long', year: 'numeric' })} &bull; Founder's Hub
               </p>
             </div>
           </div>
@@ -28,7 +28,7 @@ export default function PrivacyPolicyModal({ isOpen, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-text)] bg-[var(--color-surface-1)] hover:bg-[var(--color-surface-2)] rounded-[3px] transition-colors cursor-pointer border border-[var(--color-line)]"
+            className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-text)] bg-[var(--color-surface-1)] hover:bg-[var(--color-surface-2)] rounded-[3px] transition-colors cursor-pointer border border-[var(--color-line)] shrink-0"
             aria-label="Close"
           >
             <X className="w-4 h-4" />
@@ -36,7 +36,7 @@ export default function PrivacyPolicyModal({ isOpen, onClose }) {
         </div>
 
         {/* Scrollable Modal Content */}
-        <div className="p-5 sm:p-6 overflow-y-auto space-y-5 text-xs text-[var(--color-muted)] leading-relaxed">
+        <div className="p-4 sm:p-6 overflow-y-auto space-y-4 sm:space-y-5 text-xs text-[var(--color-muted)] leading-relaxed touch-scroll">
 
           {/* Key Guarantee Banner */}
           <div className="p-4 bg-[var(--color-surface-2)] border border-emerald-500/30 rounded-[3px] text-[var(--color-text)] flex items-start gap-3">
@@ -105,14 +105,14 @@ export default function PrivacyPolicyModal({ isOpen, onClose }) {
         </div>
 
         {/* Modal Footer */}
-        <div className="p-4 border-t border-[var(--color-line)] bg-[var(--color-surface-2)] flex items-center justify-between shrink-0">
-          <div className="text-[10px] font-mono text-[var(--color-muted)]">
+        <div className="p-3.5 sm:p-4 border-t border-[var(--color-line)] bg-[var(--color-surface-2)] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 shrink-0">
+          <div className="text-[10px] font-mono text-[var(--color-muted)] text-center sm:text-left">
             Founder's Hub &bull; Institutional Telemetry
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-[var(--color-signal)] hover:brightness-110 text-[#0E1119] font-mono text-xs uppercase tracking-wider font-semibold rounded-[3px] transition-colors cursor-pointer"
+            className="w-full sm:w-auto px-4 py-2 bg-[var(--color-signal)] hover:brightness-110 text-[#0E1119] font-mono text-xs uppercase tracking-wider font-semibold rounded-[3px] transition-colors cursor-pointer text-center justify-center"
           >
             I Acknowledge &amp; Accept
           </button>

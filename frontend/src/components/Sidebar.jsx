@@ -231,10 +231,10 @@ export default function Sidebar({
       {isOpen && (
         <div className="fixed inset-0 z-50 md:hidden flex">
           <div
-            className="fixed inset-0 bg-black/70 transition-opacity"
+            className="fixed inset-0 bg-black/75 backdrop-blur-sm transition-opacity"
             onClick={onClose}
           />
-          <div className="relative w-72 max-w-[85vw] h-full z-10 animate-slideRight">
+          <div className="relative w-72 max-w-[85vw] h-full z-10 animate-slideRight touch-scroll">
             {sidebarContent}
           </div>
         </div>

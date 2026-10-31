@@ -247,3 +247,38 @@ body {
 .mask-reveal > * {
   display: inline-block;
 }
+
+/* Mobile Touch & Viewport Optimization Utilities */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent iOS Safari automatic zoom on inputs with font-size < 16px */
+@media screen and (max-width: 767px) {
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="search"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Hide scrollbars while allowing touch scrolling */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Smooth Touch Scrolling Container */
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+

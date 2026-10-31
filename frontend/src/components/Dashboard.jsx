@@ -199,17 +199,17 @@ export default function Dashboard({
   ];
 
   return (
-    <div className="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-fadeIn text-[var(--color-text-primary)]">
+    <div className="max-w-7xl w-full mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8 animate-fadeIn text-[var(--color-text-primary)]">
       
       {/* SECTION 1: FOUNDER CONSOLE HEADER & METRIC KPI STRIP */}
-      <section className="studio-card p-6 sm:p-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-[var(--color-line)]">
+      <section className="studio-card p-4 sm:p-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 sm:pb-6 border-b border-[var(--color-line)]">
           <div>
-            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-[var(--color-signal)] mb-2">
+            <div className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest text-[var(--color-signal)] mb-1.5 sm:mb-2">
               <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-signal)]" />
               <span>Founder Console &bull; Active Index</span>
             </div>
-            <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">
+            <h1 className="font-display text-xl sm:text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">
               Welcome back, {displayName}
             </h1>
             <p className="text-xs sm:text-sm text-[var(--color-text-muted)] mt-1">
@@ -225,12 +225,12 @@ export default function Dashboard({
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
             <button
               type="button"
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="studio-btn-secondary"
+              className="studio-btn-secondary flex-1 sm:flex-initial justify-center px-3 sm:px-4"
               title="Refresh evaluations"
             >
               <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${isRefreshing ? 'animate-spin text-[var(--color-signal)]' : 'text-[var(--color-text-dim)]'}`} />
@@ -240,7 +240,7 @@ export default function Dashboard({
             <button
               type="button"
               onClick={onStartNewAnalysis}
-              className="studio-btn-primary"
+              className="studio-btn-primary flex-1 sm:flex-initial justify-center px-3 sm:px-4"
               data-cursor="Evaluate"
             >
               <Sparkles className="w-3.5 h-3.5 mr-1.5" />
@@ -250,61 +250,61 @@ export default function Dashboard({
         </div>
 
         {/* 4 Metric KPI Cards Strip */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 pt-4 sm:pt-6">
           
-          <div className="studio-card-nested p-4">
+          <div className="studio-card-nested p-3 sm:p-4">
             <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-[var(--color-text-dim)] mb-1">
               <span>Saved Analyses</span>
               <History className="w-3.5 h-3.5 text-[var(--color-signal)]" />
             </div>
-            <div className="font-mono text-2xl sm:text-3xl font-bold text-[var(--color-text-primary)]">
+            <div className="font-mono text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--color-text-primary)]">
               {isHistoryLoading && totalAnalyses === 0 ? (
                 <span className="inline-block h-7 w-8 bg-[var(--color-surface-2)] animate-pulse rounded-[2px]" />
               ) : (
                 totalAnalyses
               )}
             </div>
-            <div className="font-mono text-[11px] text-[var(--color-text-dim)] mt-1">
+            <div className="font-mono text-[10px] sm:text-[11px] text-[var(--color-text-dim)] mt-1 truncate">
               {isHistoryLoading && totalAnalyses === 0
                 ? 'Syncing archives...'
                 : totalAnalyses === 0
                 ? 'No evaluations yet'
-                : `${totalAnalyses} ${totalAnalyses === 1 ? 'profile' : 'profiles'} recorded`}
+                : `${totalAnalyses} ${totalAnalyses === 1 ? 'profile' : 'profiles'}`}
             </div>
           </div>
 
-          <div className="studio-card-nested p-4">
+          <div className="studio-card-nested p-3 sm:p-4">
             <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-[var(--color-text-dim)] mb-1">
               <span>Capital Ceiling</span>
               <Award className="w-3.5 h-3.5 text-emerald-400" />
             </div>
-            <div className="font-mono text-2xl sm:text-3xl font-bold text-emerald-400">
+            <div className="font-mono text-xl sm:text-2xl lg:text-3xl font-bold text-emerald-400">
               ₹50L+
             </div>
-            <div className="font-mono text-[11px] text-[var(--color-text-dim)] mt-1">
+            <div className="font-mono text-[10px] sm:text-[11px] text-[var(--color-text-dim)] mt-1 truncate">
               Max non-dilutive grant
             </div>
           </div>
 
-          <div className="studio-card-nested p-4">
+          <div className="studio-card-nested p-3 sm:p-4">
             <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-[var(--color-text-dim)] mb-1">
               <span>Tech Credits</span>
               <Cloud className="w-3.5 h-3.5 text-[var(--color-signal)]" />
             </div>
-            <div className="font-mono text-2xl sm:text-3xl font-bold text-[var(--color-text-primary)]">
+            <div className="font-mono text-xl sm:text-2xl lg:text-3xl font-bold text-[var(--color-text-primary)]">
               $350K+
             </div>
-            <div className="font-mono text-[11px] text-[var(--color-text-dim)] mt-1">
+            <div className="font-mono text-[10px] sm:text-[11px] text-[var(--color-text-dim)] mt-1 truncate">
               Tier-1 cloud pool
             </div>
           </div>
 
-          <div className="studio-card-nested p-4">
+          <div className="studio-card-nested p-3 sm:p-4">
             <div className="flex items-center justify-between font-mono text-[10px] uppercase tracking-wider text-[var(--color-text-dim)] mb-1">
               <span>Readiness Score</span>
               <TrendingUp className="w-3.5 h-3.5 text-[var(--color-signal)]" />
             </div>
-            <div className={`font-mono text-2xl sm:text-3xl font-bold ${latestReadinessScore !== null ? 'text-[var(--color-signal)]' : 'text-[var(--color-text-dim)]'}`}>
+            <div className={`font-mono text-xl sm:text-2xl lg:text-3xl font-bold ${latestReadinessScore !== null ? 'text-[var(--color-signal)]' : 'text-[var(--color-text-dim)]'}`}>
               {isHistoryLoading && totalAnalyses === 0 ? (
                 <span className="inline-block h-7 w-12 bg-[var(--color-surface-2)] animate-pulse rounded-[2px]" />
               ) : latestReadinessScore !== null ? (
@@ -313,7 +313,7 @@ export default function Dashboard({
                 '—'
               )}
             </div>
-            <div className="font-mono text-[11px] text-[var(--color-text-dim)] mt-1 truncate" title={
+            <div className="font-mono text-[10px] sm:text-[11px] text-[var(--color-text-dim)] mt-1 truncate" title={
               isHistoryLoading && totalAnalyses === 0
                 ? 'Syncing evaluations...'
                 : totalAnalyses === 0
@@ -336,8 +336,8 @@ export default function Dashboard({
       </section>
 
       {/* SECTION 2: PRIMARY ACTION HERO (START NEW ANALYSIS) */}
-      <section className="studio-card p-6 sm:p-7 border-[var(--color-signal)]/30 relative overflow-hidden">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+      <section className="studio-card p-4 sm:p-7 border-[var(--color-signal)]/30 relative overflow-hidden">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-5">
           <div className="space-y-1.5 max-w-2xl">
             <span className="font-mono text-[10px] uppercase tracking-widest text-[var(--color-signal)] flex items-center gap-1.5">
               <Zap className="w-3.5 h-3.5" />
@@ -354,7 +354,7 @@ export default function Dashboard({
           <button
             type="button"
             onClick={onStartNewAnalysis}
-            className="studio-btn-primary shrink-0"
+            className="studio-btn-primary shrink-0 w-full sm:w-auto justify-center"
             data-cursor="Evaluate"
           >
             <span>Start New Analysis</span>
@@ -497,7 +497,7 @@ export default function Dashboard({
                     <button
                       type="button"
                       onClick={() => onReRunAnalysis && onReRunAnalysis(item)}
-                      className="studio-btn-secondary text-xs h-8 px-3"
+                      className="studio-btn-secondary text-xs h-8 px-3 flex-1 sm:flex-initial justify-center"
                     >
                       <RefreshCw className="w-3 h-3 mr-1 text-[var(--color-text-dim)]" />
                       <span>Re-run</span>
@@ -506,7 +506,7 @@ export default function Dashboard({
                     <button
                       type="button"
                       onClick={() => onSelectHistoryItem && onSelectHistoryItem(item)}
-                      className="studio-btn-primary text-xs h-8 px-3"
+                      className="studio-btn-primary text-xs h-8 px-3 flex-1 sm:flex-initial justify-center"
                       data-cursor="Open"
                     >
                       <span>Full Dossier</span>
@@ -622,12 +622,12 @@ export default function Dashboard({
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-[var(--color-line)] flex items-center justify-between gap-2">
+              <div className="pt-3 border-t border-[var(--color-line)] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
                 <a
                   href={scheme.portalUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-mono text-xs text-[var(--color-text-dim)] hover:text-[var(--color-text-primary)] transition-colors flex items-center gap-1"
+                  className="font-mono text-xs text-[var(--color-text-dim)] hover:text-[var(--color-text-primary)] transition-colors flex items-center justify-center sm:justify-start gap-1 py-1"
                 >
                   <span>Official Portal</span>
                   <ExternalLink className="w-3 h-3" />
@@ -636,7 +636,7 @@ export default function Dashboard({
                 <button
                   type="button"
                   onClick={() => onOpenSchemeModal && onOpenSchemeModal(scheme)}
-                  className="studio-btn-secondary text-xs h-8 px-3"
+                  className="studio-btn-secondary text-xs h-8 px-3 w-full sm:w-auto justify-center"
                   data-cursor="Details"
                 >
                   <Sparkles className="w-3 h-3 mr-1 text-[var(--color-signal)]" />

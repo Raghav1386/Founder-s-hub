@@ -115,12 +115,12 @@ export default function SubmitResult({ formData, initialResult, onEditStep, onRe
 
       {/* Tabs toggle (Only before submission) */}
       {status !== 'success' && (
-        <div className="flex items-center justify-between border-b border-[var(--color-line)]">
-          <div className="flex gap-4">
+        <div className="flex flex-wrap items-center justify-between border-b border-[var(--color-line)] gap-2">
+          <div className="flex gap-2 sm:gap-4 overflow-x-auto no-scrollbar">
             <button
               type="button"
               onClick={() => setActiveTab('summary')}
-              className={`pb-2.5 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer border-b-2 ${
+              className={`pb-2.5 text-xs font-mono uppercase tracking-wider transition-colors cursor-pointer border-b-2 shrink-0 ${
                 activeTab === 'summary'
                   ? 'border-[var(--color-signal)] text-[var(--color-signal)] font-semibold'
                   : 'border-transparent text-[var(--color-muted)] hover:text-[var(--color-text)]'
@@ -131,21 +131,21 @@ export default function SubmitResult({ formData, initialResult, onEditStep, onRe
             <button
               type="button"
               onClick={() => setActiveTab('json')}
-              className={`pb-2.5 text-xs font-mono uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer border-b-2 ${
+              className={`pb-2.5 text-xs font-mono uppercase tracking-wider transition-colors flex items-center gap-1.5 cursor-pointer border-b-2 shrink-0 ${
                 activeTab === 'json'
                   ? 'border-[var(--color-signal)] text-[var(--color-signal)] font-semibold'
                   : 'border-transparent text-[var(--color-muted)] hover:text-[var(--color-text)]'
               }`}
             >
               <Code className="w-3.5 h-3.5" />
-              [ JSON Payload ]
+              <span>[ JSON Payload ]</span>
             </button>
           </div>
 
           <button
             type="button"
             onClick={handleCopyJson}
-            className="text-[11px] font-mono text-[var(--color-muted)] hover:text-[var(--color-text)] flex items-center gap-1.5 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-1)] px-2.5 py-1 rounded-[3px] border border-[var(--color-line)] transition-colors mb-2 cursor-pointer"
+            className="text-[11px] font-mono text-[var(--color-muted)] hover:text-[var(--color-text)] flex items-center gap-1.5 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-1)] px-2.5 py-1 rounded-[3px] border border-[var(--color-line)] transition-colors mb-2 cursor-pointer shrink-0"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-[var(--color-muted)]" />}
             <span>{copied ? 'Copied' : 'Copy JSON'}</span>
@@ -462,11 +462,11 @@ export default function SubmitResult({ formData, initialResult, onEditStep, onRe
                       </div>
 
                       {/* View Scheme Details Action Button */}
-                      <div className="pt-2 flex justify-end border-t border-[var(--color-line)]">
+                      <div className="pt-2 flex justify-stretch sm:justify-end border-t border-[var(--color-line)]">
                         <button
                           type="button"
                           onClick={() => setSelectedSchemeForModal(scheme)}
-                          className="text-xs font-mono text-[var(--color-signal)] hover:text-[var(--color-text)] flex items-center gap-1.5 bg-[var(--color-surface-1)] hover:bg-[var(--color-surface-2)] px-3 py-1.5 rounded-[3px] border border-[var(--color-line)] hover:border-[var(--color-signal)] transition-colors cursor-pointer"
+                          className="w-full sm:w-auto text-xs font-mono text-[var(--color-signal)] hover:text-[var(--color-text)] flex items-center justify-center gap-1.5 bg-[var(--color-surface-1)] hover:bg-[var(--color-surface-2)] px-3 py-2 sm:py-1.5 rounded-[3px] border border-[var(--color-line)] hover:border-[var(--color-signal)] transition-colors cursor-pointer"
                         >
                           <Eye className="w-3.5 h-3.5 text-[var(--color-signal)]" />
                           <span>[ View Full Guidelines & AI Q&A ]</span>
@@ -480,12 +480,12 @@ export default function SubmitResult({ formData, initialResult, onEditStep, onRe
               )}
             </div>
 
-            <div className="flex flex-wrap gap-3 pt-2">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-2.5 sm:gap-3 pt-2">
               {onGoDashboard && (
                 <button
                   type="button"
                   onClick={onGoDashboard}
-                  className="px-4 py-2 bg-[var(--color-signal)] hover:brightness-110 text-[#0E1119] rounded-[3px] font-mono text-xs uppercase tracking-wider font-semibold flex items-center gap-2 transition-colors cursor-pointer"
+                  className="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-[var(--color-signal)] hover:brightness-110 text-[#0E1119] rounded-[3px] font-mono text-xs uppercase tracking-wider font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
                 >
                   <Rocket className="w-3.5 h-3.5" />
                   <span>Return to Dashboard</span>
@@ -494,7 +494,7 @@ export default function SubmitResult({ formData, initialResult, onEditStep, onRe
               <button
                 type="button"
                 onClick={onResetForm}
-                className="px-4 py-2 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-1)] text-[var(--color-text)] border border-[var(--color-line)] rounded-[3px] font-mono text-xs uppercase tracking-wider font-semibold flex items-center gap-2 transition-colors cursor-pointer"
+                className="w-full sm:w-auto px-4 py-2.5 sm:py-2 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-1)] text-[var(--color-text)] border border-[var(--color-line)] rounded-[3px] font-mono text-xs uppercase tracking-wider font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5 text-[var(--color-muted)]" />
                 <span>Start New Analysis</span>
@@ -510,7 +510,7 @@ export default function SubmitResult({ formData, initialResult, onEditStep, onRe
           <button
             type="button"
             onClick={() => onEditStep(5)}
-            className="px-4 py-2 text-[var(--color-muted)] hover:text-[var(--color-text)] font-mono text-xs uppercase tracking-wider transition-colors text-center border border-[var(--color-line)] sm:border-none rounded-[3px] sm:rounded-none cursor-pointer"
+            className="w-full sm:w-auto px-4 py-2.5 sm:py-2 text-[var(--color-muted)] hover:text-[var(--color-text)] font-mono text-xs uppercase tracking-wider transition-colors text-center border border-[var(--color-line)] sm:border-none rounded-[3px] sm:rounded-none cursor-pointer"
           >
             &larr; Back to Step 05
           </button>

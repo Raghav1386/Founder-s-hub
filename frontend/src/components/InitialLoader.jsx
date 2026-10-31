@@ -47,9 +47,9 @@ export default function InitialLoader({ onComplete }) {
       initial={{ opacity: 1 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed inset-0 z-[10000] bg-[var(--color-ink)] text-[var(--color-text-primary)] flex flex-col items-center justify-center p-4 select-none font-sans"
+      className="fixed inset-0 z-[10000] bg-[var(--color-ink)] text-[var(--color-text-primary)] flex flex-col items-center justify-center p-3.5 sm:p-4 select-none font-sans"
     >
-      <div className="max-w-md w-full bg-[var(--color-surface-1)] border border-[var(--color-line)] rounded-[4px] p-6 sm:p-8 relative z-10 text-center space-y-5">
+      <div className="max-w-md w-full bg-[var(--color-surface-1)] border border-[var(--color-line)] rounded-[4px] p-5 sm:p-8 relative z-10 text-center space-y-4 sm:space-y-5">
 
         {/* Existing Favicon Logo Asset */}
         <div className="w-9 h-9 mx-auto rounded-[3px] bg-[var(--color-surface-2)] border border-[var(--color-line)] flex items-center justify-center overflow-hidden p-0.5">

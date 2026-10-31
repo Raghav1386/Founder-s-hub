@@ -132,11 +132,11 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
       <TrajectoryLine />
 
       {/* HERO SECTION */}
-      <section className="relative pt-20 pb-20 sm:pt-28 sm:pb-28 px-4 sm:px-6 max-w-7xl mx-auto">
-        <div className="space-y-8">
+      <section className="relative pt-12 pb-14 sm:pt-28 sm:pb-28 px-3.5 sm:px-6 max-w-7xl mx-auto">
+        <div className="space-y-6 sm:space-y-8">
           
           {/* Top Technical Metadata Tag */}
-          <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-widest text-[var(--color-text-dim)]">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[11px] uppercase tracking-widest text-[var(--color-text-dim)]">
             <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-signal)]" />
             <span className="text-[var(--color-text-muted)]">Index Coverage</span>
             <span>&bull;</span>
@@ -147,7 +147,7 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
 
           {/* Massive Typographic Headline with Kinetic Rolling Slot Reel */}
           <div className="space-y-2 max-w-5xl">
-            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-bold tracking-tight text-[var(--color-text-primary)] leading-[0.98]">
+            <h1 className="font-display text-3xl sm:text-6xl md:text-7xl font-bold tracking-tight text-[var(--color-text-primary)] leading-[1.05] sm:leading-[0.98]">
               The direct trajectory to verified startup{' '}
               <span className="kinetic-slot-window text-[var(--color-signal)] inline-block">
                 <span className="kinetic-slot-reel flex flex-col">
@@ -161,16 +161,16 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
           </div>
 
           {/* Subheadline */}
-          <p className="text-base sm:text-lg text-[var(--color-text-muted)] max-w-2xl leading-relaxed">
+          <p className="text-sm sm:text-lg text-[var(--color-text-muted)] max-w-2xl leading-relaxed">
             Stop navigating fragmented portals and founder perk programs manually. Founder's Hub indexes verified schemes, non-dilutive capital, and Tier-1 cloud credits—evaluating your venture's exact eligibility in seconds.
           </p>
 
           {/* Actions */}
-          <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
+          <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <button
               type="button"
               onClick={onStartWizard}
-              className="studio-btn-primary h-12 px-6 text-sm sm:text-base font-medium"
+              className="studio-btn-primary h-12 px-6 text-sm sm:text-base font-medium justify-center"
               data-cursor="Launch"
             >
               <span>Evaluate My Startup</span>
@@ -179,7 +179,7 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
 
             <a
               href="#matrix"
-              className="studio-btn-secondary h-12 px-5 text-sm sm:text-base font-medium"
+              className="studio-btn-secondary h-12 px-5 text-sm sm:text-base font-medium justify-center text-center"
               data-cursor="Inspect"
             >
               <span>Inspect Opportunity Matrix</span>
@@ -189,14 +189,14 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
         </div>
 
         {/* Real Live Evaluation Product Window (Framed in 1px Studio Hairline) */}
-        <div className="mt-14 sm:mt-20 studio-card p-4 sm:p-6 relative overflow-hidden">
+        <div className="mt-10 sm:mt-20 studio-card p-3.5 sm:p-6 relative overflow-hidden">
           
           {/* Top Window Bar */}
-          <div className="flex items-center justify-between border-b border-[var(--color-line)] pb-3 mb-5 font-mono text-[11px] text-[var(--color-text-dim)] uppercase tracking-wider">
+          <div className="flex flex-wrap items-center justify-between border-b border-[var(--color-line)] pb-3 mb-4 sm:mb-5 font-mono text-[11px] text-[var(--color-text-dim)] uppercase tracking-wider gap-2">
             <div className="flex items-center gap-2">
               <Terminal className="w-3.5 h-3.5 text-[var(--color-signal)]" />
               <span className="text-[var(--color-text-primary)] font-semibold">Live Evaluation Pipeline</span>
-              <span className="text-[var(--color-text-dim)]">/ Session #0842</span>
+              <span className="text-[var(--color-text-dim)] hidden xs:inline">/ Session #0842</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-400" />
@@ -307,17 +307,17 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
       </section>
 
       {/* WAYPOINT SECTION: THE TRAJECTORY WORKFLOW */}
-      <section id="how-it-works" className="py-24 px-4 sm:px-6 max-w-7xl mx-auto border-b border-[var(--color-line)]">
+      <section id="how-it-works" className="py-14 sm:py-24 px-3.5 sm:px-6 max-w-7xl mx-auto border-b border-[var(--color-line)]">
         
         {/* Section Header */}
-        <div className="space-y-3 mb-16 max-w-2xl">
+        <div className="space-y-3 mb-10 sm:mb-16 max-w-2xl">
           <span className="font-mono text-[11px] uppercase tracking-widest text-[var(--color-signal)] block">
             Waypoint Journey
           </span>
-          <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-[var(--color-text-primary)]">
+          <h2 className="font-display text-2xl sm:text-4xl font-bold tracking-tight text-[var(--color-text-primary)]">
             How evaluation progresses from input to official grant.
           </h2>
-          <p className="text-sm text-[var(--color-text-muted)] leading-relaxed">
+          <p className="text-xs sm:text-sm text-[var(--color-text-muted)] leading-relaxed">
             A continuous four-stage pipeline that eliminates bureaucratic friction and pinpoints exact statutory eligibility.
           </p>
         </div>
@@ -325,7 +325,7 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
         {/* 4 Connected Waypoints */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           
-          <div className="studio-card p-5 space-y-3">
+          <div className="studio-card p-4 sm:p-5 space-y-3">
             <div className="flex items-center justify-between border-b border-[var(--color-line)] pb-3">
               <span className="font-mono text-xs font-semibold text-[var(--color-signal)]">01 / Onboarding</span>
               <span className="font-mono text-[10px] text-[var(--color-text-dim)] uppercase">2 Minutes</span>
@@ -336,7 +336,7 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
             </p>
           </div>
 
-          <div className="studio-card p-5 space-y-3">
+          <div className="studio-card p-4 sm:p-5 space-y-3">
             <div className="flex items-center justify-between border-b border-[var(--color-line)] pb-3">
               <span className="font-mono text-xs font-semibold text-[var(--color-signal)]">02 / Embedding</span>
               <span className="font-mono text-[10px] text-[var(--color-text-dim)] uppercase">Vector DB</span>
@@ -347,7 +347,7 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
             </p>
           </div>
 
-          <div className="studio-card p-5 space-y-3">
+          <div className="studio-card p-4 sm:p-5 space-y-3">
             <div className="flex items-center justify-between border-b border-[var(--color-line)] pb-3">
               <span className="font-mono text-xs font-semibold text-[var(--color-signal)]">03 / Verification</span>
               <span className="font-mono text-[10px] text-[var(--color-text-dim)] uppercase">LLM Rules</span>
@@ -358,7 +358,7 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
             </p>
           </div>
 
-          <div className="studio-card p-5 space-y-3">
+          <div className="studio-card p-4 sm:p-5 space-y-3">
             <div className="flex items-center justify-between border-b border-[var(--color-line)] pb-3">
               <span className="font-mono text-xs font-semibold text-[var(--color-signal)]">04 / Action</span>
               <span className="font-mono text-[10px] text-emerald-400 uppercase">Verified</span>
@@ -373,17 +373,17 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
       </section>
 
       {/* OPPORTUNITY MATRIX (BENTO / VARYING CELL GRID) */}
-      <section id="matrix" className="py-24 px-4 sm:px-6 max-w-7xl mx-auto border-b border-[var(--color-line)]">
+      <section id="matrix" className="py-14 sm:py-24 px-3.5 sm:px-6 max-w-7xl mx-auto border-b border-[var(--color-line)]">
         
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 gap-5 sm:gap-6">
           <div className="space-y-2 max-w-xl">
             <span className="font-mono text-[11px] uppercase tracking-widest text-[var(--color-signal)] block">
               Indexed Matrix
             </span>
-            <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-[var(--color-text-primary)]">
+            <h2 className="font-display text-2xl sm:text-4xl font-bold tracking-tight text-[var(--color-text-primary)]">
               Comprehensive Opportunity Coverage
             </h2>
-            <p className="text-sm text-[var(--color-text-muted)]">
+            <p className="text-xs sm:text-sm text-[var(--color-text-muted)]">
               Continuous indexing across ₹500+ Cr in startup schemes, non-dilutive grants, and Tier-1 cloud credits.
             </p>
           </div>
@@ -423,7 +423,7 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
           {filteredCategories.map((cat) => (
             <div
               key={cat.id}
-              className="studio-card p-5 space-y-4 flex flex-col justify-between"
+              className="studio-card p-4 sm:p-5 space-y-4 flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between border-b border-[var(--color-line)] pb-3">
@@ -464,15 +464,15 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
       </section>
 
       {/* GROUNDED SCHEME Q&A ENGINE (INTERACTIVE STUDIO CONSOLE) */}
-      <section id="grounded-qa" className="py-24 px-4 sm:px-6 max-w-7xl mx-auto border-b border-[var(--color-line)]">
-        <div className="studio-card p-6 sm:p-10 space-y-6">
+      <section id="grounded-qa" className="py-14 sm:py-24 px-3.5 sm:px-6 max-w-7xl mx-auto border-b border-[var(--color-line)]">
+        <div className="studio-card p-4 sm:p-10 space-y-5 sm:space-y-6">
           
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--color-line)] pb-5">
             <div>
               <span className="font-mono text-[11px] uppercase tracking-widest text-[var(--color-signal)] block mb-1">
                 Grounded Verification Console
               </span>
-              <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">
+              <h2 className="font-display text-xl sm:text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">
                 Ask Questions Grounded in Official Policy Documents
               </h2>
             </div>
@@ -547,20 +547,20 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
       </section>
 
       {/* INSTITUTIONAL COVERAGE DIRECTORY */}
-      <section className="py-24 px-4 sm:px-6 max-w-7xl mx-auto border-b border-[var(--color-line)]">
-        <div className="space-y-2 mb-10 max-w-xl">
+      <section className="py-14 sm:py-24 px-3.5 sm:px-6 max-w-7xl mx-auto border-b border-[var(--color-line)]">
+        <div className="space-y-2 mb-8 sm:mb-10 max-w-xl">
           <span className="font-mono text-[11px] uppercase tracking-widest text-[var(--color-signal)] block">
             Statutory Sources
           </span>
           <h2 className="font-display text-2xl sm:text-3xl font-bold tracking-tight text-[var(--color-text-primary)]">
             Verified Statutory Bodies &amp; Institutional Programs
           </h2>
-          <p className="text-sm text-[var(--color-text-muted)]">
+          <p className="text-xs sm:text-sm text-[var(--color-text-muted)]">
             Every indexed opportunity maps directly to official gazettes, institutional funds, and cloud partner networks.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5 sm:gap-3">
           {[
             { name: 'Startup India', org: 'DPIIT / MoCI', badge: 'Central Body' },
             { name: 'SIDBI', org: 'Small Industries Dev Bank', badge: 'MSME Finance' },
@@ -575,7 +575,7 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
           ].map((src, i) => (
             <div
               key={i}
-              className="p-3 bg-[var(--color-surface-1)] border border-[var(--color-line)] rounded-[3px] text-center space-y-1 hover:border-[var(--color-line-strong)] transition-colors"
+              className="p-2.5 sm:p-3 bg-[var(--color-surface-1)] border border-[var(--color-line)] rounded-[3px] text-center space-y-1 hover:border-[var(--color-line-strong)] transition-colors"
             >
               <span className="font-mono text-[9px] uppercase tracking-wider text-[var(--color-signal)] block">
                 {src.badge}
@@ -592,16 +592,16 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
       </section>
 
       {/* FINAL CALL TO ACTION (STUDIO SPLIT) */}
-      <section className="py-24 px-4 sm:px-6 max-w-7xl mx-auto">
-        <div className="studio-card p-8 sm:p-14 space-y-6">
+      <section className="py-14 sm:py-24 px-3.5 sm:px-6 max-w-7xl mx-auto">
+        <div className="studio-card p-6 sm:p-14 space-y-6">
           <div className="space-y-3 max-w-2xl">
             <span className="font-mono text-[11px] uppercase tracking-widest text-[var(--color-signal)] block">
               Immediate Evaluation
             </span>
-            <h2 className="font-display text-3xl sm:text-5xl font-bold tracking-tight text-[var(--color-text-primary)]">
+            <h2 className="font-display text-2xl sm:text-5xl font-bold tracking-tight text-[var(--color-text-primary)]">
               Evaluate your venture in under two minutes.
             </h2>
-            <p className="text-sm sm:text-base text-[var(--color-text-muted)] leading-relaxed">
+            <p className="text-xs sm:text-base text-[var(--color-text-muted)] leading-relaxed">
               Match your startup against verified non-dilutive grants, incubation schemes, and Tier-1 cloud credits.
             </p>
           </div>
@@ -610,7 +610,7 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
             <button
               type="button"
               onClick={onStartWizard}
-              className="studio-btn-primary h-12 px-8 text-base font-medium"
+              className="studio-btn-primary h-12 px-6 sm:px-8 text-sm sm:text-base font-medium w-full sm:w-auto justify-center"
               data-cursor="Evaluate"
             >
               <span>Launch Startup Evaluation</span>
@@ -618,7 +618,7 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
             </button>
           </div>
 
-          <div className="pt-4 border-t border-[var(--color-line)] flex flex-wrap gap-6 font-mono text-[11px] uppercase tracking-wider text-[var(--color-text-dim)]">
+          <div className="pt-4 border-t border-[var(--color-line)] flex flex-wrap gap-4 sm:gap-6 font-mono text-[11px] uppercase tracking-wider text-[var(--color-text-dim)]">
             <span className="flex items-center gap-1.5">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
               100% Free &amp; Immediate
@@ -636,8 +636,8 @@ export default function LandingPage({ onStartWizard, onOpenPrivacyModal }) {
       </section>
 
       {/* LARGE STUDIO FOOTER */}
-      <footer className="border-t border-[var(--color-line)] bg-[var(--color-surface-1)] py-16 px-4 sm:px-6">
-        <div className="max-w-7xl mx-auto space-y-12">
+      <footer className="border-t border-[var(--color-line)] bg-[var(--color-surface-1)] py-10 sm:py-16 px-3.5 sm:px-6">
+        <div className="max-w-7xl mx-auto space-y-8 sm:space-y-12">
           
           <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 pb-10 border-b border-[var(--color-line)]">
             <div className="space-y-2">

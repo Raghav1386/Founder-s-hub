@@ -315,7 +315,7 @@ function MainApp() {
               onOpenSchemeModal={(scheme) => setSelectedSchemeForModal(scheme)}
             />
           ) : (
-            <main className="flex-1 max-w-4xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-10 animate-fadeIn">
+            <main className="flex-1 max-w-4xl w-full mx-auto px-3 sm:px-6 py-4 sm:py-10 animate-fadeIn">
               {/* Step Progress Indicator Bar */}
               <ProgressBar
                 currentStep={currentStep > 5 ? 5 : currentStep}
@@ -325,7 +325,7 @@ function MainApp() {
               />
 
               {/* Form Card Container */}
-              <div className="bg-[var(--color-surface-1)] border border-[var(--color-line)] rounded-[4px] p-5 sm:p-8">
+              <div className="bg-[var(--color-surface-1)] border border-[var(--color-line)] rounded-[4px] p-4 sm:p-8">
                 {/* Render Step Content */}
                 {currentStep === 1 && (
                   <Step1GeneralInfo
@@ -379,18 +379,18 @@ function MainApp() {
 
                 {/* Navigation Controls (Steps 1 through 5) */}
                 {currentStep <= 5 && (
-                  <div className="flex items-center justify-between pt-6 mt-8 border-t border-[var(--color-line)] gap-3">
+                  <div className="flex items-center justify-between pt-5 sm:pt-6 mt-6 sm:mt-8 border-t border-[var(--color-line)] gap-2.5">
                     <button
                       type="button"
                       onClick={handlePrev}
                       disabled={currentStep === 1}
-                      className={`studio-btn-secondary ${currentStep === 1 ? 'opacity-40 pointer-events-none' : ''}`}
+                      className={`studio-btn-secondary flex-1 sm:flex-initial justify-center px-3 sm:px-4.5 ${currentStep === 1 ? 'opacity-40 pointer-events-none' : ''}`}
                     >
                       <ArrowLeft className="w-3.5 h-3.5 mr-1" />
                       <span>Previous</span>
                     </button>
 
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2.5 flex-1 sm:flex-initial justify-end">
                       <button
                         type="button"
                         onClick={handleResetForm}
@@ -404,17 +404,19 @@ function MainApp() {
                       <button
                         type="button"
                         onClick={handleNext}
-                        className="studio-btn-primary"
+                        className="studio-btn-primary flex-1 sm:flex-initial justify-center px-3 sm:px-4.5"
                         data-cursor="Next"
                       >
                         {currentStep === 5 ? (
                           <>
-                            <span>Review Profile</span>
+                            <span>Review</span>
+                            <span className="hidden xs:inline sm:inline"> Profile</span>
                             <CheckCircle2 className="w-3.5 h-3.5 ml-1" />
                           </>
                         ) : (
                           <>
-                            <span>Next Step</span>
+                            <span>Next</span>
+                            <span className="hidden xs:inline sm:inline"> Step</span>
                             <ArrowRight className="w-3.5 h-3.5 ml-1" />
                           </>
                         )}

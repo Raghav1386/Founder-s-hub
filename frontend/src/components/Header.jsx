@@ -59,34 +59,34 @@ export default function Header({
 
   return (
     <header className="sticky top-0 z-40 bg-[var(--color-ink)] border-b border-[var(--color-line)] transition-colors duration-150">
-      <div className={`${isShellMode ? 'px-4 sm:px-6 lg:px-8' : 'max-w-7xl mx-auto px-4 sm:px-6'} h-16 flex items-center justify-between gap-4`}>
+      <div className={`${isShellMode ? 'px-3 sm:px-6 lg:px-8' : 'max-w-7xl mx-auto px-3 sm:px-6'} h-16 flex items-center justify-between gap-2 sm:gap-4`}>
         
         {/* Left: Brand Identity (Public) OR Mobile Menu + Breadcrumb (Shell) */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
           {isShellMode ? (
             <>
               <button
                 type="button"
                 onClick={onToggleMobileSidebar}
-                className="md:hidden p-2 rounded-[3px] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-1)] border border-[var(--color-line)] transition-colors cursor-pointer"
+                className="md:hidden p-2 rounded-[3px] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-surface-1)] border border-[var(--color-line)] transition-colors cursor-pointer shrink-0"
                 aria-label="Toggle navigation menu"
               >
                 <Menu className="w-4 h-4" />
               </button>
 
-              <div className="flex items-center gap-2 font-mono text-[11px] uppercase tracking-wider text-[var(--color-text-dim)]">
+              <div className="flex items-center gap-1.5 sm:gap-2 font-mono text-[11px] uppercase tracking-wider text-[var(--color-text-dim)] truncate">
                 <button
                   type="button"
                   onClick={onGoDashboard}
-                  className="hover:text-[var(--color-text-primary)] transition-colors cursor-pointer flex items-center gap-1.5"
+                  className="hover:text-[var(--color-text-primary)] transition-colors cursor-pointer flex items-center gap-1.5 shrink-0"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-signal)]" />
                   <span className="text-[var(--color-text-primary)] font-semibold">
                     {viewMode === 'dashboard' ? 'Console' : 'Assessment'}
                   </span>
                 </button>
-                <span>/</span>
-                <span className="text-[var(--color-text-muted)]">
+                <span className="hidden sm:inline">/</span>
+                <span className="text-[var(--color-text-muted)] hidden sm:inline">
                   {viewMode === 'dashboard' ? '01 Overview' : '02 Evaluation Wizard'}
                 </span>
               </div>
@@ -95,7 +95,7 @@ export default function Header({
             <button
               type="button"
               onClick={isAuthenticated ? onGoDashboard : onGoHome}
-              className="flex items-center gap-3 text-left group cursor-pointer"
+              className="flex items-center gap-2 sm:gap-3 text-left group cursor-pointer shrink-0"
             >
               {/* Existing Favicon Brand Asset */}
               <div className="w-7 h-7 rounded-[3px] overflow-hidden border border-[var(--color-line)] shrink-0 bg-[var(--color-surface-1)] flex items-center justify-center">
@@ -143,13 +143,13 @@ export default function Header({
         )}
 
         {/* Right Section: Theme Toggle & Actions */}
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
           
           {/* Studio Theme Switcher */}
           <button
             type="button"
             onClick={toggleTheme}
-            className="w-8 h-8 rounded-[3px] border border-[var(--color-line)] hover:border-[var(--color-line-strong)] bg-transparent hover:bg-[var(--color-surface-1)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] flex items-center justify-center transition-colors cursor-pointer"
+            className="w-8 h-8 rounded-[3px] border border-[var(--color-line)] hover:border-[var(--color-line-strong)] bg-transparent hover:bg-[var(--color-surface-1)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] flex items-center justify-center transition-colors cursor-pointer shrink-0"
             title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
             aria-label="Toggle theme"
           >
@@ -161,7 +161,7 @@ export default function Header({
               <button
                 type="button"
                 onClick={onOpenAuthModal}
-                className="studio-btn-secondary"
+                className="studio-btn-secondary px-2.5 sm:px-4 text-xs sm:text-sm"
                 data-cursor="Sign In"
               >
                 <User className="w-3.5 h-3.5 mr-1" />
@@ -171,42 +171,45 @@ export default function Header({
               <button
                 type="button"
                 onClick={onOpenAuthModal}
-                className="studio-btn-primary"
+                className="studio-btn-primary px-3 sm:px-4 text-xs sm:text-sm"
                 data-cursor="Start"
               >
-                <span>Find Opportunities</span>
-                <ArrowRight className="w-3.5 h-3.5 ml-1 hidden xs:inline" />
+                <span className="hidden sm:inline">Find Opportunities</span>
+                <span className="sm:hidden">Start</span>
+                <ArrowRight className="w-3.5 h-3.5 ml-1" />
               </button>
             </>
           ) : viewMode === 'wizard' ? (
             <button
               type="button"
               onClick={onGoDashboard}
-              className="studio-btn-secondary"
+              className="studio-btn-secondary px-2.5 sm:px-4 text-xs sm:text-sm"
               data-cursor="Dashboard"
             >
-              <LayoutDashboard className="w-3.5 h-3.5 mr-1" />
+              <LayoutDashboard className="w-3.5 h-3.5 sm:mr-1" />
               <span>Console</span>
             </button>
           ) : viewMode === 'dashboard' ? (
             <button
               type="button"
               onClick={onStartWizard}
-              className="studio-btn-primary"
+              className="studio-btn-primary px-3 sm:px-4 text-xs sm:text-sm"
               data-cursor="Launch"
             >
               <Sparkles className="w-3.5 h-3.5 mr-1" />
-              <span>New Analysis</span>
+              <span className="hidden sm:inline">New Analysis</span>
+              <span className="sm:hidden">New</span>
             </button>
           ) : (
             <button
               type="button"
               onClick={onGoDashboard}
-              className="studio-btn-primary"
+              className="studio-btn-primary px-3 sm:px-4 text-xs sm:text-sm"
               data-cursor="Open"
             >
               <LayoutDashboard className="w-3.5 h-3.5 mr-1" />
-              <span>Go to Console</span>
+              <span className="hidden sm:inline">Go to Console</span>
+              <span className="sm:hidden">Console</span>
             </button>
           )}
 

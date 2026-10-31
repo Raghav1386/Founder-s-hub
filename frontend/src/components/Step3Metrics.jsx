@@ -80,7 +80,7 @@ export default function Step3Metrics({ formData, updateFormData, errors }) {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-2.5">
           {TEAM_SIZES.map((size) => {
             const isSelected = formData.teamSize === size.value;
             return (
@@ -88,7 +88,7 @@ export default function Step3Metrics({ formData, updateFormData, errors }) {
                 type="button"
                 key={size.value}
                 onClick={() => updateFormData('teamSize', size.value)}
-                className={`py-2.5 px-3 rounded-[3px] border text-xs font-mono font-medium transition-colors flex flex-col items-center justify-center gap-1 cursor-pointer ${
+                className={`py-2.5 px-3 rounded-[3px] border text-xs font-mono font-medium transition-colors flex flex-col items-center justify-center gap-1 cursor-pointer last:col-span-2 sm:last:col-span-1 md:last:col-span-1 ${
                   isSelected
                     ? 'bg-[var(--color-signal)] border-[var(--color-signal)] text-[var(--color-accent-text)] font-semibold'
                     : 'bg-[var(--color-surface-1)] border-[var(--color-line)] text-[var(--color-text-muted)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-line-strong)]'

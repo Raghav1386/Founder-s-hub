@@ -15,26 +15,26 @@ export default function SavedHistoryModal({ isOpen, onClose, onSelectHistoryItem
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[99999] bg-black/75 flex items-center justify-center p-4 animate-fadeIn">
+    <div className="fixed inset-0 z-[99999] bg-black/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-fadeIn">
       
       {/* Modal Container */}
-      <div className="bg-[var(--color-surface-1)] border border-[var(--color-line)] w-full max-w-3xl rounded-[4px] overflow-hidden text-[var(--color-text)] relative animate-scaleUp max-h-[85vh] flex flex-col">
+      <div className="bg-[var(--color-surface-1)] border border-[var(--color-line)] w-full max-w-3xl rounded-[4px] overflow-hidden text-[var(--color-text)] relative animate-scaleUp max-h-[88vh] flex flex-col">
         
         {/* Modal Header */}
-        <div className="p-5 sm:p-6 border-b border-[var(--color-line)] bg-[var(--color-surface-2)] flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-[3px] bg-[var(--color-surface-1)] border border-[var(--color-line)] flex items-center justify-center text-[var(--color-signal)] shrink-0">
+        <div className="p-4 sm:p-6 border-b border-[var(--color-line)] bg-[var(--color-surface-2)] flex items-center justify-between">
+          <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-[3px] bg-[var(--color-surface-1)] border border-[var(--color-line)] flex items-center justify-center text-[var(--color-signal)] shrink-0">
               <History className="w-4 h-4" />
             </div>
-            <div>
-              <h2 className="text-base sm:text-lg font-bold text-[var(--color-text)] tracking-tight flex items-center gap-2">
-                Startup Evaluation Archives
-                <span className="text-[11px] font-mono bg-[var(--color-surface-1)] text-[var(--color-signal)] border border-[var(--color-line)] px-2 py-0.5 rounded-[2px] font-semibold">
-                  {savedHistory.length} Dossiers
+            <div className="min-w-0">
+              <h2 className="text-sm sm:text-lg font-bold text-[var(--color-text)] tracking-tight flex items-center gap-2 truncate">
+                <span>Evaluation Archives</span>
+                <span className="text-[10px] sm:text-[11px] font-mono bg-[var(--color-surface-1)] text-[var(--color-signal)] border border-[var(--color-line)] px-2 py-0.5 rounded-[2px] font-semibold shrink-0">
+                  {savedHistory.length}
                 </span>
               </h2>
-              <p className="text-xs text-[var(--color-muted)] font-mono">
-                Historical scheme evaluation telemetry and AI recommendations.
+              <p className="text-[11px] sm:text-xs text-[var(--color-muted)] font-mono truncate">
+                Historical scheme evaluation telemetry.
               </p>
             </div>
           </div>
@@ -42,7 +42,7 @@ export default function SavedHistoryModal({ isOpen, onClose, onSelectHistoryItem
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-text)] bg-[var(--color-surface-1)] hover:bg-[var(--color-surface-2)] rounded-[3px] transition-colors cursor-pointer border border-[var(--color-line)]"
+            className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-text)] bg-[var(--color-surface-1)] hover:bg-[var(--color-surface-2)] rounded-[3px] transition-colors cursor-pointer border border-[var(--color-line)] shrink-0"
             aria-label="Close"
           >
             <X className="w-4 h-4" />
@@ -50,7 +50,7 @@ export default function SavedHistoryModal({ isOpen, onClose, onSelectHistoryItem
         </div>
 
         {/* Modal Body / History Items List */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3">
+        <div className="flex-1 overflow-y-auto p-3.5 sm:p-6 space-y-3 touch-scroll">
           {savedHistory.length === 0 ? (
             <div className="py-16 text-center space-y-3 bg-[var(--color-surface-2)] rounded-[3px] border border-[var(--color-line)]">
               <Rocket className="w-8 h-8 text-[var(--color-muted)] mx-auto" />
@@ -97,7 +97,7 @@ export default function SavedHistoryModal({ isOpen, onClose, onSelectHistoryItem
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-between sm:justify-start">
                       {runReadiness !== null && (
                         <span className="text-xs font-mono font-semibold bg-[var(--color-surface-1)] text-[var(--color-signal)] border border-[var(--color-line)] px-2.5 py-1 rounded-[3px]">
                           {runReadiness}% Readiness
@@ -109,7 +109,7 @@ export default function SavedHistoryModal({ isOpen, onClose, onSelectHistoryItem
                           if (onSelectHistoryItem) onSelectHistoryItem(item);
                           onClose();
                         }}
-                        className="bg-[var(--color-signal)] hover:brightness-110 text-[#0E1119] font-mono font-semibold text-xs uppercase tracking-wider px-3.5 py-1.5 rounded-[3px] transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                        className="bg-[var(--color-signal)] hover:brightness-110 text-[#0E1119] font-mono font-semibold text-xs uppercase tracking-wider px-3.5 py-1.5 rounded-[3px] transition-colors flex items-center justify-center gap-1.5 cursor-pointer ml-auto sm:ml-0"
                       >
                         <span>View Dossier</span>
                         <ChevronRight className="w-3.5 h-3.5" />

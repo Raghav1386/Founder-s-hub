@@ -86,53 +86,66 @@ export default function SchemeDetailModal({
     <div className="fixed inset-0 z-[9999] bg-[var(--color-ink)] overflow-y-auto min-h-screen w-full animate-fadeIn flex flex-col text-[var(--color-text)]">
       
       {/* Top Header Bar */}
-      <div className="sticky top-0 z-20 bg-[var(--color-surface-1)] border-b border-[var(--color-line)] px-4 sm:px-8 py-4">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="sticky top-0 z-20 bg-[var(--color-surface-1)] border-b border-[var(--color-line)] px-3 sm:px-8 py-3 sm:py-4">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
           
-          {/* Left: Back Button & Title */}
-          <div className="flex items-start gap-3">
+          {/* Top Row: Back Button, Title, and Close Button on Mobile */}
+          <div className="flex items-start justify-between sm:justify-start gap-2.5 sm:gap-3 min-w-0">
+            <div className="flex items-start gap-2.5 sm:gap-3 min-w-0 flex-1">
+              <button
+                type="button"
+                onClick={onClose}
+                className="mt-0.5 p-1.5 sm:p-2 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-1)] text-[var(--color-text)] rounded-[3px] transition-colors flex items-center gap-1 text-xs font-mono uppercase tracking-wider shrink-0 cursor-pointer border border-[var(--color-line)]"
+              >
+                <ArrowLeft className="w-3.5 h-3.5 text-[var(--color-signal)]" />
+                <span className="hidden sm:inline">Back</span>
+              </button>
+
+              <div className="space-y-1 min-w-0">
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                  <span className="text-[10px] font-mono uppercase tracking-wider bg-[var(--color-surface-2)] text-[var(--color-muted)] border border-[var(--color-line)] px-2 py-0.5 rounded-[2px]">
+                    {source}
+                  </span>
+                  {schemeMatch && (
+                    <span
+                      className={`text-xs font-mono font-semibold px-2 sm:px-2.5 py-0.5 rounded-[3px] border ${
+                        schemeMatch.eligibilityScore >= 80
+                          ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                          : schemeMatch.eligibilityScore >= 60
+                          ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
+                          : 'bg-red-500/10 text-red-300 border-red-500/30'
+                      }`}
+                    >
+                      [{schemeMatch.eligibilityScore}% MATCH &bull; {schemeMatch.eligibilityStatus}]
+                    </span>
+                  )}
+                </div>
+                <h1 className="text-base sm:text-2xl font-bold text-[var(--color-text)] tracking-tight leading-snug line-clamp-2 sm:line-clamp-none">
+                  {title}
+                </h1>
+              </div>
+            </div>
+
+            {/* Mobile close button */}
             <button
               type="button"
               onClick={onClose}
-              className="mt-0.5 p-2 bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-1)] text-[var(--color-text)] rounded-[3px] transition-colors flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider shrink-0 cursor-pointer border border-[var(--color-line)]"
+              className="sm:hidden p-1.5 text-[var(--color-muted)] hover:text-[var(--color-text)] bg-[var(--color-surface-2)] rounded-[3px] transition-colors cursor-pointer border border-[var(--color-line)] shrink-0"
+              title="Close"
+              aria-label="Close"
             >
-              <ArrowLeft className="w-3.5 h-3.5 text-[var(--color-signal)]" />
-              <span>Back</span>
+              <X className="w-4 h-4" />
             </button>
-
-            <div className="space-y-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[10px] font-mono uppercase tracking-wider bg-[var(--color-surface-2)] text-[var(--color-muted)] border border-[var(--color-line)] px-2 py-0.5 rounded-[2px]">
-                  {source}
-                </span>
-                {schemeMatch && (
-                  <span
-                    className={`text-xs font-mono font-semibold px-2.5 py-0.5 rounded-[3px] border ${
-                      schemeMatch.eligibilityScore >= 80
-                        ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                        : schemeMatch.eligibilityScore >= 60
-                        ? 'bg-amber-500/10 text-amber-300 border-amber-500/30'
-                        : 'bg-red-500/10 text-red-300 border-red-500/30'
-                    }`}
-                  >
-                    [{schemeMatch.eligibilityScore}% MATCH &bull; {schemeMatch.eligibilityStatus}]
-                  </span>
-                )}
-              </div>
-              <h1 className="text-lg sm:text-2xl font-bold text-[var(--color-text)] tracking-tight leading-snug">
-                {title}
-              </h1>
-            </div>
           </div>
 
           {/* Right: Actions */}
-          <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-center">
+          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 self-stretch sm:self-center">
             {url && (
               <a
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-3.5 py-2 bg-[var(--color-signal)] hover:brightness-110 text-[#0E1119] rounded-[3px] text-xs font-mono font-semibold uppercase tracking-wider flex items-center gap-2 transition-colors"
+                className="w-full sm:w-auto px-3.5 py-2 bg-[var(--color-signal)] hover:brightness-110 text-[#0E1119] rounded-[3px] text-xs font-mono font-semibold uppercase tracking-wider flex items-center justify-center gap-2 transition-colors"
               >
                 <span>Portal Access</span>
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -141,7 +154,7 @@ export default function SchemeDetailModal({
             <button
               type="button"
               onClick={onClose}
-              className="p-2 text-[var(--color-muted)] hover:text-[var(--color-text)] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-1)] rounded-[3px] transition-colors cursor-pointer border border-[var(--color-line)]"
+              className="hidden sm:inline-flex p-2 text-[var(--color-muted)] hover:text-[var(--color-text)] bg-[var(--color-surface-2)] hover:bg-[var(--color-surface-1)] rounded-[3px] transition-colors cursor-pointer border border-[var(--color-line)]"
               title="Close"
             >
               <X className="w-4 h-4" />
@@ -150,7 +163,7 @@ export default function SchemeDetailModal({
         </div>
 
         {/* Tab Navigation Sub-Header */}
-        <div className="max-w-6xl mx-auto pt-3 mt-2 border-t border-[var(--color-line)] flex gap-4 sm:gap-6 text-xs font-mono uppercase tracking-wider overflow-x-auto no-scrollbar whitespace-nowrap">
+        <div className="max-w-6xl mx-auto pt-2.5 sm:pt-3 mt-2 border-t border-[var(--color-line)] flex gap-3 sm:gap-6 text-xs font-mono uppercase tracking-wider overflow-x-auto no-scrollbar whitespace-nowrap">
           {schemeMatch && (
             <button
               type="button"
@@ -195,7 +208,7 @@ export default function SchemeDetailModal({
       </div>
 
       {/* Main Page Body Content */}
-      <div className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-8 space-y-6">
+      <div className="flex-1 max-w-6xl w-full mx-auto p-3.5 sm:p-8 space-y-5 sm:space-y-6">
         
         {loading && (
           <div className="flex flex-col items-center justify-center py-20 space-y-3 bg-[var(--color-surface-1)] rounded-[4px] border border-[var(--color-line)]">
